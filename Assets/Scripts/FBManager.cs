@@ -4,13 +4,28 @@ using UnityEngine;
 using Facebook.Unity;
 using UnityEngine.UI;
 
-public class TestFBLogin : MonoBehaviour {
-	public Text logText;
-	// Use this for initialization
+public class FBManager : MonoBehaviour {
+	private static FBManager instance = null;
+
+	public static FBManager Instance{get{return instance;}}
+
+	void Awake ()
+	{
+		if (instance != null && instance != this) {
+			Destroy (this.gameObject);
+			return;
+		} else {
+			instance=this;
+		}
+
+		DontDestroyOnLoad(this.gameObject);
+	}
+
 	void Start ()
 	{
 		if (!FB.IsInitialized) {
 			FB.Init (OnInitFBComplete, null, null);
+			Debug.Log("init fb");
 		} else {
 			FB.ActivateApp();
 		}
@@ -18,14 +33,14 @@ public class TestFBLogin : MonoBehaviour {
 	}
 
 	void OnInitFBComplete (){
-		ShoWLog(string.Format("OnInitCompleteCalled IsLoggedIn='{0}' IsInitialized='{1}'",FB.IsLoggedIn,FB.IsInitialized));
+		Debug.Log(string.Format("OnInitCompleteCalled IsLoggedIn='{0}' IsInitialized='{1}'",FB.IsLoggedIn,FB.IsInitialized));
 
 		if(FB.IsLoggedIn){
 			GetFBName();
 		}
 	}
 
-	public void OnClickButtonFBLogin ()
+	public void OnFBLogin ()
 	{
 		if (!FB.IsInitialized) {
 			FB.Init (OnInitFBComplete, null, null);
@@ -40,24 +55,21 @@ public class TestFBLogin : MonoBehaviour {
 
 	void OnFBGetName(Facebook.Unity.IGraphResult result){
 		string fbName = result.ResultDictionary["first_name"].ToString();
-		ShoWLog("FBFirstName: "+fbName);
+		Debug.Log("FBFirstName: "+fbName);
 	}
 
 	void HandleLoginResult (IResult result)
 	{
 		if (result == null) {
-			ShoWLog (result.ToString());
+			Debug.Log (result.ToString());
 		} else if (!string.IsNullOrEmpty (result.Error)) {
-			ShoWLog ("error login 01: " + result.ToString());
+			Debug.Log ("error login 01: " + result.ToString());
 		} else if (result.Cancelled) {
-			ShoWLog ("error login 02: " + result.ToString());
+			Debug.Log ("error login 02: " + result.ToString());
 		} else if (!string.IsNullOrEmpty (result.RawResult)) { //success
-			ShoWLog("login success");
+			Debug.Log("login success");
 			GetFBName();
 		}
 	}
 
-	void ShoWLog (string log){
-		logText.text = log;
-	}
 }
