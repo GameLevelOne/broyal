@@ -9,6 +9,7 @@ public class SignInManager : MonoBehaviour {
 	public GameObject panelForgotPassword;
 	public GameObject panelSignUp;
 
+	string sceneLandingPage = "SceneLandingPage";
 	string signInUsername;
 	string signInPassword;
 
@@ -24,7 +25,7 @@ public class SignInManager : MonoBehaviour {
 		//go to loading scene
 		this.gameObject.SetActive(false);
 		panelLoading.SetActive(true);
-		LoadingProgress.Instance.ChangeScene("SceneHome");
+		LoadingProgress.Instance.ChangeScene(sceneLandingPage);
 	}
 
 	public void OnClickFBLogin (){
