@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CompleteFBProfileManager : MonoBehaviour {
+	public GameObject panelLandingPage;
 	public Image[] genderRadioButtons = new Image[2];
 	public Sprite[] radioButtonOnOff = new Sprite[2]; //0 = off, 1 = on
 
@@ -26,6 +27,7 @@ public class CompleteFBProfileManager : MonoBehaviour {
 
 	public void OnClickSubmit(){
 		this.gameObject.SetActive(false);
+		panelLandingPage.SetActive(true);
 	}
 
 	void UpdateGenderOptionDisplay ()
