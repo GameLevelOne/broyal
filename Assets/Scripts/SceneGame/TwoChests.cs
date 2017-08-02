@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class TwoChests : MonoBehaviour {
+	public GameObject panelScores;
 	public Text textRightAns;
 	public Text textWrongAns;
 
@@ -61,5 +62,11 @@ public class TwoChests : MonoBehaviour {
 			return true;
 		} else 
 		return false;
+	}
+
+	//temporary
+	public void OnClickGameScreen (){
+		panelScores.SetActive(true);
+		this.gameObject.SetActive(false);
 	}
 }

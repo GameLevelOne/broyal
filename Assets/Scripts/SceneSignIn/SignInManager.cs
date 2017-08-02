@@ -9,7 +9,7 @@ public class SignInManager : MonoBehaviour {
 	public GameObject panelForgotPassword;
 	public GameObject panelSignUp;
 
-	string sceneLandingPage = "SceneLandingPage";
+	string sceneLandingPage = "SceneHome";
 	string signInUsername;
 	string signInPassword;
 
