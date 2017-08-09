@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PanelScoresManager : MonoBehaviour {
+	public GameObject panelGameReady;
 	public GameObject panelScore;
 	public GameObject panelScoreboard;
 	public GameObject panelLoadingBar;
 
-	public void OnClickNextScoreboard (){
+	public void OnClickNext (){
 		panelScoreboard.SetActive(true);
 		panelScore.SetActive(false);
 	}

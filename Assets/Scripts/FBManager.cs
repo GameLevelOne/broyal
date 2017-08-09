@@ -6,8 +6,11 @@ using UnityEngine.UI;
 
 public class FBManager : MonoBehaviour {
 	private static FBManager instance = null;
+	private bool fbLogin = false;
 
 	public static FBManager Instance{get{return instance;}}
+	public bool FBLogin{ get { return fbLogin;}}
+
 
 	void Awake ()
 	{
@@ -68,6 +71,7 @@ public class FBManager : MonoBehaviour {
 			Debug.Log ("error login 02: " + result.ToString());
 		} else if (!string.IsNullOrEmpty (result.RawResult)) { //success
 			Debug.Log("login success");
+			fbLogin=true;
 			GetFBName();
 		}
 	}
