@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ProfilesManager : MonoBehaviour {
+	public GameObject panelAuctionLobby;
 	public GameObject panelUserProfile;
 	public GameObject panelPetProfile;
 	public GameObject panelLandingPage;
@@ -23,6 +24,7 @@ public class ProfilesManager : MonoBehaviour {
 
 	public void OnClickBack(){
 		panelLandingPage.SetActive(true);
+		panelAuctionLobby.SetActive(false);
 		this.gameObject.SetActive(false);
 	}
 

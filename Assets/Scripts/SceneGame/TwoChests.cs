@@ -3,48 +3,86 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+enum ChestSprites{
+	BrownEmpty,BrownFilled,RedEmpty,RedFilled
+}
+
 public class TwoChests : MonoBehaviour {
+	public GameObject panelResult;
+	public PanelGameReady panelGameReady;
 	public GameObject panelScores;
-	public Text textRightAns;
-	public Text textWrongAns;
+
+	public GameObject panelTimeOut;
+	public GameObject chestBrownButton;
+	public GameObject chestRedButton;
+	public Text timerText;
+
+	public Text resultText;
+
+	public Image chestBigImage;
+	public Sprite[] chestSprite = new Sprite[4]; 
 
 	List<int> scores = new List<int>();
-	int totalPlayers = 10;
+
+	Coroutine currCor = null;
+
 	int currentPlayer = 0;
+	int treasureNo = 0;
+
+	string triggerResultRight = "resultRight";
+	string triggerResultWrong = "resultWrong";
 
 	void Start ()
 	{
-		for (int i = 0; i < totalPlayers; i++) {
-			scores.Add(0);
-		}
+//		for (int i = 0; i < totalPlayers; i++) {
+//			scores.Add(0);
+//		}
+		
+	}
+
+	void OnEnable(){
+		StartTimer ();
 	}
 
 	public void OnClickChest (int chest)
 	{
-		if (currentPlayer < scores.Count) {
-			currentPlayer++;
-			int treasureNo = Random.Range (1, 3);
+		StopTimer();
 
-			if (treasureNo == chest) {
-				Debug.Log ("Torejaa hakken!");
-				UpdateScore (currentPlayer, 1);
-			} else {
-				Debug.Log ("Hazure!");
-				UpdateScore (currentPlayer, 0);
-			}
+		treasureNo = Random.Range (0, 2);
+
+		if (treasureNo == chest) {
+			UpdateResultDisplay(true,chest);	
 		} else {
-			NextRound();
+			UpdateResultDisplay(false,chest);
 		}
 	}
 
-	void UpdateScore (int playerNo, int score)
+	public void OnClickResult(){
+		panelScores.SetActive(true);
+		this.gameObject.SetActive(false);
+	}
+
+	void UpdateResultDisplay (bool rightAnswer, int chestColor)
 	{
-		scores [playerNo - 1] = score;
-		if (score == 1) {
-			textRightAns.text += "\nPlayer " + playerNo;
+		Animator resultAnim = panelResult.GetComponent<Animator> ();
+		if (rightAnswer) {
+			if (chestColor == 1) {
+				chestBigImage.sprite = chestSprite [(int)ChestSprites.BrownFilled];
+			} else if (chestColor == 2) {
+				chestBigImage.sprite = chestSprite [(int)ChestSprites.RedFilled];
+			}
+			resultAnim.SetTrigger (triggerResultRight);
+			resultText.text = "CONGRATULATIONS!";
 		} else {
-			textWrongAns.text += "\nPlayer " + playerNo;
+			if (chestColor == 1) {
+				chestBigImage.sprite = chestSprite [(int)ChestSprites.BrownEmpty];
+			} else if (chestColor == 2) {
+				chestBigImage.sprite = chestSprite [(int)ChestSprites.RedEmpty];
+			}
+			resultAnim.SetTrigger (triggerResultWrong);
+			resultText.text = "OOPS! TOO BAD...";
 		}
+		panelResult.GetComponent<Image> ().enabled = true;
 	}
 
 	void NextRound ()
@@ -52,8 +90,6 @@ public class TwoChests : MonoBehaviour {
 		scores.RemoveAll(t => t == 0);
 		Debug.Log("Reset round, current players: "+scores.Count);
 		currentPlayer = 0;
-		textRightAns.text = "";
-		textWrongAns.text = "";
 	}
 
 	static bool ScoreIsZero (int i)
@@ -64,9 +100,38 @@ public class TwoChests : MonoBehaviour {
 		return false;
 	}
 
-	//temporary
-	public void OnClickGameScreen (){
-		panelScores.SetActive(true);
-		this.gameObject.SetActive(false);
+	void StartTimer(){
+		currCor = StartCoroutine(StartCountdown());
+		Debug.Log("start timer");
+	}
+
+	void StopTimer (){
+		StopCoroutine(currCor);
+		Debug.Log("timer stopped");
+	}
+
+	void ShowChestAfterTimeOut ()
+	{
+		if (treasureNo == 0) {
+			chestBrownButton.transform.GetChild (0).GetComponent<Image> ().sprite = chestSprite [(int)ChestSprites.BrownFilled];
+			chestRedButton.transform.GetChild (0).GetComponent<Image> ().sprite = chestSprite [(int)ChestSprites.RedEmpty];
+		} else {
+			chestBrownButton.transform.GetChild(0).GetComponent<Image>().sprite = chestSprite[(int)ChestSprites.BrownEmpty];
+			chestRedButton.transform.GetChild(0).GetComponent<Image>().sprite = chestSprite[(int)ChestSprites.RedFilled];
+		}
+
+		chestBrownButton.GetComponent<Animator>().SetTrigger("showResult");
+		chestRedButton.GetComponent<Animator>().SetTrigger("showResult");
+	}
+
+	IEnumerator StartCountdown ()
+	{
+		for (int i = 9; i >= 0; i--) {
+			yield return new WaitForSeconds(1);
+			timerText.text = "0"+i.ToString();
+		}
+		ShowChestAfterTimeOut();
+		yield return new WaitForSeconds(2);
+		panelTimeOut.SetActive(true);
 	}
 }
