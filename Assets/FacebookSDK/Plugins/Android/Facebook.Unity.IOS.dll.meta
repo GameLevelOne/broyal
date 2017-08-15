@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 8e39eae5889de4cae88efb8e3afdf426
-timeCreated: 1488390590
+guid: 9fac71e128ffaac49b0e6d895ce47932
+timeCreated: 1500979028
 licenseType: Pro
 PluginImporter:
   serializedVersion: 2
@@ -23,31 +23,21 @@ PluginImporter:
           Exclude OSXIntel: 1
           Exclude OSXIntel64: 1
           Exclude OSXUniversal: 1
-          Exclude WebGL: 1
           Exclude Win: 1
           Exclude Win64: 1
           Exclude iOS: 1
     data:
       first:
-        '': Editor
-      second:
-        enabled: 0
-        settings:
-          CPU: AnyCPU
-          OS: AnyOS
-    data:
-      first:
-        '': data
-      second:
-        enabled: 0
-        settings: {}
-    data:
-      first:
         Android: Android
       second:
         enabled: 1
-        settings:
-          CPU: ARMv7
+        settings: {}
+    data:
+      first:
+        Any: 
+      second:
+        enabled: 0
+        settings: {}
     data:
       first:
         Editor: Editor
@@ -61,56 +51,70 @@ PluginImporter:
       second:
         enabled: 0
         settings:
-          CPU: AnyCPU
+          CPU: None
     data:
       first:
         Facebook: Win64
       second:
         enabled: 0
         settings:
-          CPU: AnyCPU
+          CPU: None
     data:
       first:
         Standalone: Linux
       second:
         enabled: 0
         settings:
-          CPU: x86
+          CPU: None
     data:
       first:
         Standalone: Linux64
       second:
         enabled: 0
         settings:
-          CPU: x86_64
+          CPU: None
+    data:
+      first:
+        Standalone: LinuxUniversal
+      second:
+        enabled: 0
+        settings:
+          CPU: None
     data:
       first:
         Standalone: OSXIntel
       second:
         enabled: 0
         settings:
-          CPU: AnyCPU
+          CPU: None
     data:
       first:
         Standalone: OSXIntel64
       second:
         enabled: 0
         settings:
-          CPU: AnyCPU
+          CPU: None
+    data:
+      first:
+        Standalone: OSXUniversal
+      second:
+        enabled: 0
+        settings:
+          CPU: None
     data:
       first:
         Standalone: Win
       second:
         enabled: 0
         settings:
-          CPU: AnyCPU
+          CPU: None
     data:
       first:
         Standalone: Win64
       second:
         enabled: 0
         settings:
-          CPU: AnyCPU
+          CPU: None
     data:
       first:
         Windows Store Apps: WindowsStoreApps
@@ -123,9 +127,7 @@ PluginImporter:
         iPhone: iOS
       second:
         enabled: 0
-        settings:
-          CompileFlags: 
-          FrameworkDependencies: 
+        settings: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
