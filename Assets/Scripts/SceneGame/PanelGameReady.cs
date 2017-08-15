@@ -22,7 +22,7 @@ public class PanelGameReady : MonoBehaviour {
 		get	{ return roundCount;}
 	}
 
-	void Start(){
+	void OnEnable(){
 		StartCountdown();
 	}
 
