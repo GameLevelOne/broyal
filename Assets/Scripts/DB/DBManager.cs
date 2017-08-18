@@ -45,14 +45,14 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithKey(),onComplete, onError);
 	}
 
-	public void VerifyUser(string userName, string verificationOTP, 
+	public void VerifyUser(string userName, string verificationOtp, 
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.verifyUserAPI;
 		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
 			"\"username\":\""+userName+"\",\n"+
-			"\"verificationOtp\":\""+verificationOTP+"\"\n"+
+			"\"verificationOtp\":\""+verificationOtp+"\"\n"+
 			"}";
 
 		DebugMsg ("VERIFY USER Request","\nurl = "+url+"\ndata = "+jsondata);
@@ -80,14 +80,101 @@ public class DBManager : MonoBehaviour {
 			}, onError);
 	}
 
-	public void GetUserProfile(System.Action<string> onComplete , System.Action<string> onError = null)
+	public void GetUserStars(System.Action<string> onComplete , System.Action<string> onError = null)
 	{
-		string url = config.restURL + config.getUserProfileAPI;
-		DebugMsg ("USER LOGIN Request","\nurl = "+url);
+		string url = config.restURL + config.getUserStarsAPI;
+		DebugMsg ("GET USER STARS Request","\nurl = "+url);
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
+	public void UnsubscribeUser(System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.unsubscribeUserAPI;
+		DebugMsg ("UNSUBSCRIBE USER Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
 
+	public void GetUserProfile(System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getUserProfileAPI;
+		DebugMsg ("GET USER PROFILE Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void UpdateUserName(string userName,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.updateUserNameAPI;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"username\":\""+userName+"\"\n"+
+			"}";
+
+		DebugMsg ("UPDATE USER NAME Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void UpdateUserProfile(int gender, string phoneNumber, string email, string completeAddress, string province, string city,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.updateUserProfileAPI;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"gender\":"+gender+",\n"+
+			"\"phoneNumber\":\""+phoneNumber+"\",\n"+
+			"\"email\":\""+email+"\",\n"+
+			"\"completeAddress\":\""+completeAddress+"\",\n"+
+			"\"province\":\""+province+"\",\n"+
+			"\"city\":\""+city+"\"\n"+
+			"}";
+
+		DebugMsg ("UPDATE USER PROFILE Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void UserForgotPassword(string userName,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.userForgotPasswordAPI;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"username\":\""+userName+"\"\n"+
+			"}";
+
+		DebugMsg ("USER FORGOT PASSWORD Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithKey(),onComplete, onError);
+	}
+
+	public void UserResetPassword(string userName, string verificationOtp, string password, string confirmPassword,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.userResetPasswordAPI;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"username\":\""+userName+"\",\n"+
+			"\"verificationOtp\":\""+verificationOtp+"\",\n"+
+			"\"password\":\""+password+"\",\n"+
+			"\"confirmPassword\":\""+confirmPassword+"\"\n"+
+			"}";
+
+		DebugMsg ("USER RESET PASSWORD Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithKey(),onComplete, onError);
+	}
+
+	public void UserChangePassword(string oldPassword, string password, string confirmPassword,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.userChangePasswordAPI;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"oldPassword\":\""+oldPassword+"\",\n"+
+			"\"password\":\""+password+"\",\n"+
+			"\"confirmPassword\":\""+confirmPassword+"\"\n"+
+			"}";
+
+		DebugMsg ("USER CHANGE PASSWORD Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+	}
 
 //===========================Utilities==============================================================
 
