@@ -13,7 +13,7 @@ public class TestDB : MonoBehaviour {
 	public void RegisterPressed () {
 		resultBox.color = Color.white;
 		resultBox.text = "Loading...";
-		DBManager.API.UserRegistration (true,1,"motmot2","mot","9909944483","timotius@gamelevelone.com",
+		DBManager.API.UserRegistration (true,2,"helgawij0","hw","9909944483","tkrdaisuki@gmail.com",
 			(response)=> {
 				resultBox.text = response;
 				resultBox.color = Color.white;
@@ -38,7 +38,7 @@ public class TestDB : MonoBehaviour {
 	public void LoginPressed () {
 		resultBox.color = Color.white;
 		resultBox.text = "Loading...";
-		DBManager.API.UserLogin ("motmot1","mot",
+		DBManager.API.UserLogin ("helgawij0","hw",
 			(response)=> {
 				JSONNode jdata = JSON.Parse(response);
 				resultBox.text = "Result: \n";
