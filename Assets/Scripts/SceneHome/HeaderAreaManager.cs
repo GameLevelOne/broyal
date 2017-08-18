@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HeaderAreaManager : MonoBehaviour {
+	public NavigationBarManager navigationBar;
+
 	public GameObject panelLandingPage;
 	public GameObject panelParentProfile;
 	public GameObject panelUserProfile;
@@ -10,21 +12,21 @@ public class HeaderAreaManager : MonoBehaviour {
 	public GameObject panelSettings;
 
 	public void OnClickUserProfile(){
+		navigationBar.CloseCurrentActivePanel();
 		panelParentProfile.SetActive(true);
-		panelLandingPage.SetActive(false);
 		panelUserProfile.SetActive(true);
 		panelPetProfile.SetActive(false);
 	}
 
 	public void OnClickPetProfile(){
+		navigationBar.CloseCurrentActivePanel();
 		panelParentProfile.SetActive(true);
-		panelLandingPage.SetActive(false);
 		panelPetProfile.SetActive(true);
 		panelUserProfile.SetActive(false);
 	}
 
 	public void OnClickSettings(){
-		panelLandingPage.SetActive(false);
+		navigationBar.CloseCurrentActivePanel();
 		panelSettings.SetActive(true);
 	}
 }

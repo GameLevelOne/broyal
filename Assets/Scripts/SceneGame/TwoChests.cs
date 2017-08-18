@@ -51,8 +51,10 @@ public class TwoChests : MonoBehaviour {
 		treasureNo = Random.Range (0, 2);
 
 		if (treasureNo == chest) {
+			panelScores.GetComponent<PanelScoresManager>().RightAnswer=true;
 			UpdateResultDisplay(true,chest);	
 		} else {
+			panelScores.GetComponent<PanelScoresManager>().RightAnswer=false;
 			UpdateResultDisplay(false,chest);
 		}
 	}
@@ -66,17 +68,17 @@ public class TwoChests : MonoBehaviour {
 	{
 		Animator resultAnim = panelResult.GetComponent<Animator> ();
 		if (rightAnswer) {
-			if (chestColor == 1) {
+			if (chestColor == 0) {
 				chestBigImage.sprite = chestSprite [(int)ChestSprites.BrownFilled];
-			} else if (chestColor == 2) {
+			} else if (chestColor == 1) {
 				chestBigImage.sprite = chestSprite [(int)ChestSprites.RedFilled];
 			}
 			resultAnim.SetTrigger (triggerResultRight);
 			resultText.text = "CONGRATULATIONS!";
 		} else {
-			if (chestColor == 1) {
+			if (chestColor == 0) {
 				chestBigImage.sprite = chestSprite [(int)ChestSprites.BrownEmpty];
-			} else if (chestColor == 2) {
+			} else if (chestColor == 1) {
 				chestBigImage.sprite = chestSprite [(int)ChestSprites.RedEmpty];
 			}
 			resultAnim.SetTrigger (triggerResultWrong);
