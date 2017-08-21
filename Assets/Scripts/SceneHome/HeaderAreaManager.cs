@@ -13,6 +13,7 @@ public class HeaderAreaManager : MonoBehaviour {
 	public GameObject panelPetProfile;
 	public GameObject panelSettings;
 	public Text usernameText;
+	public Text usernameProfileDisplay;
 
 	string username;
 
@@ -43,7 +44,16 @@ public class HeaderAreaManager : MonoBehaviour {
 		DBManager.API.GetUserProfile(
 		(response)=>{
 			JSONNode jsonData = JSON.Parse(response);
-			usernameText.text = jsonData["username"];
+			string currUsername = jsonData["username"];
+			PlayerData.Instance.Email = jsonData["email"];
+			PlayerData.Instance.Gender = jsonData["gender"];
+			PlayerData.Instance.PhoneNum = jsonData["phoneNumber"];
+			PlayerData.Instance.StarsSpent = jsonData["starsSpent"];
+			PlayerData.Instance.AvailableStars = jsonData["availableStars"];
+			PlayerData.Instance.ProfilePic = jsonData["profilePicture"];
+			usernameText.text = currUsername;
+			usernameProfileDisplay.text = currUsername;
+			PlayerData.Instance.Username = currUsername;
 		},
 		(error)=>{
 			Debug.Log("ERROR");

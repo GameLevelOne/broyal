@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using SimpleJSON;
 
 public class ForgotPasswordManager : MonoBehaviour {
 	public GameObject panelForgotPass1;
@@ -30,12 +31,52 @@ public class ForgotPasswordManager : MonoBehaviour {
 	}
 
 	public void OnClickSend(){ //forgot 1 -> goto OTP page
-		panelForgotPass1.SetActive(false);
-		panelForgotPass2.SetActive(true);
+		DoRequestForgotPassword();
+		//panelForgotPass1.SetActive(false);
+		//panelForgotPass2.SetActive(true);
 	}
 
 	public void OnClickEnter(){ //forgot 2 -> goto sign in page
-		panelForgotPass2.SetActive(false);
-		panelSignIn.SetActive(true);
+		DoResetPassword();
+	}
+
+	void DoRequestForgotPassword (){
+		if(!string.IsNullOrEmpty(username)){
+			DBManager.API.UserForgotPassword(username,
+			(response)=>{
+				JSONNode jsonData = JSON.Parse(response);
+				Debug.Log(jsonData["message"]);
+				panelForgotPass1.SetActive(false);
+				panelForgotPass2.SetActive(true);
+			},
+			(error)=>{
+				Debug.Log("ERROR");
+			}
+			);
+		} else{
+			Debug.Log("field is empty");
+		}
+	}
+
+	void DoResetPassword ()
+	{
+		if (string.IsNullOrEmpty (otp) || string.IsNullOrEmpty (newPass1) || string.IsNullOrEmpty (newPass2)) {
+			Debug.Log ("please fill in all fields");
+		} else if (newPass1 != newPass2) {
+			Debug.Log ("passwords not match");
+		} else {
+			DBManager.API.UserResetPassword (username, otp, newPass1, newPass2,
+				(response) => {
+					Debug.Log ("password reset success");
+					panelForgotPass2.SetActive(false);
+					panelSignIn.SetActive(true);
+				},
+				(error) => {
+					JSONNode jsonData = JSON.Parse (error);
+					Debug.Log (jsonData ["confirmPassword"]);
+					Debug.Log (jsonData ["verificationOtp"]);
+				}
+			);
+		}
 	}
 }
