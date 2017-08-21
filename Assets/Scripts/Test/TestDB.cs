@@ -23,10 +23,10 @@ public class TestDB : MonoBehaviour {
 				resultBox.color = Color.red;
 			});
 	}	
-	public void VerifyPressed () {
+	public void ForgotPressed () {
 		resultBox.color = Color.white;
 		resultBox.text = "Loading...";
-		DBManager.API.VerifyUser ("motmot1","5292",
+		DBManager.API.UserForgotPassword ("motmot1",
 			(response)=> {
 				resultBox.text = response;
 			}, 
