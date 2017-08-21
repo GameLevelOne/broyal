@@ -111,7 +111,7 @@ public class DBManager : MonoBehaviour {
 			"}";
 
 		DebugMsg ("UPDATE USER NAME Request","\nurl = "+url+"\ndata = "+jsondata);
-		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
 	}
 
 	public void UpdateUserProfile(int gender, string phoneNumber, string email, string completeAddress, string province, string city,
@@ -129,7 +129,7 @@ public class DBManager : MonoBehaviour {
 			"}";
 
 		DebugMsg ("UPDATE USER PROFILE Request","\nurl = "+url+"\ndata = "+jsondata);
-		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
 	}
 
 	public void UserForgotPassword(string userName,
@@ -142,7 +142,7 @@ public class DBManager : MonoBehaviour {
 			"}";
 
 		DebugMsg ("USER FORGOT PASSWORD Request","\nurl = "+url+"\ndata = "+jsondata);
-		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithKey(),onComplete, onError);
+		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithKey()),onComplete, onError);
 	}
 
 	public void UserResetPassword(string userName, string verificationOtp, string password, string confirmPassword,
@@ -158,7 +158,7 @@ public class DBManager : MonoBehaviour {
 			"}";
 
 		DebugMsg ("USER RESET PASSWORD Request","\nurl = "+url+"\ndata = "+jsondata);
-		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithKey(),onComplete, onError);
+		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithKey()),onComplete, onError);
 	}
 
 	public void UserChangePassword(string oldPassword, string password, string confirmPassword,
@@ -173,7 +173,7 @@ public class DBManager : MonoBehaviour {
 			"}";
 
 		DebugMsg ("USER CHANGE PASSWORD Request","\nurl = "+url+"\ndata = "+jsondata);
-		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
 	}
 
 //===========================Utilities==============================================================
@@ -230,6 +230,10 @@ public class DBManager : MonoBehaviour {
 		Dictionary<string,string> header = CreateHeader();
 		header.Add ("royalBidKey", config.royalBidKey);
 		header.Add ("royalBidSecret", config.royalBidSecret);
+		return header;
+	}
+	Dictionary<string,string> PutRequestHeader(Dictionary<string,string> header) {
+		header.Add ("X-HTTP-Method-Override", "PUT");
 		return header;
 	}
 	Dictionary<string,string> CreateHeaderWithAuthorization() {
