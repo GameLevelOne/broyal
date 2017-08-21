@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Facebook.Unity;
+using SimpleJSON;
 
 public class SignInManager : MonoBehaviour {
 	public GameObject panelLoading;
 	public GameObject panelForgotPassword;
 	public GameObject panelSignUp;
+	public GameObject panelPopupMsg;
+
+	public Text popupMsg;
 
 	string sceneLandingPage = "SceneHome";
 	string signInUsername;
@@ -23,9 +27,7 @@ public class SignInManager : MonoBehaviour {
 
 	public void OnClickSignIn(){
 		//go to loading scene
-		this.gameObject.SetActive(false);
-		panelLoading.SetActive(true);
-		LoadingProgress.Instance.ChangeScene(sceneLandingPage);
+		CheckInputContents();
 	}
 
 	public void OnClickFBLogin (){
@@ -42,4 +44,36 @@ public class SignInManager : MonoBehaviour {
 		panelSignUp.SetActive(true);
 	}
 
+	void CheckInputContents ()
+	{
+		if (string.IsNullOrEmpty (signInUsername) || string.IsNullOrEmpty (signInPassword)) {
+			DisplayMessage ("Please fill in all fields");
+		} else {
+			DoLogin();
+		}
+	}
+
+	void DisplayMessage (string msgText){
+		popupMsg.text = msgText;
+		panelPopupMsg.SetActive(true);
+	}
+
+	void DoLogin(){
+		DBManager.API.UserLogin(signInUsername,signInPassword,
+			(response)=>{
+				this.gameObject.SetActive(false);
+				panelLoading.SetActive(true);
+				LoadingProgress.Instance.ChangeScene(sceneLandingPage);
+			},
+			(error)=>{
+				//JSONNode jsonData = JSON.Parse(error);
+				//DisplayMessage(jsonData["errors"]["username"]);
+				DisplayMessage("fail to login");
+			}
+		);
+	}
+
+	public void OnClickClosePopup(){
+		panelPopupMsg.SetActive(false);
+	}
 }
