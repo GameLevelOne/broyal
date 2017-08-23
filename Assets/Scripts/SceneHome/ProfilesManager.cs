@@ -19,10 +19,10 @@ public class ProfilesManager : MonoBehaviour {
 	public GameObject panelEditPetName;
 	public GameObject iconGender;
 
-	public Text fieldEmail;
-	public Text fieldPhone;
-	public Text fieldAddress;
-	public Text textUsername;
+	public Text fieldUsername;
+	public InputField fieldEmail;
+	public InputField fieldPhone;
+	public InputField fieldAddress;
 
 	string username;
 	string currPassword;
@@ -34,6 +34,7 @@ public class ProfilesManager : MonoBehaviour {
 	string province;
 	string city;
 	string address;
+	string petName;
 	int gender;
 
 	public void OnClickUserProfile (){
@@ -54,6 +55,7 @@ public class ProfilesManager : MonoBehaviour {
 	}
 
 	public void OnClickEditProfile(){
+		ChangeEditProfileDisplay();
 		panelEditProfile.SetActive(true);
 	}
 
@@ -159,6 +161,10 @@ public class ProfilesManager : MonoBehaviour {
 		}
 	}
 
+	public void GetPetName (InputField obj){
+		petName = obj.text;
+	}
+
 	void DoEditUserProfile ()
 	{
 		if (string.IsNullOrEmpty (email) || string.IsNullOrEmpty (phoneNum) || string.IsNullOrEmpty (address) ||
@@ -168,6 +174,7 @@ public class ProfilesManager : MonoBehaviour {
 			DBManager.API.UpdateUserProfile(gender,phoneNum,email,address,province,city,
 			(response)=>{
 				Debug.Log("update user success");	
+				panelEditProfile.SetActive(false);
 			},
 			(error)=>{	
 				Debug.Log("update user fail");
@@ -184,10 +191,13 @@ public class ProfilesManager : MonoBehaviour {
 			DBManager.API.UpdateUserName(username,
 			(response)=>{
 				Debug.Log("username changed successfully");
+				panelEditUsername.SetActive(false);
+				PlayerData.Instance.Username = username;
+				ChangeEditProfileDisplay();
 			},
 			(error)=>{
 				JSONNode jsonData = JSON.Parse(error);
-				Debug.Log(jsonData["message"]);
+				Debug.Log("Can only change username once");
 			}
 			);
 		}
@@ -208,5 +218,11 @@ public class ProfilesManager : MonoBehaviour {
 			}
 			);
 		}
+	}
+
+	void ChangeEditProfileDisplay(){
+		fieldUsername.text = PlayerData.Instance.Username;
+		fieldEmail.text = PlayerData.Instance.Email;
+		fieldPhone.text = PlayerData.Instance.PhoneNum;
 	}
 }

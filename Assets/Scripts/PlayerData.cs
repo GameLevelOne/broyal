@@ -12,6 +12,9 @@ public class PlayerData : MonoBehaviour {
 	private int currentAvailableStars;
 	private string currentProfilePic; //temp
 
+	private string currentPetName = "Kochirou"; //temp
+	private int currentPetExp = 0;
+
 	void Awake ()
 	{
 		if (instance != null && instance != this) {
@@ -57,5 +60,15 @@ public class PlayerData : MonoBehaviour {
 	public string ProfilePic {
 		set{ currentProfilePic = value;}
 		get{ return currentProfilePic;}
+	}
+
+	public string PetName{
+		set{ currentPetName = value;}
+		get{ return currentPetName;}
+	}
+
+	public int PetExp {
+		set{ currentPetExp = value; }
+		get{ return currentPetExp;}
 	}
 }
