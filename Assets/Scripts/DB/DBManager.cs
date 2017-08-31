@@ -101,6 +101,37 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
+	public void GetAuctionLandingData(System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getAuctionLandingData;
+		DebugMsg ("GET AUCTION LANDING DATA Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void GetAuctionListingCurrent(int auctionType, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getAuctionListingCurrent + auctionType;
+		DebugMsg ("GET AUCTION LISTING CURRENT Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void GetAuctionListingPast(int auctionType, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getAuctionListingPast + auctionType;
+		DebugMsg ("GET AUCTION LISTING PAST Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void GetAuctionListingFuture(int auctionType, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getAuctionListingFuture + auctionType;
+		DebugMsg ("GET AUCTION LISTING FUTURE Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
 	public void UpdateUserName(string userName,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
@@ -174,6 +205,30 @@ public class DBManager : MonoBehaviour {
 
 		DebugMsg ("USER CHANGE PASSWORD Request","\nurl = "+url+"\ndata = "+jsondata);
 		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
+	}
+
+	public void AuctionBidding(int auctionId, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.auctionBidding + auctionId;
+		DebugMsg ("AUCTION BIDDING Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void AuctionJoin(int auctionId, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.auctionJoin + auctionId;
+		DebugMsg ("AUCTION JOIN Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void GetAuctionDetails(int auctionId, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getAuctionDetails + auctionId;
+		DebugMsg ("GET AUCTION DETAILS Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
 //===========================Utilities==============================================================
