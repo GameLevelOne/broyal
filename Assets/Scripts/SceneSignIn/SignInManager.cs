@@ -15,7 +15,7 @@ public class SignInManager : MonoBehaviour {
 	public GameObject panelForgotPassword;
 	public GameObject panelForgotPassword2;
 	public GameObject panelSignUp;
-	public GameObject panelPopupMsg;
+	public PopupAnimation panelPopupMsg;
 
 	public Text popupMsg;
 
@@ -25,12 +25,16 @@ public class SignInManager : MonoBehaviour {
 
 	PanelsFromSignIn nextPanel;
 
+	void Awake() {
+		fader.FadeIn ();
+	}
+
 	void OnEnable(){
-		Fader.OnFadeOutFinished += OnFadeOutFinished;
+		fader.OnFadeOutFinished += OnFadeOutFinished;
 	}
 
 	void OnDisable(){
-		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+		fader.OnFadeOutFinished -= OnFadeOutFinished;
 	}
 
 	void OnFadeOutFinished ()
@@ -91,7 +95,7 @@ public class SignInManager : MonoBehaviour {
 
 	void DisplayMessage (string msgText){
 		popupMsg.text = msgText;
-		panelPopupMsg.SetActive(true);
+		panelPopupMsg.OpenPanel();
 	}
 
 	void DoLogin(){

@@ -12,11 +12,11 @@ public class AuctionScreenManager : MonoBehaviour {
 	string swipeRight = "swipeRight";
 
 	void OnEnable(){
-		Fader.OnFadeOutFinished += OnFadeOutFinished;
+		fader.OnFadeOutFinished += OnFadeOutFinished;
 	}
 
 	void OnDisable(){
-		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+		fader.OnFadeOutFinished -= OnFadeOutFinished;
 	}
 
 	void OnFadeOutFinished(){

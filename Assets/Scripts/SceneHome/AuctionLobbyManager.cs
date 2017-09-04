@@ -12,11 +12,11 @@ public class AuctionLobbyManager : MonoBehaviour {
 	public Transform buttonJoin;
 
 	void OnEnable(){
-		Fader.OnFadeOutFinished += OnFadeOutFinished;
+		fader.OnFadeOutFinished += OnFadeOutFinished;
 	}
 
 	void OnDisable(){
-		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+		fader.OnFadeOutFinished -= OnFadeOutFinished;
 	}
 
 	void OnFadeOutFinished ()

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PopupAnimation : MonoBehaviour {
-	Animator popupAnimator;
+	public Animator popupAnimator;
 	string panelOpen = "panelOpen";
 	string panelClose = "panelClose";
 
@@ -11,12 +11,8 @@ public class PopupAnimation : MonoBehaviour {
 	void Start () {
 	}
 
-	void OnEnable(){
-		popupAnimator = GetComponent<Animator>();
-		OpenPanel();
-	}
-
 	public void OpenPanel(){
+		gameObject.SetActive (true);
 		popupAnimator.SetTrigger(panelOpen);
 	}
 
@@ -25,7 +21,6 @@ public class PopupAnimation : MonoBehaviour {
 	}
 
 	public void OnClosePanel(){
-		Debug.Log("asd");
-		this.gameObject.SetActive(false);
+		gameObject.SetActive(false);
 	}
 }

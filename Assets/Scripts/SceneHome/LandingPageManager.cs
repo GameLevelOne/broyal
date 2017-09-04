@@ -8,11 +8,11 @@ public class LandingPageManager : MonoBehaviour {
 	public GameObject panelCompleteProfile;
 
 	void OnEnable(){
-		Fader.OnFadeOutFinished += OnFadeOutFinished;
+		fader.OnFadeOutFinished += OnFadeOutFinished;
 	}
 
 	void OnDisable(){
-		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+		fader.OnFadeOutFinished -= OnFadeOutFinished;
 	}
 
 	void OnFadeOutFinished ()
@@ -30,6 +30,8 @@ public class LandingPageManager : MonoBehaviour {
 				panelCompleteProfile.SetActive (true);
 			}
 		}
+
+		fader.FadeIn ();
 	}
 
 	public void OnClickBid(){

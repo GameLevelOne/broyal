@@ -23,11 +23,11 @@ public class ForgotPasswordManager : MonoBehaviour {
 	PanelsFromPassword nextPanel;
 
 	void OnEnable(){
-		Fader.OnFadeOutFinished += OnFadeOutFinished;
+		fader.OnFadeOutFinished += OnFadeOutFinished;
 	}
 
 	void OnDisable(){
-		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+		fader.OnFadeOutFinished -= OnFadeOutFinished;
 	}
 
 	void OnFadeOutFinished ()

@@ -42,11 +42,11 @@ public class SignUpManager : MonoBehaviour {
 	bool tickTnC = false;
 
 	void OnEnable(){
-		Fader.OnFadeOutFinished += OnFadeOutFinished;
+		fader.OnFadeOutFinished += OnFadeOutFinished;
 	}
 
 	void OnDisable(){
-		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+		fader.OnFadeOutFinished -= OnFadeOutFinished;
 	}
 
 	void OnFadeOutFinished ()
@@ -156,7 +156,7 @@ public class SignUpManager : MonoBehaviour {
 
 	public void OnClickClosePopup ()
 	{
-		panelPopupMsg.SetActive (false);
+//		panelPopupMsg.SetActive (false);
 		if (currRegistrationStatus == MessageType.RegisterSuccess) {
 			panelPopupVerify.SetActive (true);
 		} else if (currRegistrationStatus == MessageType.VerifySuccess) {
