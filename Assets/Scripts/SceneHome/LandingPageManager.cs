@@ -3,8 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class LandingPageManager : MonoBehaviour {
+	public Fader fader;
 	public GameObject panelAuctionLobby;
 	public GameObject panelCompleteProfile;
+
+	void OnEnable(){
+		Fader.OnFadeOutFinished += OnFadeOutFinished;
+	}
+
+	void OnDisable(){
+		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+	}
+
+	void OnFadeOutFinished ()
+	{
+		fader.FadeIn();
+		panelAuctionLobby.SetActive(true);
+		this.gameObject.SetActive(false);
+	}
 
 	void Start ()
 	{
@@ -17,8 +33,7 @@ public class LandingPageManager : MonoBehaviour {
 	}
 
 	public void OnClickBid(){
-		panelAuctionLobby.SetActive(true);
-		this.gameObject.SetActive(false);
+		fader.FadeOut();
 	}
 
 }

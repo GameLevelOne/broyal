@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AuctionScreenManager : MonoBehaviour {
+	public Fader fader;
 	public Animator panelAnimator;
 	public GameObject panelPreGameScreen;
 	public GameObject panelAuctionLobby;
@@ -10,11 +11,24 @@ public class AuctionScreenManager : MonoBehaviour {
 	string swipeLeft = "swipeLeft";
 	string swipeRight = "swipeRight";
 
-	public void OnClickBid(){
+	void OnEnable(){
+		Fader.OnFadeOutFinished += OnFadeOutFinished;
+	}
+
+	void OnDisable(){
+		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+	}
+
+	void OnFadeOutFinished(){
 		PreGameManager preGameManager = panelPreGameScreen.GetComponent<PreGameManager>();
 		panelPreGameScreen.SetActive(true);
 		this.gameObject.SetActive(false);
 		preGameManager.StartCountdown();
+		fader.FadeIn();
+	}
+
+	public void OnClickBid(){
+		fader.FadeOut();
 	}
 
 	public void OnClickBack(){

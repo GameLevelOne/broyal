@@ -12,9 +12,11 @@ enum MessageType{
 }
 
 public class SignUpManager : MonoBehaviour {
+	public Fader fader;
 	public GameObject panelSignIn;
 	public GameObject panelPopupMsg;
 	public GameObject panelPopupVerify;
+	public GameObject panelForgotPassword2;
 
 	public Text popupMsg;
 
@@ -38,6 +40,22 @@ public class SignUpManager : MonoBehaviour {
 
 	bool tickNewsletter = false;
 	bool tickTnC = false;
+
+	void OnEnable(){
+		Fader.OnFadeOutFinished += OnFadeOutFinished;
+	}
+
+	void OnDisable(){
+		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+	}
+
+	void OnFadeOutFinished ()
+	{
+		panelForgotPassword2.SetActive(false);
+		panelSignIn.SetActive(true);
+		fader.FadeIn();
+		this.gameObject.SetActive(false);
+	}
 
 	#region InputFields
 
@@ -142,8 +160,7 @@ public class SignUpManager : MonoBehaviour {
 		if (currRegistrationStatus == MessageType.RegisterSuccess) {
 			panelPopupVerify.SetActive (true);
 		} else if (currRegistrationStatus == MessageType.VerifySuccess) {
-			panelSignIn.SetActive(true);
-			this.gameObject.SetActive(false);
+			fader.FadeOut();
 		}
 	}
 
@@ -165,8 +182,8 @@ public class SignUpManager : MonoBehaviour {
 	void DoRegister(){
 		DBManager.API.UserRegistration(tickTnC,genderOption,signUpUsername,signUpPassword,signUpPhone,signUpEmail,
 			(response)=>{
-				DisplayMessagePopup("Registration success!");
 				currRegistrationStatus = MessageType.RegisterSuccess;
+				DisplayMessagePopup("Registration success!");
 			},
 			(error)=>{
 				JSONNode jsonData = JSON.Parse(error);

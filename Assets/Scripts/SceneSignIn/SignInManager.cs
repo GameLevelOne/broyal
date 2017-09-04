@@ -5,9 +5,15 @@ using UnityEngine.UI;
 using Facebook.Unity;
 using SimpleJSON;
 
+public enum PanelsFromSignIn{
+	Game,SignUp,Password
+}
+
 public class SignInManager : MonoBehaviour {
+	public Fader fader;
 	public GameObject panelLoading;
 	public GameObject panelForgotPassword;
+	public GameObject panelForgotPassword2;
 	public GameObject panelSignUp;
 	public GameObject panelPopupMsg;
 
@@ -16,6 +22,36 @@ public class SignInManager : MonoBehaviour {
 	string sceneLandingPage = "SceneHome";
 	string signInUsername;
 	string signInPassword;
+
+	PanelsFromSignIn nextPanel;
+
+	void OnEnable(){
+		Fader.OnFadeOutFinished += OnFadeOutFinished;
+	}
+
+	void OnDisable(){
+		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+	}
+
+	void OnFadeOutFinished ()
+	{
+		Debug.Log("asd");
+		if (nextPanel == PanelsFromSignIn.Game) {
+			panelLoading.SetActive (true);
+			LoadingProgress.Instance.ChangeScene (sceneLandingPage);
+			this.gameObject.SetActive(false);
+		} else if(nextPanel == PanelsFromSignIn.Password){
+			this.gameObject.SetActive(false);
+			panelForgotPassword2.SetActive(false);
+			panelForgotPassword.SetActive(true);
+			fader.FadeIn();
+		} else if(nextPanel == PanelsFromSignIn.SignUp){
+			this.gameObject.SetActive(false);
+			panelForgotPassword2.SetActive(false);
+			panelSignUp.SetActive(true);
+			fader.FadeIn();
+		}
+	}
 
 	public void GetInputUsername (InputField obj){
 		signInUsername = obj.text;
@@ -35,13 +71,13 @@ public class SignInManager : MonoBehaviour {
 	}
 
 	public void OnClickForgotPassword(){
-		this.gameObject.SetActive(false);
-		panelForgotPassword.SetActive(true);
+		nextPanel = PanelsFromSignIn.Password;
+		fader.FadeOut();
 	}
 
 	public void OnClickSignUp(){
-		this.gameObject.SetActive(false);
-		panelSignUp.SetActive(true);
+		nextPanel = PanelsFromSignIn.SignUp;
+		fader.FadeOut();
 	}
 
 	void CheckInputContents ()
@@ -61,9 +97,8 @@ public class SignInManager : MonoBehaviour {
 	void DoLogin(){
 		DBManager.API.UserLogin(signInUsername,signInPassword,
 			(response)=>{
-				this.gameObject.SetActive(false);
-				panelLoading.SetActive(true);
-				LoadingProgress.Instance.ChangeScene(sceneLandingPage);
+				nextPanel = PanelsFromSignIn.Game;
+				fader.FadeOut();
 			},
 			(error)=>{
 				//JSONNode jsonData = JSON.Parse(error);
@@ -71,9 +106,5 @@ public class SignInManager : MonoBehaviour {
 				DisplayMessage("fail to login");
 			}
 		);
-	}
-
-	public void OnClickClosePopup(){
-		panelPopupMsg.SetActive(false);
 	}
 }

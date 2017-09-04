@@ -4,15 +4,32 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class AuctionLobbyManager : MonoBehaviour {
+	public Fader fader;
 	public AuctionItemAreaManager auctionItemAreaManager;
 	public GameObject panelAuctionScreen;
 	public GameObject panelProductDetail;
 	public GameObject panelClaimConfirmation;
 	public Transform buttonJoin;
 
-	public void OnClickEnter(){
+	void OnEnable(){
+		Fader.OnFadeOutFinished += OnFadeOutFinished;
+	}
+
+	void OnDisable(){
+		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+	}
+
+	void OnFadeOutFinished ()
+	{
+		fader.FadeIn();
 		panelAuctionScreen.SetActive(true);
 		this.gameObject.SetActive(false);
+	}
+
+
+
+	public void OnClickEnter(){
+		fader.FadeOut();
 	}
 
 	public void OnClickJoin (){

@@ -4,7 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
 
+enum PanelsFromPassword{
+	Forgot2,SignIn
+}
+
 public class ForgotPasswordManager : MonoBehaviour {
+	public Fader fader;
+
 	public GameObject panelForgotPass1;
 	public GameObject panelForgotPass2;
 	public GameObject panelSignIn;
@@ -13,6 +19,29 @@ public class ForgotPasswordManager : MonoBehaviour {
 	string otp;
 	string newPass1;
 	string newPass2;
+
+	PanelsFromPassword nextPanel;
+
+	void OnEnable(){
+		Fader.OnFadeOutFinished += OnFadeOutFinished;
+	}
+
+	void OnDisable(){
+		Fader.OnFadeOutFinished -= OnFadeOutFinished;
+	}
+
+	void OnFadeOutFinished ()
+	{
+		if(nextPanel == PanelsFromPassword.Forgot2){
+			panelForgotPass1.SetActive(false);
+			panelForgotPass2.SetActive(true);
+		} else if(nextPanel == PanelsFromPassword.SignIn){
+			panelForgotPass1.SetActive(false);
+			panelForgotPass2.SetActive(false);
+			panelSignIn.SetActive(true);
+		}
+		fader.FadeIn();
+	}
 
 	public void GetInputUsername(InputField obj){
 		username = obj.text;
@@ -46,8 +75,8 @@ public class ForgotPasswordManager : MonoBehaviour {
 			(response)=>{
 				JSONNode jsonData = JSON.Parse(response);
 				Debug.Log(jsonData["message"]);
-				panelForgotPass1.SetActive(false);
-				panelForgotPass2.SetActive(true);
+				nextPanel = PanelsFromPassword.Forgot2;
+				fader.FadeOut();
 			},
 			(error)=>{
 				Debug.Log("ERROR");
@@ -68,8 +97,8 @@ public class ForgotPasswordManager : MonoBehaviour {
 			DBManager.API.UserResetPassword (username, otp, newPass1, newPass2,
 				(response) => {
 					Debug.Log ("password reset success");
-					panelForgotPass2.SetActive(false);
-					panelSignIn.SetActive(true);
+					nextPanel = PanelsFromPassword.SignIn;
+					fader.FadeOut();
 				},
 				(error) => {
 					JSONNode jsonData = JSON.Parse (error);
