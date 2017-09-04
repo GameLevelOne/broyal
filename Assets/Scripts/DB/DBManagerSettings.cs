@@ -23,10 +23,18 @@ public class DBManagerSettings : ScriptableObject {
 	public string getUserStarsAPI;
 	public string unsubscribeUserAPI;
 	public string getUserProfileAPI;
+	public string getAuctionLandingData;
+	public string getAuctionListingCurrent;
+	public string getAuctionListingPast;
+	public string getAuctionListingFuture;
 	public string updateUserNameAPI;
 	public string updateUserProfileAPI;
 	public string userForgotPasswordAPI;
 	public string userResetPasswordAPI;
 	public string userChangePasswordAPI;
+	public string auctionBidding;
+	public string auctionJoin;
+	public string getAuctionDetails;
+
 
 }
