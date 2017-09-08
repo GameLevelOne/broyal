@@ -35,6 +35,11 @@ public class DBManagerSettings : ScriptableObject {
 	public string auctionBidding;
 	public string auctionJoin;
 	public string getAuctionDetails;
-
+	public string petListing;
+	public string getUserPetProfile;
+	public string claimPetTrainExp;
+	public string claimPetShareExp;
+	public string purchasePet;
+	public string changePetName;
 
 }

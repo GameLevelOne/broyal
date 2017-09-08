@@ -27,6 +27,60 @@ public class DBManager : MonoBehaviour {
 	string tokenType = null;
 	string accessToken = null;
 
+	public void PetListing( 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.petListing;
+		DebugMsg ("PET LISTING Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void GetUserPetProfile( 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getUserPetProfile;
+		DebugMsg ("GET USER PET PROFILE Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void ClaimPetTrainExp( 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.claimPetTrainExp;
+		DebugMsg ("CLAIM PET TRAIN EXP Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void ClaimPetShareExp( 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.claimPetShareExp;
+		DebugMsg ("CLAIM PET SHARE EXP Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void PurchasePet(int petId, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.purchasePet + petId;
+		DebugMsg ("PURCHASE PET Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void ChangePetName(int petId, string newName,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.changePetName;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"petId\":\""+petId+"\",\n"+
+			"\"petName\":\""+newName+"\"\n"+
+			"}";
+
+		DebugMsg ("CHANGE PET NAME Request","\nurl = "+url);
+		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
+	}
+
 	public void UserRegistration(bool termsCondition, int gender, string userName, string password, string mobile, string email,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
