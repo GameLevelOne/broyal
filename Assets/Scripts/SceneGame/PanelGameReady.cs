@@ -54,6 +54,7 @@ public class PanelGameReady : MonoBehaviour {
 		textReady.text = "GO!";
 		yield return new WaitForSeconds(1);
 		this.gameObject.SetActive(false);
+		SoundManager.Instance.PlaySFX(SFXList.GameStart);
 		panelGame.SetActive(true);
 		this.gameObject.SetActive(false);
 	}

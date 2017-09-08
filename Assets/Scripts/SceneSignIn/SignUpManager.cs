@@ -16,7 +16,6 @@ public class SignUpManager : MonoBehaviour {
 	public GameObject panelSignIn;
 	public GameObject panelPopupMsg;
 	public GameObject panelPopupVerify;
-	public GameObject panelForgotPassword2;
 
 	public Text popupMsg;
 
@@ -33,6 +32,9 @@ public class SignUpManager : MonoBehaviour {
 	string signUpPassword;
 	string signUpConfirmPassword;
 	string signUpOTP;
+
+	string triggerPanelOpen = "panelOpen";
+	string triggerPanelClose = "panelClose";
 
 	MessageType currRegistrationStatus = MessageType.RegisterError;
 
@@ -51,7 +53,6 @@ public class SignUpManager : MonoBehaviour {
 
 	void OnFadeOutFinished ()
 	{
-		panelForgotPassword2.SetActive(false);
 		panelSignIn.SetActive(true);
 		fader.FadeIn();
 		this.gameObject.SetActive(false);
@@ -152,6 +153,7 @@ public class SignUpManager : MonoBehaviour {
 	{
 		popupMsg.text=msgText;
 		panelPopupMsg.SetActive(true);
+		panelPopupMsg.GetComponent<Animator>().SetTrigger(triggerPanelOpen);
 	}
 
 	public void OnClickClosePopup ()
@@ -159,6 +161,7 @@ public class SignUpManager : MonoBehaviour {
 //		panelPopupMsg.SetActive (false);
 		if (currRegistrationStatus == MessageType.RegisterSuccess) {
 			panelPopupVerify.SetActive (true);
+			panelPopupVerify.GetComponent<Animator>().SetTrigger(triggerPanelOpen);
 		} else if (currRegistrationStatus == MessageType.VerifySuccess) {
 			fader.FadeOut();
 		}
@@ -168,7 +171,7 @@ public class SignUpManager : MonoBehaviour {
 		DBManager.API.VerifyUser(signUpUsername,signUpOTP,
 			(response)=>{
 				currRegistrationStatus = MessageType.VerifySuccess;
-				panelPopupVerify.SetActive(false);
+				panelPopupVerify.GetComponent<Animator>().SetTrigger(triggerPanelClose);
 				DisplayMessagePopup("Verification success!");
 			},
 			(error)=>{

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using SimpleJSON;
 
 enum PanelsFromPassword{
-	Forgot2,SignIn
+	Null,Forgot2,SignIn
 }
 
 public class ForgotPasswordManager : MonoBehaviour {
@@ -20,7 +20,7 @@ public class ForgotPasswordManager : MonoBehaviour {
 	string newPass1;
 	string newPass2;
 
-	PanelsFromPassword nextPanel;
+	PanelsFromPassword nextPanel = PanelsFromPassword.Null;
 
 	void OnEnable(){
 		fader.OnFadeOutFinished += OnFadeOutFinished;
