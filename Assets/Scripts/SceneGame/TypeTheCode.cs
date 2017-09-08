@@ -105,6 +105,8 @@ public class TypeTheCode : MonoBehaviour {
 		}
 		overlay.SetActive(false);
 		totalInput=0;
+		countdownText.text = "06";
+		StartCoroutine(GameTimer());
 	}
 
 	IEnumerator WaitForReset(){
@@ -117,8 +119,10 @@ public class TypeTheCode : MonoBehaviour {
 			yield return new WaitForSeconds(1);
 			countdownText.text = "0"+i.ToString();
 		}
+		SoundManager.Instance.PlaySFX(SFXList.TimeUp);
 		gameOver = true;
 		overlay.SetActive(true);
+		StartCoroutine(WaitForReset());
 	}
 
 }
