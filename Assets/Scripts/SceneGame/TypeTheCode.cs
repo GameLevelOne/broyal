@@ -45,12 +45,12 @@ public class TypeTheCode : MonoBehaviour {
 			}
 		}
 
-		if(totalInput == totalChar){
-			CheckAnswer();
-			overlay.SetActive(true);
-		} else{
-			overlay.SetActive(false);
-		}
+		CheckAnswer();
+//		if(totalInput == totalChar){
+//			overlay.SetActive(true);
+//		} else{
+//			overlay.SetActive(false);
+//		}
 	}
 
 	void Start(){
@@ -81,20 +81,22 @@ public class TypeTheCode : MonoBehaviour {
 	{
 		int totalTrue = 0;
 		for (int i = 0; i < totalChar; i++) {
+			Debug.Log (stringProblem [i] + " vs "+ stringAnswer [i]);
 			if (stringProblem [i] == stringAnswer [i]) {
 				totalTrue++;
+				answerObjArray [i].color = Color.white;
 			} else {
 				answerObjArray [i].color = Color.red;
 			}
 		}
 
-		if (!gameOver) {
-			if (totalTrue == totalChar) {
-				Debug.Log ("You win!");
-			} else {
-				StartCoroutine (WaitForReset ());
-			}
-		}
+//		if (!gameOver) {
+//			if (totalTrue == totalChar) {
+//				Debug.Log ("You win!");
+//			} else {
+//				StartCoroutine (WaitForReset ());
+//			}
+//		}
 	}
 
 	void ResetAnswer(){
@@ -103,14 +105,16 @@ public class TypeTheCode : MonoBehaviour {
 			answerObjArray[i].text = "";
 			answerObjArray[i].color = Color.white;
 		}
+		GenerateProblem ();
 		overlay.SetActive(false);
 		totalInput=0;
 		countdownText.text = "06";
+		StopAllCoroutines ();
 		StartCoroutine(GameTimer());
 	}
 
 	IEnumerator WaitForReset(){
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(2);
 		ResetAnswer();
 	}
 
@@ -119,7 +123,7 @@ public class TypeTheCode : MonoBehaviour {
 			yield return new WaitForSeconds(1);
 			countdownText.text = "0"+i.ToString();
 		}
-		SoundManager.Instance.PlaySFX(SFXList.TimeUp);
+//		SoundManager.Instance.PlaySFX(SFXList.TimeUp);
 		gameOver = true;
 		overlay.SetActive(true);
 		StartCoroutine(WaitForReset());
