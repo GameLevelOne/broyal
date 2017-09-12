@@ -53,6 +53,7 @@ public class LandingPageManager : MonoBehaviour {
 				bidRumbleTagline.text = jsonData["bidRumbleAuction"]["productName"];
 			},
 			(error) => {
+				Debug.Log("masuk sini?");
 				loadingPanel.SetActive(false);
 			}
 		);
