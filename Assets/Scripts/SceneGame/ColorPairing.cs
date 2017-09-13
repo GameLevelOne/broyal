@@ -16,13 +16,17 @@ public class ColorPairing : MonoBehaviour {
 	int counterBlue = 0;
 	int counterRed = 0;
 	bool gameOver = false;
+	bool isWinning = false;
+	float gameTimer = 0f;
+	float gameTimeLimit = 6f;
 
 	GameObject[] tileObjects = new GameObject[16];
 	int tileCounter = 0;
 
 	void Start(){
 		GenerateTiles();
-		StartCoroutine(GameTimer());
+		StartCoroutine(Countdown());
+		StartCoroutine(CountPlayTime());
 	}
 
 	void OnEnable(){
@@ -43,13 +47,10 @@ public class ColorPairing : MonoBehaviour {
 			}
 			if(counterBlue == totalBlue || counterRed == totalRed){
 				gameOver=true;
+				isWinning = true;
+				GameOver();
 			}
 		} 
-
-		if(gameOver){
-			overlay.SetActive(true);
-			Debug.Log("You Win");
-		}
 	}
 
 	void GenerateTiles ()
@@ -69,6 +70,8 @@ public class ColorPairing : MonoBehaviour {
 	}
 
 	void RandomColor(GameObject obj){
+		Debug.Log("counterBlue:"+counterBlue);
+		Debug.Log("counterRed:"+counterRed);
 		if(counterBlue < 2 && counterRed < 2){
 			if(Random.value <= 0.5f){
 				obj.GetComponent<ColorPairingTile>().InitTile(true);
@@ -88,11 +91,33 @@ public class ColorPairing : MonoBehaviour {
 		}
 	}
 
-	void ResetGame(){
+	void ResetGame ()
+	{
 		counterBlue = 0;
 		counterRed = 0;
-		for(int i=0;i<tileObjects.Length;i++){
-			RandomColor(tileObjects[i]);
+		tileCounter = 0;
+
+		for (int i = 0; i < areaSize; i++) {
+			for (int j = 0; j < areaSize; j++) {
+				RandomColor (tileObjects [tileCounter]);
+				tileCounter++;
+			}
+			counterBlue=0;
+			counterRed=0;
+		}
+		overlay.SetActive(false);
+		StartCoroutine(Countdown());
+		StartCoroutine(CountPlayTime());
+	}
+
+	void GameOver(){
+		overlay.SetActive(true);
+		if(isWinning){
+			Debug.Log(gameTimer);
+			StopAllCoroutines();
+		} else{
+			gameTimer=0f;
+			StartCoroutine(WaitForReset());
 		}
 	}
 
@@ -101,14 +126,22 @@ public class ColorPairing : MonoBehaviour {
 		ResetGame();
 	}
 
-	IEnumerator GameTimer(){
+	IEnumerator Countdown(){
+		countdownText.text = "06";
 		for(int i=5;i>=0;i--){
 			yield return new WaitForSeconds(1);
 			countdownText.text = "0"+i.ToString();
 		}
 //		SoundManager.Instance.PlaySFX(SFXList.TimeUp);
-		gameOver = true;
 		overlay.SetActive(true);
-		StartCoroutine(WaitForReset());
+		gameOver = true;
+		GameOver();
+	}
+
+	IEnumerator CountPlayTime(){
+		while(gameTimer < gameTimeLimit){
+			gameTimer += Time.deltaTime;
+			yield return null;
+		}
 	}
 }

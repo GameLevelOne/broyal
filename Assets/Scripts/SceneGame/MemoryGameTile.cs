@@ -4,17 +4,24 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class MemoryGameTile : MonoBehaviour {
-	public int picValue;
+	[SerializeField]
+	int picValue;
+	[SerializeField]
+	int tileIdx;
 
-	public delegate void MemoryTileClicked(int picValue);
+	public delegate void MemoryTileClicked(int picValue,int tileIdx);
 	public static event MemoryTileClicked OnMemoryTileClicked;
 
-	public void InitTile(int value,Sprite pic){
+	Sprite tilePic;
+
+	public void InitTile(int value,int idx,Sprite pic){
 		picValue = value;
-		GetComponent<Image>().sprite = pic;
+		tileIdx = idx;
+		tilePic = pic;
 	}
 
 	public void OnClick(){
-		OnMemoryTileClicked(picValue);
+		GetComponent<Image>().sprite = tilePic;
+		OnMemoryTileClicked(picValue,tileIdx);
 	}
 }

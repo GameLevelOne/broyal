@@ -4,14 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ColorPairingTile : MonoBehaviour {
-	public bool isBlue = false; //blue or red
+	bool isBlue = false; //blue or red
 
 	public delegate void TileClicked(bool isBlue);
 	public static event TileClicked OnTileClicked;
 
 	public void InitTile(bool isBlue){
 		Image tileImg = GetComponent<Image>();
-
+		tileImg.raycastTarget=true;
+		this.isBlue=isBlue;
 		if(isBlue){
 			tileImg.color = Color.blue;
 		} else{
@@ -21,7 +22,7 @@ public class ColorPairingTile : MonoBehaviour {
 
 	public void OnClick(){
 		Image tileImg = GetComponent<Image>();
-
+		tileImg.raycastTarget=false;
 		if(tileImg.color == Color.blue){
 			tileImg.color=Color.red;
 			isBlue = false;
