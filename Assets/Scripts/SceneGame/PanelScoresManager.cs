@@ -13,6 +13,7 @@ public class PanelScoresManager : MonoBehaviour {
 
 	bool rightAnswer = false;
 	string sceneGame = "SceneGame";
+	string sceneHome = "SceneHome";
 
 	public bool RightAnswer{ set { rightAnswer=value;}}
 
@@ -31,14 +32,14 @@ public class PanelScoresManager : MonoBehaviour {
 			panelScore.SetActive(false);
 		} else {
 			panelLoadingBar.SetActive(true);
-			LoadingProgress.Instance.ChangeScene(sceneGame);
+			panelLoadingBar.GetComponent<LoadingProgress>().ChangeScene(sceneGame);
 		}
 
 	}
 
 	public void OnClickNextToHome(){ //to be replaced with claim prize page (SceneHome)
 		panelLoadingBar.SetActive(true);
-		LoadingProgress.Instance.ChangeScene("SceneHome");
+		panelLoadingBar.GetComponent<LoadingProgress>().ChangeScene(sceneHome);
 	}
 	
 }

@@ -26,7 +26,7 @@ public class SignInManager : MonoBehaviour {
 	PanelsFromSignIn nextPanel;
 
 	void Awake() {
-		fader.FadeIn ();
+		//fader.FadeIn ();
 	}
 
 	void OnEnable(){
@@ -42,7 +42,7 @@ public class SignInManager : MonoBehaviour {
 		Debug.Log("asd");
 		if (nextPanel == PanelsFromSignIn.Game) {
 			panelLoading.SetActive (true);
-			LoadingProgress.Instance.ChangeScene (sceneLandingPage);
+			panelLoading.GetComponent<LoadingProgress>().ChangeScene(sceneLandingPage);
 			this.gameObject.SetActive(false);
 		} else if(nextPanel == PanelsFromSignIn.Password){
 			this.gameObject.SetActive(false);
@@ -101,6 +101,8 @@ public class SignInManager : MonoBehaviour {
 	void DoLogin(){
 		DBManager.API.UserLogin(signInUsername,signInPassword,
 			(response)=>{
+				PlayerData.Instance.Username = signInUsername;
+				PlayerData.Instance.Password = signInPassword;
 				nextPanel = PanelsFromSignIn.Game;
 				fader.FadeOut();
 			},

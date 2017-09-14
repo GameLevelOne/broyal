@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerData : MonoBehaviour {
 	private static PlayerData instance;
 	private string currentUsername;
+	private string currentPassword;
 	private string currentEmail;
 	private string currentGender;
 	private string currentPhoneNum;
@@ -28,8 +29,19 @@ public class PlayerData : MonoBehaviour {
 	public static PlayerData Instance{ get { return instance; }}
 
 	public string Username {
-		set{ currentUsername = value; }
+		set{ 
+			currentUsername = value; 
+			PlayerPrefs.SetString("PlayerData/Username",currentUsername);
+		}
 		get{ return currentUsername;}
+	}
+
+	public string Password{
+		set{ 
+			currentPassword = value;
+			PlayerPrefs.SetString("PlayerData/Password",currentPassword);
+		}
+		get{ return currentPassword;}
 	}
 
 	public string Email {
@@ -70,5 +82,9 @@ public class PlayerData : MonoBehaviour {
 	public int PetExp {
 		set{ currentPetExp = value; }
 		get{ return currentPetExp;}
+	}
+
+	void OnApplicationQuit(){
+		PlayerPrefs.Save();
 	}
 }

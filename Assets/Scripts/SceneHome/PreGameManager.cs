@@ -8,13 +8,15 @@ public class PreGameManager : MonoBehaviour {
 	public GameObject panelVideoAds; //to be replaced with actual ads
 	public GameObject panelLoadingBar;
 
+	string sceneGame = "SceneGame";
+
 	public void StartCountdown(){
 		StartCoroutine(RunCountdown());
 	}
 
 	public void OnCloseAds(){
 		panelLoadingBar.SetActive(true);
-		LoadingProgress.Instance.ChangeScene("SceneGame");
+		panelLoadingBar.GetComponent<LoadingProgress>().ChangeScene(sceneGame);
 	}
 
 	IEnumerator RunCountdown ()

@@ -73,7 +73,6 @@ public class HeaderAreaManager : MonoBehaviour {
 		DBManager.API.GetUserProfile(
 		(response)=>{
 			JSONNode jsonData = JSON.Parse(response);
-			PlayerData.Instance.Username = jsonData["username"];
 			PlayerData.Instance.Email = jsonData["email"];
 			PlayerData.Instance.Gender = jsonData["gender"];
 			PlayerData.Instance.PhoneNum = jsonData["phoneNumber"];
