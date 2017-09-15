@@ -113,16 +113,16 @@ public class ColorPairing : MonoBehaviour {
 
 	void GameOver(){
 		overlay.SetActive(true);
-		if(isWinning){
-			Debug.Log(gameTimer);
+//		if(isWinning){
+//			Debug.Log(gameTimer);
 			StopAllCoroutines();
 			panelScore.gameObject.SetActive(true);
 			panelScore.SetScoreText(gameTimer.ToString());
 
-		} else{
-			gameTimer=0f;
-			StartCoroutine(WaitForReset());
-		}
+//		} else{
+//			gameTimer=0f;
+//			StartCoroutine(WaitForReset());
+//		}
 	}
 
 	IEnumerator WaitForReset(){

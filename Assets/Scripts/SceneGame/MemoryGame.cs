@@ -131,17 +131,17 @@ public class MemoryGame : MonoBehaviour {
 	void GameOver(){
 		overlay.SetActive(true);
 
-		if(answerCount <3){
-			answerCount=0;
-			StartCoroutine(WaitForResetTile(6));
-		} else{
-			if(gameTimer < gameTimeLimit){
+//		if(answerCount <3){
+//			answerCount=0;
+//			StartCoroutine(WaitForResetTile(6));
+//		} else{
+//			if(gameTimer < gameTimeLimit){
 				StopAllCoroutines();
 				Debug.Log(gameTimer);
 				panelScore.gameObject.SetActive(true);
 				panelScore.SetScoreText(gameTimer.ToString());
-			}
-		}
+//			}
+//		}
 	}
 
 	IEnumerator WaitForResetTile(int amount){

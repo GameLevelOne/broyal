@@ -36,11 +36,14 @@ public class TypeTheCode : MonoBehaviour {
 	void HandleOnInputChar ()
 	{
 		//backspace = 0;
-		stringAnswer[totalInput] = keyboard.currInput;
+		if (totalInput<totalChar)
+			stringAnswer[totalInput] = keyboard.currInput;
 
 		if(keyboard.currInput != '0'){
-			answerObjArray[totalInput].text = keyboard.currInput.ToString();
-			totalInput++;
+			if (totalInput < totalChar) {
+				answerObjArray [totalInput].text = keyboard.currInput.ToString ();
+				totalInput++;
+			}
 		} else{
 			if(totalInput<=0){
 				totalInput=0;
@@ -87,7 +90,7 @@ public class TypeTheCode : MonoBehaviour {
 	{
 		int totalTrue = 0;
 		for (int i = 0; i < totalChar; i++) {
-			Debug.Log (stringProblem [i] + " vs "+ stringAnswer [i]);
+//			Debug.Log (stringProblem [i] + " vs "+ stringAnswer [i]);
 			if (stringProblem [i] == stringAnswer [i]) {
 				totalTrue++;
 				answerObjArray [i].color = Color.white;
@@ -105,16 +108,16 @@ public class TypeTheCode : MonoBehaviour {
 
 	void GameOver(){
 		overlay.SetActive(true);
-		if(isWinning){
+//		if(isWinning){
 			Debug.Log(gameTimer);
 			StopAllCoroutines();
 			panelScore.gameObject.SetActive(true);
 			panelScore.SetScoreText(gameTimer.ToString());
 
-		} else{
-			gameTimer=0f;
-			StartCoroutine(WaitForReset());
-		}
+//		} else{
+//			gameTimer=0f;
+//			StartCoroutine(WaitForReset());
+//		}
 	}
 
 	void ResetAnswer(){
