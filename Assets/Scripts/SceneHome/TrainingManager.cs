@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TrainingType{
-	TypeTheCode,MemoryGame,ColorPairing,Sequence
-}
-
 public class TrainingManager : MonoBehaviour {
+	public LoadingProgress panelLoadingBar;
+
 	public GameObject panelTypeTheCode;
 	public GameObject panelMemoryGame;
 	public GameObject panelColorPairing;
@@ -16,14 +14,21 @@ public class TrainingManager : MonoBehaviour {
 
 	public void OnClickOpenTrainingPanel(int type){
 		if (type == (int)TrainingType.TypeTheCode) {
-			panelTypeTheCode.SetActive(true);
+			//panelTypeTheCode.SetActive(true);
+			PlayerData.Instance.CurrentTrainingType = TrainingType.TypeTheCode;
 		} else if(type == (int)TrainingType.MemoryGame){
-			panelMemoryGame.SetActive(true);
+			//panelMemoryGame.SetActive(true);
+			PlayerData.Instance.CurrentTrainingType = TrainingType.MemoryGame;
 		} else if(type == (int)TrainingType.ColorPairing){
-			panelColorPairing.SetActive(true);
+			//panelColorPairing.SetActive(true);
+			PlayerData.Instance.CurrentTrainingType = TrainingType.ColorPairing;
 		} else if(type == (int)TrainingType.Sequence){
-			panelSequence.SetActive(true);
+			//panelSequence.SetActive(true);
+			PlayerData.Instance.CurrentTrainingType = TrainingType.Sequence;
 		}
+		PlayerData.Instance.CurrentGameType = GameType.Training;
+		panelLoadingBar.gameObject.SetActive(true);
+		panelLoadingBar.ChangeScene("SceneGame");
 	}
 
 	#region tempTouchBox

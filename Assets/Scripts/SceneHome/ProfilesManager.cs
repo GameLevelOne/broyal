@@ -211,6 +211,7 @@ public class ProfilesManager : MonoBehaviour {
 			DBManager.API.UserChangePassword(currPassword,newPassword1,newPassword2,
 			(response)=>{
 				Debug.Log("password changed successfully");
+				panelEditPassword.SetActive(false);
 			},
 			(error)=>{
 				JSONNode jsonData = JSON.Parse(error);

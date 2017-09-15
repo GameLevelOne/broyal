@@ -15,9 +15,7 @@ public class SignInManager : MonoBehaviour {
 	public GameObject panelForgotPassword;
 	public GameObject panelForgotPassword2;
 	public GameObject panelSignUp;
-	public PopupAnimation panelPopupMsg;
-
-	public Text popupMsg;
+	public PopupManager panelPopupMsg;
 
 	string sceneLandingPage = "SceneHome";
 	string signInUsername;
@@ -31,7 +29,7 @@ public class SignInManager : MonoBehaviour {
 	}
 
 	void Awake() {
-		fader.FadeIn ();
+		//fader.FadeIn ();
 	}
 
 	void OnEnable(){
@@ -47,7 +45,7 @@ public class SignInManager : MonoBehaviour {
 		Debug.Log("asd");
 		if (nextPanel == PanelsFromSignIn.Game) {
 			panelLoading.SetActive (true);
-			LoadingProgress.Instance.ChangeScene (sceneLandingPage);
+			panelLoading.GetComponent<LoadingProgress>().ChangeScene(sceneLandingPage);
 			this.gameObject.SetActive(false);
 		} else if(nextPanel == PanelsFromSignIn.Password){
 			this.gameObject.SetActive(false);
@@ -99,13 +97,16 @@ public class SignInManager : MonoBehaviour {
 	}
 
 	void DisplayMessage (string msgText){
-		popupMsg.text = msgText;
+		panelPopupMsg.gameObject.SetActive(true);
+		panelPopupMsg.SetText(msgText);
 		panelPopupMsg.OpenPanel();
 	}
 
 	void DoLogin(){
 		DBManager.API.UserLogin(signInUsername,signInPassword,
 			(response)=>{
+				PlayerData.Instance.Username = signInUsername;
+				PlayerData.Instance.Password = signInPassword;
 				nextPanel = PanelsFromSignIn.Game;
 				fader.FadeOut();
 			},

@@ -13,11 +13,9 @@ enum MessageType{
 
 public class SignUpManager : MonoBehaviour {
 	public Fader fader;
+	public PopupManager panelPopupMsg;
 	public GameObject panelSignIn;
-	public GameObject panelPopupMsg;
 	public GameObject panelPopupVerify;
-
-	public Text popupMsg;
 
 	public Image[] genderRadioButtons = new Image[2];
 	public Image checkBoxNewsletter;
@@ -151,9 +149,9 @@ public class SignUpManager : MonoBehaviour {
 
 	void DisplayMessagePopup (string msgText)
 	{
-		popupMsg.text=msgText;
-		panelPopupMsg.SetActive(true);
-		panelPopupMsg.GetComponent<Animator>().SetTrigger(triggerPanelOpen);
+		panelPopupMsg.gameObject.SetActive(true);
+		panelPopupMsg.SetText(msgText);
+		panelPopupMsg.OpenPanel();
 	}
 
 	public void OnClickClosePopup ()

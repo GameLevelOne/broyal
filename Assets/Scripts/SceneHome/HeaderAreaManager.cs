@@ -7,6 +7,8 @@ using SimpleJSON;
 public class HeaderAreaManager : MonoBehaviour {
 	public NavigationBarManager navigationBar;
 
+	public GameObject headerPetProfile;
+
 	public GameObject panelLandingPage;
 	public GameObject panelParentProfile;
 	public GameObject panelUserProfile;
@@ -19,10 +21,13 @@ public class HeaderAreaManager : MonoBehaviour {
 	public Text petCurrExp;
 	public Text petName;
 
+	bool hasPet = false;
+
 	int maxExp = 1000; //temp
 
 	void Start(){
 		GetCurrentUserProfile();
+		GetCurrentUserPetProfile();
 	}
 
 	void OnEnable(){
@@ -73,7 +78,6 @@ public class HeaderAreaManager : MonoBehaviour {
 		DBManager.API.GetUserProfile(
 		(response)=>{
 			JSONNode jsonData = JSON.Parse(response);
-			PlayerData.Instance.Username = jsonData["username"];
 			PlayerData.Instance.Email = jsonData["email"];
 			PlayerData.Instance.Gender = jsonData["gender"];
 			PlayerData.Instance.PhoneNum = jsonData["phoneNumber"];
@@ -88,10 +92,36 @@ public class HeaderAreaManager : MonoBehaviour {
 		);
 	}
 
-	void UpdateDisplay(){
+	void GetCurrentUserPetProfile(){
+		DBManager.API.GetUserPetProfile(
+			(response)=>{
+				JSONNode jsonData = JSON.Parse(response);
+				string msg = jsonData["message"];
+				if(!string.IsNullOrEmpty(msg)){
+					hasPet=false;
+				} else{
+					PlayerData.Instance.PetName = jsonData["petName"];
+
+				}
+
+				UpdateDisplay();
+			},
+			(error)=>{
+				Debug.Log("ERROR");
+			}
+		);
+	}
+
+	void UpdateDisplay ()
+	{
 		usernameText.text = usernameProfileDisplay.text = PlayerData.Instance.Username;
-		userStars.text = PlayerData.Instance.AvailableStars.ToString();
-		petCurrExp.text = PlayerData.Instance.PetExp.ToString();
-		petName.text = PlayerData.Instance.PetName;
+		userStars.text = PlayerData.Instance.AvailableStars.ToString ();
+		if (hasPet) {
+			petCurrExp.text = PlayerData.Instance.PetExp.ToString ();
+			petName.text = PlayerData.Instance.PetName;
+			headerPetProfile.SetActive(true);
+		} else{
+			headerPetProfile.SetActive(false);
+		}
 	}
 }

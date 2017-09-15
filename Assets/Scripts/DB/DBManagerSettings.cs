@@ -17,12 +17,23 @@ public class DBManagerSettings : ScriptableObject {
 	[Space(10)]
 
 	[Header("API STRING")]
+	public string getBidRumbleRoundDetails;
+	public string submitBidRumbleResult;
+	public string petListing;
+	public string getUserPetProfile;
+	public string claimPetTrainExp;
+	public string claimPetShareExp;
+	public string purchasePet;
+	public string changePetName;
+	public string startTrainingTime;
+	public string checkTrainingTime;
 	public string userRegistrationAPI;
 	public string verifyUserAPI;
 	public string userLoginAPI;
+	public string createTopUp;
 	public string getUserStarsAPI;
-	public string unsubscribeUserAPI;
 	public string getUserProfileAPI;
+	public string unsubscribeUserAPI;
 	public string getAuctionLandingData;
 	public string getAuctionListingCurrent;
 	public string getAuctionListingPast;
@@ -35,11 +46,7 @@ public class DBManagerSettings : ScriptableObject {
 	public string auctionBidding;
 	public string auctionJoin;
 	public string getAuctionDetails;
-	public string petListing;
-	public string getUserPetProfile;
-	public string claimPetTrainExp;
-	public string claimPetShareExp;
-	public string purchasePet;
-	public string changePetName;
+
+
 
 }
