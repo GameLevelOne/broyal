@@ -25,6 +25,11 @@ public class SignInManager : MonoBehaviour {
 
 	PanelsFromSignIn nextPanel;
 
+	public void testChangeLoc()
+	{
+		LocalizationService.Instance.Localization = "Bahasa";
+	}
+
 	void Awake() {
 		fader.FadeIn ();
 	}
