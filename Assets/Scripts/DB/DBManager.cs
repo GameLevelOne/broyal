@@ -134,6 +134,19 @@ public class DBManager : MonoBehaviour {
 			}, onError);
 	}
 
+	public void CreateTopUp(int stars, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.createTopUp;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"stars\":\""+stars+"\"\n"+
+			"}";
+
+		DebugMsg ("CREATE TOP UP Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
 	public void GetUserStars(System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.getUserStarsAPI;
@@ -282,6 +295,44 @@ public class DBManager : MonoBehaviour {
 	{
 		string url = config.restURL + config.getAuctionDetails + auctionId;
 		DebugMsg ("GET AUCTION DETAILS Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void GetBidRumbleRoundDetails(int auctionId, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getBidRumbleRoundDetails + auctionId;
+		DebugMsg ("GET BID RUMBLE ROUND DETAILS Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void SubmitBidRumbleResult(int auctionId, int roundNumber,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.submitBidRumbleResult;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"auctionId\":\""+auctionId+"\",\n"+
+			"\"roundNumber\":\""+roundNumber+"\",\n"+
+			"}";
+
+		DebugMsg ("SUBMIT BID RUMBLE RESULT Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
+	}
+
+	public void StartTrainingTime(
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.startTrainingTime;
+		DebugMsg ("START TRAINING TIME Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void CheckTrainingTime( 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.checkTrainingTime;
+		DebugMsg ("CHECK TRAINING TIME Request","\nurl = "+url);
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
