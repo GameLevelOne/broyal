@@ -12,7 +12,6 @@ public class LoadPreviousSession : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		PlayerPrefs.DeleteAll();
 		CheckPreviousSignIn();
 	}
 

@@ -15,6 +15,7 @@ public class PreGameManager : MonoBehaviour {
 	}
 
 	public void OnCloseAds(){
+		PlayerData.Instance.CurrentGameType = GameType.BidRoyale;
 		panelLoadingBar.SetActive(true);
 		panelLoadingBar.GetComponent<LoadingProgress>().ChangeScene(sceneGame);
 	}

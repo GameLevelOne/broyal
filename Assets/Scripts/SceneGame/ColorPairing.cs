@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ColorPairing : MonoBehaviour {
+	public PanelTrainingScores panelScore;
 	public Transform tileParent;
 	public GameObject tilePrefab;
 	public GameObject overlay;
@@ -115,6 +116,9 @@ public class ColorPairing : MonoBehaviour {
 		if(isWinning){
 			Debug.Log(gameTimer);
 			StopAllCoroutines();
+			panelScore.gameObject.SetActive(true);
+			panelScore.SetScoreText(gameTimer.ToString());
+
 		} else{
 			gameTimer=0f;
 			StartCoroutine(WaitForReset());

@@ -1,14 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class PopupAnimation : MonoBehaviour {
+public class PopupManager : MonoBehaviour {
 	public Animator popupAnimator;
+	public Text msgText;
 	string panelOpen = "panelOpen";
 	string panelClose = "panelClose";
 
-	// Use this for initialization
-	void Start () {
+	public void SetText(string text){
+		msgText.text = text;
 	}
 
 	public void OpenPanel(){

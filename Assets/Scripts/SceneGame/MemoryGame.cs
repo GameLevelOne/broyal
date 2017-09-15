@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class MemoryGame : MonoBehaviour {
+	public PanelTrainingScores panelScore;
+
 	public Transform tileParent;
 	public GameObject tilePrefab;
 	public GameObject overlay;
@@ -136,6 +138,8 @@ public class MemoryGame : MonoBehaviour {
 			if(gameTimer < gameTimeLimit){
 				StopAllCoroutines();
 				Debug.Log(gameTimer);
+				panelScore.gameObject.SetActive(true);
+				panelScore.SetScoreText(gameTimer.ToString());
 			}
 		}
 	}

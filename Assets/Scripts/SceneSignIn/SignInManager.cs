@@ -15,9 +15,7 @@ public class SignInManager : MonoBehaviour {
 	public GameObject panelForgotPassword;
 	public GameObject panelForgotPassword2;
 	public GameObject panelSignUp;
-	public PopupAnimation panelPopupMsg;
-
-	public Text popupMsg;
+	public PopupManager panelPopupMsg;
 
 	string sceneLandingPage = "SceneHome";
 	string signInUsername;
@@ -94,7 +92,8 @@ public class SignInManager : MonoBehaviour {
 	}
 
 	void DisplayMessage (string msgText){
-		popupMsg.text = msgText;
+		panelPopupMsg.gameObject.SetActive(true);
+		panelPopupMsg.SetText(msgText);
 		panelPopupMsg.OpenPanel();
 	}
 

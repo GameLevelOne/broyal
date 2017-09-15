@@ -2,6 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum GameType{
+	BidRoyale,
+	BidRumble,
+	Training
+}
+
+public enum TrainingType{
+	TypeTheCode,
+	MemoryGame,
+	ColorPairing,
+	Sequence
+}
+
 public class PlayerData : MonoBehaviour {
 	private static PlayerData instance;
 	private string currentUsername;
@@ -13,8 +26,12 @@ public class PlayerData : MonoBehaviour {
 	private int currentAvailableStars;
 	private string currentProfilePic; //temp
 
-	private string currentPetName = "Kochirou"; //temp
+	private string currentPetId;
+	private string currentPetName;
 	private int currentPetExp = 0;
+
+	private GameType gameType;
+	private TrainingType trainingType;
 
 	void Awake ()
 	{
@@ -74,6 +91,11 @@ public class PlayerData : MonoBehaviour {
 		get{ return currentProfilePic;}
 	}
 
+	public string PetId{
+		set{ currentPetId = value;}
+		get{ return currentPetId;}
+	}
+
 	public string PetName{
 		set{ currentPetName = value;}
 		get{ return currentPetName;}
@@ -82,6 +104,16 @@ public class PlayerData : MonoBehaviour {
 	public int PetExp {
 		set{ currentPetExp = value; }
 		get{ return currentPetExp;}
+	}
+
+	public GameType CurrentGameType{
+		set{ gameType = value;}
+		get{ return gameType;}
+	}
+
+	public TrainingType CurrentTrainingType{
+		set{ trainingType = value;}
+		get{ return trainingType;}
 	}
 
 	void OnApplicationQuit(){

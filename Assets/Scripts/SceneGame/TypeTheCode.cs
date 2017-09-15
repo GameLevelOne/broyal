@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class TypeTheCode : MonoBehaviour {
+	public PanelTrainingScores panelScore;
 	public Keyboard keyboard;
 	public Text countdownText;
 	public Text problemText;
@@ -19,6 +20,10 @@ public class TypeTheCode : MonoBehaviour {
 	int totalInput = 0;
 
 	bool gameOver = false;
+	bool isWinning = false;
+
+	float gameTimer = 0f;
+	float gameTimeLimit = 6f;
 
 	void OnEnable(){
 		Keyboard.OnInputChar += HandleOnInputChar;
@@ -57,6 +62,7 @@ public class TypeTheCode : MonoBehaviour {
 		GenerateProblem();
 		GenerateAnswerBox();
 		StartCoroutine(GameTimer());
+		StartCoroutine(CountPlayTime());
 	}
 
 	void GenerateProblem(){
@@ -89,14 +95,26 @@ public class TypeTheCode : MonoBehaviour {
 				answerObjArray [i].color = Color.red;
 			}
 		}
+		if(totalTrue == totalChar){
+			gameOver = true;
+			isWinning = true;
+			GameOver();
+		}
 
-//		if (!gameOver) {
-//			if (totalTrue == totalChar) {
-//				Debug.Log ("You win!");
-//			} else {
-//				StartCoroutine (WaitForReset ());
-//			}
-//		}
+	}
+
+	void GameOver(){
+		overlay.SetActive(true);
+		if(isWinning){
+			Debug.Log(gameTimer);
+			StopAllCoroutines();
+			panelScore.gameObject.SetActive(true);
+			panelScore.SetScoreText(gameTimer.ToString());
+
+		} else{
+			gameTimer=0f;
+			StartCoroutine(WaitForReset());
+		}
 	}
 
 	void ResetAnswer(){
@@ -119,6 +137,7 @@ public class TypeTheCode : MonoBehaviour {
 	}
 
 	IEnumerator GameTimer(){
+		countdownText.text = "06";
 		for(int i=5;i>=0;i--){
 			yield return new WaitForSeconds(1);
 			countdownText.text = "0"+i.ToString();
@@ -126,7 +145,14 @@ public class TypeTheCode : MonoBehaviour {
 //		SoundManager.Instance.PlaySFX(SFXList.TimeUp);
 		gameOver = true;
 		overlay.SetActive(true);
-		StartCoroutine(WaitForReset());
+		GameOver();
+	}
+
+	IEnumerator CountPlayTime(){
+		while(gameTimer < gameTimeLimit){
+			gameTimer += Time.deltaTime;
+			yield return null;
+		}
 	}
 
 }
