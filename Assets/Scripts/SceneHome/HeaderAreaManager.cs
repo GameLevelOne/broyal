@@ -7,7 +7,8 @@ using SimpleJSON;
 public class HeaderAreaManager : MonoBehaviour {
 	public NavigationBarManager navigationBar;
 
-	public GameObject headerPetProfile;
+	public GameObject headerWithPet;
+	public GameObject headerNoPet;
 
 	public GameObject panelLandingPage;
 	public GameObject panelParentProfile;
@@ -26,6 +27,8 @@ public class HeaderAreaManager : MonoBehaviour {
 	int maxExp = 1000; //temp
 
 	void Start(){
+		headerWithPet.SetActive (false);
+		headerNoPet.SetActive (false);
 		GetCurrentUserProfile();
 		GetCurrentUserPetProfile();
 	}
@@ -119,9 +122,9 @@ public class HeaderAreaManager : MonoBehaviour {
 		if (hasPet) {
 			petCurrExp.text = PlayerData.Instance.PetExp.ToString ();
 			petName.text = PlayerData.Instance.PetName;
-			headerPetProfile.SetActive(true);
+			headerWithPet.SetActive(true);
 		} else{
-			headerPetProfile.SetActive(false);
+			headerNoPet.SetActive(true);
 		}
 	}
 }

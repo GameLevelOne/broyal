@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
 
-public class LandingPageManager : MonoBehaviour {
+public class LandingPageManager : BasePage {
 	public Fader fader;
 	public GameObject loadingPanel;
 	public GameObject panelAuctionLobby;
 	public GameObject panelCompleteProfile;
-	public Text bidRoyalTagline;
-	public Text bidRumbleTagline;
+	public ImageLoader bidRoyalPic;
+	public ImageLoader bidRumblePic;
 
 	void OnEnable(){
 		fader.OnFadeOutFinished += OnFadeOutFinished;
@@ -45,19 +45,21 @@ public class LandingPageManager : MonoBehaviour {
 		fader.OnFadeInFinished -= OnFadeInFinished;
 
 		loadingPanel.SetActive (true);
-		DBManager.API.GetAuctionLandingData (
+		DBManager.API.GetLandingAuctionData (
 			(response) => {
 				loadingPanel.SetActive(false);
 				JSONNode jsonData = JSON.Parse(response);
-				bidRoyalTagline.text = jsonData["bidRoyalAuction"]["productName"];
-				bidRumbleTagline.text = jsonData["bidRumbleAuction"]["productName"];
+				bidRoyalPic.LoadImageFromUrl(jsonData["bidRoyaleAuction"]["productImage"]);
+				bidRumblePic.LoadImageFromUrl(jsonData["bidRumbleAuction"]["productImage"]);
 			},
 			(error) => {
-				Debug.Log("masuk sini?");
 				loadingPanel.SetActive(false);
+				bidRoyalPic.SetError();
+				bidRumblePic.SetError();
 			}
 		);
 	}
+
 
 	public void OnClickBid(){
 		fader.FadeOut();

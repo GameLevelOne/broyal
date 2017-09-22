@@ -27,6 +27,30 @@ public class DBManager : MonoBehaviour {
 	string tokenType = null;
 	string accessToken = null;
 
+//===========================Bid Rumble Game=======================================================
+	public void GetBidRumbleRoundDetails(int auctionId, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getBidRumbleRoundDetails + auctionId;
+		DebugMsg ("GET BID RUMBLE ROUND DETAILS Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void SubmitBidRumbleResult(int auctionId, int roundNumber,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.submitBidRumbleResult;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"auctionId\":\""+auctionId+"\",\n"+
+			"\"roundNumber\":\""+roundNumber+"\",\n"+
+			"}";
+
+		DebugMsg ("SUBMIT BID RUMBLE RESULT Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
+	}
+
+//===========================Pet API=======================================================
 	public void PetListing( 
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
@@ -80,6 +104,33 @@ public class DBManager : MonoBehaviour {
 		DebugMsg ("CHANGE PET NAME Request","\nurl = "+url);
 		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
 	}
+
+	public void StartTrainingTime(
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.startTrainingTime;
+		DebugMsg ("START TRAINING TIME Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void CheckTrainingTime( 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.checkTrainingTime;
+		DebugMsg ("CHECK TRAINING TIME Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+//===========================Shop=======================================================
+	public void GetShopList( 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getShopList;
+		DebugMsg ("GET SHOP LIST Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+//===========================User API=======================================================
 
 	public void UserRegistration(bool termsCondition, int gender, string userName, string password, string mobile, string email,
 		System.Action<string> onComplete , System.Action<string> onError = null)
@@ -153,14 +204,7 @@ public class DBManager : MonoBehaviour {
 		DebugMsg ("GET USER STARS Request","\nurl = "+url);
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
-
-	public void UnsubscribeUser(System.Action<string> onComplete , System.Action<string> onError = null)
-	{
-		string url = config.restURL + config.unsubscribeUserAPI;
-		DebugMsg ("UNSUBSCRIBE USER Request","\nurl = "+url);
-		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
-	}
-
+		
 	public void GetUserProfile(System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.getUserProfileAPI;
@@ -168,34 +212,10 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
-	public void GetAuctionLandingData(System.Action<string> onComplete , System.Action<string> onError = null)
+	public void UnsubscribeUser(System.Action<string> onComplete , System.Action<string> onError = null)
 	{
-		string url = config.restURL + config.getAuctionLandingData;
-		DebugMsg ("GET AUCTION LANDING DATA Request","\nurl = "+url);
-		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
-	}
-
-	public void GetAuctionListingCurrent(int auctionType, 
-		System.Action<string> onComplete , System.Action<string> onError = null)
-	{
-		string url = config.restURL + config.getAuctionListingCurrent + auctionType;
-		DebugMsg ("GET AUCTION LISTING CURRENT Request","\nurl = "+url);
-		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
-	}
-
-	public void GetAuctionListingPast(int auctionType, 
-		System.Action<string> onComplete , System.Action<string> onError = null)
-	{
-		string url = config.restURL + config.getAuctionListingPast + auctionType;
-		DebugMsg ("GET AUCTION LISTING PAST Request","\nurl = "+url);
-		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
-	}
-
-	public void GetAuctionListingFuture(int auctionType, 
-		System.Action<string> onComplete , System.Action<string> onError = null)
-	{
-		string url = config.restURL + config.getAuctionListingFuture + auctionType;
-		DebugMsg ("GET AUCTION LISTING FUTURE Request","\nurl = "+url);
+		string url = config.restURL + config.unsubscribeUserAPI;
+		DebugMsg ("UNSUBSCRIBE USER Request","\nurl = "+url);
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
@@ -273,7 +293,8 @@ public class DBManager : MonoBehaviour {
 		DebugMsg ("USER CHANGE PASSWORD Request","\nurl = "+url+"\ndata = "+jsondata);
 		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
 	}
-
+		
+//===========================Auction API=======================================================
 	public void AuctionBidding(int auctionId, 
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
@@ -298,43 +319,30 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
-	public void GetBidRumbleRoundDetails(int auctionId, 
+	public void GetWinnerList(
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
-		string url = config.restURL + config.getBidRumbleRoundDetails + auctionId;
-		DebugMsg ("GET BID RUMBLE ROUND DETAILS Request","\nurl = "+url);
+		string url = config.restURL + config.getWinnerList;
+		DebugMsg ("GET WINNER LIST Request","\nurl = "+url);
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
-	public void SubmitBidRumbleResult(int auctionId, int roundNumber,
+	public void GetAuctionListing(int auctionType, int start, int end,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
-		string url = config.restURL + config.submitBidRumbleResult;
-		UTF8Encoding encoder = new UTF8Encoding ();
-		string jsondata = "{\n"+
-			"\"auctionId\":\""+auctionId+"\",\n"+
-			"\"roundNumber\":\""+roundNumber+"\",\n"+
-			"}";
-
-		DebugMsg ("SUBMIT BID RUMBLE RESULT Request","\nurl = "+url+"\ndata = "+jsondata);
-		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
+		string url = config.restURL + config.getAuctionListing + auctionType + "&start=" + start + "&end=" + end;
+		DebugMsg ("GET AUCTION LISTING Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
-
-	public void StartTrainingTime(
+				
+	public void GetLandingAuctionData(
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
-		string url = config.restURL + config.startTrainingTime;
-		DebugMsg ("START TRAINING TIME Request","\nurl = "+url);
+		string url = config.restURL + config.getLandingAuctionData;
+		DebugMsg ("GET LANDING AUCTION DATA Request","\nurl = "+url);
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
-	public void CheckTrainingTime( 
-		System.Action<string> onComplete , System.Action<string> onError = null)
-	{
-		string url = config.restURL + config.checkTrainingTime;
-		DebugMsg ("CHECK TRAINING TIME Request","\nurl = "+url);
-		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
-	}
 
 //===========================Utilities==============================================================
 

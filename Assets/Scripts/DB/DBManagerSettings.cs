@@ -27,6 +27,7 @@ public class DBManagerSettings : ScriptableObject {
 	public string changePetName;
 	public string startTrainingTime;
 	public string checkTrainingTime;
+	public string getShopList;
 	public string userRegistrationAPI;
 	public string verifyUserAPI;
 	public string userLoginAPI;
@@ -34,10 +35,6 @@ public class DBManagerSettings : ScriptableObject {
 	public string getUserStarsAPI;
 	public string getUserProfileAPI;
 	public string unsubscribeUserAPI;
-	public string getAuctionLandingData;
-	public string getAuctionListingCurrent;
-	public string getAuctionListingPast;
-	public string getAuctionListingFuture;
 	public string updateUserNameAPI;
 	public string updateUserProfileAPI;
 	public string userForgotPasswordAPI;
@@ -46,6 +43,9 @@ public class DBManagerSettings : ScriptableObject {
 	public string auctionBidding;
 	public string auctionJoin;
 	public string getAuctionDetails;
+	public string getWinnerList;
+	public string getAuctionListing;
+	public string getLandingAuctionData;
 
 
 
