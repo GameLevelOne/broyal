@@ -40,12 +40,12 @@ public class ImageLoader : MonoBehaviour {
 
 	IEnumerator LoadFromWWW(string url)
 	{
-		Debug.Log ("Load URL: "+url);
+//		Debug.Log ("Load URL: "+url);
 		yield return null;
 		WWW www = new WWW (url);
 		yield return www;
 		if (string.IsNullOrEmpty (www.error)) {
-			Debug.Log ("Success");
+//			Debug.Log ("Success");
 			loadAnim.SetInteger ("AnimState",(int)ImageLoaderState.LOADED);
 			loadImage.sprite = Sprite.Create (www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0, 0));
 		} else {

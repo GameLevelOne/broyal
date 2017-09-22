@@ -3,48 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AuctionLobbyManager : MonoBehaviour {
+public enum AuctionMode
+{
+	BIDROYALE,
+	BIDRUMBLE
+}
+
+public class AuctionLobbyManager : BasePage {
 	public Fader fader;
 	public AuctionItemAreaManager auctionItemAreaManager;
 	public GameObject panelAuctionScreen;
 	public GameObject panelProductDetail;
 	public GameObject panelClaimConfirmation;
 	public Transform buttonJoin;
+	public AuctionMode auctionMode;
+	public int auctionIndex;
+	public Image auctionLogo;
+	public Sprite[] spriteLogo;
 
-	void OnEnable(){
-		fader.OnFadeOutFinished += OnFadeOutFinished;
-	}
-
-	void OnDisable(){
-		fader.OnFadeOutFinished -= OnFadeOutFinished;
-	}
-
-	void OnFadeOutFinished ()
+	protected override void Init ()
 	{
-		fader.FadeIn();
-		panelAuctionScreen.SetActive(true);
-		this.gameObject.SetActive(false);
+		base.Init ();
+		auctionLogo.sprite = spriteLogo [(int)auctionMode];
 	}
-
-
-
+		
 	public void OnClickEnter(){
 		fader.FadeOut();
 	}
 
-	public void OnClickJoin (){
-		auctionItemAreaManager.UpdateJoinButton();
+	public void ClickJoin (){
+		auctionIndex = 0;
+		NextPage ("AUCTIONROOM");
 	}
 
-	public void OnClickClaim(){
+	public void ClickClaim(){
 		panelClaimConfirmation.SetActive(true);
 	}
 
-	public void OnClickProductDetail(){
+	public void ClickProductDetail(){
 		panelProductDetail.SetActive(true);
 	}
 
-	public void OnClickCloseProductDetail(){
-		panelProductDetail.SetActive(false);
-	}
 }

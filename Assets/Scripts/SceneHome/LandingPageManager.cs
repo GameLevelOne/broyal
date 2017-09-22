@@ -6,26 +6,11 @@ using SimpleJSON;
 
 public class LandingPageManager : BasePage {
 	public Fader fader;
-	public GameObject loadingPanel;
-	public GameObject panelAuctionLobby;
+	public ConnectingPanel connectingPanel;
+	public AuctionLobbyManager auctionLobby;
 	public GameObject panelCompleteProfile;
 	public ImageLoader bidRoyalPic;
 	public ImageLoader bidRumblePic;
-
-	void OnEnable(){
-		fader.OnFadeOutFinished += OnFadeOutFinished;
-	}
-
-	void OnDisable(){
-		fader.OnFadeOutFinished -= OnFadeOutFinished;
-	}
-
-	void OnFadeOutFinished ()
-	{
-		fader.FadeIn();
-		panelAuctionLobby.SetActive(true);
-		this.gameObject.SetActive(false);
-	}
 
 	void Start ()
 	{
@@ -43,26 +28,40 @@ public class LandingPageManager : BasePage {
 	void OnFadeInFinished()
 	{
 		fader.OnFadeInFinished -= OnFadeInFinished;
+//		Init ();
+	}
 
-		loadingPanel.SetActive (true);
+	protected override void Init ()
+	{
+		base.Init ();
+		connectingPanel.Connecting (true);
 		DBManager.API.GetLandingAuctionData (
 			(response) => {
-				loadingPanel.SetActive(false);
+				connectingPanel.Connecting(false);
 				JSONNode jsonData = JSON.Parse(response);
 				bidRoyalPic.LoadImageFromUrl(jsonData["bidRoyaleAuction"]["productImage"]);
 				bidRumblePic.LoadImageFromUrl(jsonData["bidRumbleAuction"]["productImage"]);
 			},
 			(error) => {
-				loadingPanel.SetActive(false);
+				connectingPanel.Connecting(false);
 				bidRoyalPic.SetError();
 				bidRumblePic.SetError();
 			}
 		);
 	}
 
+	public void BidRoyaleClicked()
+	{
+		auctionLobby.auctionMode = AuctionMode.BIDROYALE;
+		auctionLobby.auctionIndex = 0;
+		NextPage ("LOBBY");
+	}
 
-	public void OnClickBid(){
-		fader.FadeOut();
+	public void BidRumbleClicked()
+	{
+		auctionLobby.auctionMode = AuctionMode.BIDRUMBLE;
+		auctionLobby.auctionIndex = 0;
+		NextPage ("LOBBY");
 	}
 
 }

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-enum MenuNames{Winner,News,Home,Training,Shop,AuctionLobby}
+enum MenuNames{Winner,News,Home,Training,Shop}
 
 public class NavigationBarManager : MonoBehaviour {
 	public Transform bgHighlight;
-
-	public GameObject[] panels = new GameObject[6];
+	public BasePage[] pages;
+	public GameObject[] panels = new GameObject[5];
 
 	float[] highlightXPos = new float[5];
 	float highlightYPos = -466f;
@@ -36,7 +36,14 @@ public class NavigationBarManager : MonoBehaviour {
 
 	public void OnClickHome(){
 		SetBGHighlight((int)MenuNames.Home);
-		SetActivePanel((int)MenuNames.Home);;
+		for (int i = 0; i < panels.Length; i++) {
+			if (i == (int)MenuNames.Home) {
+				PagesManager.instance.CurrentPageOutro (pages[0]);
+				currentActivePanel = panels[i];
+			} else {
+				panels[i].SetActive(false);
+			}
+		}
 	}
 
 	public void OnClickTraining(){

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PagesIntroOutro : MonoBehaviour {
 	public delegate void IntroOutroEvent();
-	public static event IntroOutroEvent OnFinishIntro;
-	public static event IntroOutroEvent OnFinishOutro;
+	public event IntroOutroEvent OnFinishIntro;
+	public event IntroOutroEvent OnFinishOutro;
 
 	Animator anim;
 
@@ -22,6 +22,8 @@ public class PagesIntroOutro : MonoBehaviour {
 				
 	void FinishIntroEvent()
 	{
+		Debug.Log ("Reset Trigger: " + name);
+		anim.ResetTrigger ("Intro");
 		if (OnFinishIntro != null)
 			OnFinishIntro();
 	}
@@ -33,12 +35,13 @@ public class PagesIntroOutro : MonoBehaviour {
 		gameObject.SetActive (false);
 	}
 
-	void OnEnable()
+	protected void OnEnable()
 	{
 		anim.SetTrigger ("Intro");
+//		Debug.Log ("Intro: " + name);
 	}
 
-	void OnDisable()
+	protected void OnDisable()
 	{
 		anim.ResetTrigger ("Intro");
 		anim.ResetTrigger ("Outro");
