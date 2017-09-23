@@ -11,15 +11,17 @@ public enum AuctionMode
 
 public class AuctionLobbyManager : BasePage {
 	public Fader fader;
-	public AuctionItemAreaManager auctionItemAreaManager;
-	public GameObject panelAuctionScreen;
-	public GameObject panelProductDetail;
-	public GameObject panelClaimConfirmation;
-	public Transform buttonJoin;
+	public ConnectingPanel connectingPanel;
+
 	public AuctionMode auctionMode;
 	public int auctionIndex;
 	public Image auctionLogo;
 	public Sprite[] spriteLogo;
+
+	public ScrollSnapRect scrollSnap;
+	public Transform container;
+	public Transform unused;
+	public AuctionRoomData[] rooms;
 
 	protected override void Init ()
 	{
@@ -27,21 +29,17 @@ public class AuctionLobbyManager : BasePage {
 		auctionLogo.sprite = spriteLogo [(int)auctionMode];
 	}
 		
-	public void OnClickEnter(){
-		fader.FadeOut();
-	}
-
 	public void ClickJoin (){
 		auctionIndex = 0;
 		NextPage ("AUCTIONROOM");
 	}
 
 	public void ClickClaim(){
-		panelClaimConfirmation.SetActive(true);
+//		panelClaimConfirmation.SetActive(true);
 	}
 
 	public void ClickProductDetail(){
-		panelProductDetail.SetActive(true);
+//		panelProductDetail.SetActive(true);
 	}
 
 }

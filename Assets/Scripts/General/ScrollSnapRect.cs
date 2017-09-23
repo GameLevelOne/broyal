@@ -168,6 +168,7 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
         aPageIndex = Mathf.Clamp(aPageIndex, 0, _pageCount - 1);
         _container.anchoredPosition = _pagePositions[aPageIndex];
         _currentPage = aPageIndex;
+		FinishChangePage ();
     }
 
     //------------------------------------------------------------------------
@@ -176,6 +177,7 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
         _lerpTo = _pagePositions[aPageIndex];
         _lerp = true;
         _currentPage = aPageIndex;
+		FinishChangePage ();
     }
 
     //------------------------------------------------------------------------
@@ -302,4 +304,28 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
             }
         }
     }
+
+	private void FinishChangePage()
+	{
+		Debug.Log ("Current Page: "+_currentPage);
+	}
+
+	public void UpdateContainerSize()
+	{
+		_pageCount = _container.childCount;
+		SetPagePositions ();
+		SetPage (1);
+	}
+
+	public Transform GetCurrentPage()
+	{
+		return _container.GetChild (_currentPage);
+	}
+	public bool IsFirstOrLast()
+	{
+		if ( (_currentPage==0) || (_currentPage==_container.childCount-1) ) 
+			return true;
+		else 
+			return false;		
+	}
 }
