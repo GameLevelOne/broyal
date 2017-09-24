@@ -362,6 +362,7 @@ public class DBManager : MonoBehaviour {
 		yield return www;
 		if (www.error == null) {
 			DebugMsg ("","RESULT: \n"+www.text);
+			Debug.Log ("ResponseHeaders: "+www.responseHeaders["content-type"]);
 			if (onComplete!=null)
 				onComplete(www.text);
 		} else {

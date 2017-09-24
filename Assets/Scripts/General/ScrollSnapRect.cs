@@ -82,7 +82,9 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
         SetPagePositions();
         SetPage(startingPage);
         InitPageSelection();
-        SetPageSelection(startingPage);
+		if (_showPageSelection) {
+			SetPageSelection (startingPage);
+		}
 
         // prev and next buttons
         if (nextButton)
