@@ -25,15 +25,30 @@ public class AuctionLobbyManager : BasePage {
 	public AuctionRoomData[] rooms;
 	public Transform firstLoading;
 	public Transform lastLoading;
+	int minData;
+	int maxData;
+	int bufferData = 4;
+
+	void Start()
+	{
+		scrollSnap.OnChangePage += OnChangeRoomPage;
+	}
 
 	protected override void Init ()
 	{
 		base.Init ();
 		auctionLogo.sprite = spriteLogo [(int)auctionMode];
+		minData = -3;
+		maxData = 3;
+		LoadData (minData, maxData);
+	}
+
+	void LoadData(int start, int end)
+	{
 		connectingPanel.Connecting (true);
-		DBManager.API.GetAuctionListing ((int)auctionMode + 1, -3, 3,
+		DBManager.API.GetAuctionListing ((int)auctionMode + 1, start, end,
 			(response) => {
-				Debug.Log("SuccessResult");
+//				Debug.Log("SuccessResult");
 				connectingPanel.Connecting(false);
 				JSONNode jsonData = JSON.Parse(response);
 				ReturnAllContainer();
@@ -51,15 +66,24 @@ public class AuctionLobbyManager : BasePage {
 						AuctionState.PAST,
 						imgUrl,
 						jsonData["pastAuctions"][i]["productName"],
-						jsonData["pastAuctions"][i]["openBid"].AsInt,
-						jsonData["pastAuctions"][i]["nextIncrement"].AsInt,
-						jsonData["pastAuctions"][i]["maxPrice"].AsInt,
-						jsonData["pastAuctions"][i]["enterPrice"].AsInt,
+						0,
+						0,
+						0,
+						0,
 						jsonData["pastAuctions"][i]["claimable"].AsBool
 					);
 					totalData++;
 				}
-				if ( (jsonData["currentAuction"]==null) || (jsonData["currentAuction"]=="") ) {
+
+				if (start<minData) {
+					minData = (start < (minData - (jsonData["pastAuctions"].Count-1)) ) ? start : (minData - (jsonData["pastAuctions"].Count-1)) ;
+				} else {
+					minData = start;
+				}
+
+				int startPage = totalData;
+				if ( (jsonData["currentAuction"].IsNull) || (jsonData["currentAuction"]=="{}") ) {
+					Debug.Log("NO Current");
 				} else {
 					data = rooms[totalData];
 					string[] imgUrl = new string[3];
@@ -98,15 +122,27 @@ public class AuctionLobbyManager : BasePage {
 					);
 					totalData++;
 				}
+
+				if (end > maxData) {
+					maxData = (end > (maxData + (jsonData["futureAuctions"].Count-1)) ) ? end : (maxData + (jsonData["futureAuctions"].Count-1)) ;
+				} else {
+					maxData = end;
+				}
+				Debug.Log("TotalData: "+totalData);
 				for (int i=totalData;i<rooms.Length;i++)
 				{
 					rooms[i].transform.SetParent(unused);
 				}
-				scrollSnap.UpdateContainerSize();
+				if (startPage<totalData) {
+					scrollSnap.UpdateContainerSize(startPage+1);
+				} else {
+					scrollSnap.UpdateContainerSize(startPage);
+				}
+
 			},
 			(error) => {
 				connectingPanel.Connecting(false);
-			});
+			});	
 	}
 		
 	public void ReturnAllContainer()
@@ -117,6 +153,18 @@ public class AuctionLobbyManager : BasePage {
 			rooms [i].transform.SetSiblingIndex (i + 1);
 		}
 		lastLoading.SetAsLastSibling ();
+	}
+
+	void OnChangeRoomPage(Transform child)
+	{
+		if (child == firstLoading) {
+			LoadData (minData-bufferData,maxData-bufferData);
+		} else if (child == lastLoading) {
+			LoadData (minData+bufferData,maxData+bufferData);
+		} else {
+			AuctionRoomData data = child.GetComponent<AuctionRoomData> ();
+			data.OnRoomShow ();
+		}
 	}
 
 	public void ClickJoin (){
@@ -132,4 +180,8 @@ public class AuctionLobbyManager : BasePage {
 //		panelProductDetail.SetActive(true);
 	}
 
+	void OnDestroy()
+	{
+		scrollSnap.OnChangePage += OnChangeRoomPage;
+	}
 }

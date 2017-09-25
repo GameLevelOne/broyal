@@ -28,7 +28,7 @@ public class LoadingProgress : MonoBehaviour {
 
 	IEnumerator LoadNextScene ()
 	{
-		Debug.Log("start loading");
+//		Debug.Log("start loading");
 		AsyncOperation asyncOp = SceneManager.LoadSceneAsync(nextScene);
 		asyncOp.allowSceneActivation = false;
 
@@ -41,7 +41,7 @@ public class LoadingProgress : MonoBehaviour {
 		}
 
 		if(barIsFilled){
-			Debug.Log("load scene");
+//			Debug.Log("load scene");
 			asyncOp.allowSceneActivation=true;
 		}
 	}

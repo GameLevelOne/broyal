@@ -54,15 +54,15 @@ public class AuctionRoomData : MonoBehaviour {
 
 		productImage.SetLoading ();
 		productNameLabel.text = productName;
-		openingBidLabel.text = "Open Bid: IDR " + openingBid.ToString ("N0");
-		nextIncrementLabel.text = "Next Increment: IDR " + nextIncrement.ToString ("N0");
-		maxPriceLabel.text = "Max Price: IDR " + maxPrice.ToString ("N0");
+		openingBidLabel.text = LocalizationService.Instance.GetTextByKey("AuctionLobby.OPEN_BID") + ": " + openingBid.ToString ("IDR #,0;IDR -#,0;-");
+		nextIncrementLabel.text = LocalizationService.Instance.GetTextByKey("AuctionLobby.NEXT_INCREMENT") + ": " + nextIncrement.ToString ("IDR #,0;IDR -#,0;-");
+		maxPriceLabel.text = LocalizationService.Instance.GetTextByKey("AuctionLobby.MAX_PRICE") + ": " + maxPrice.ToString ("IDR #,0;IDR -#,0;-");
 
 		if (auctionState == AuctionState.PAST) {
 			starsPanel.gameObject.SetActive (false);
 			if (claimable) {
 				actionButton.gameObject.SetActive (true);
-				actionButtonLabel.text = "CLAIM";
+				actionButtonLabel.text = LocalizationService.Instance.GetTextByKey("AuctionLobby.CLAIM");
 			} else {
 				actionButton.gameObject.SetActive (false);
 			}
@@ -70,13 +70,12 @@ public class AuctionRoomData : MonoBehaviour {
 			actionButton.gameObject.SetActive (false);
 		} else {
 			actionButton.gameObject.SetActive (true);
+			actionButtonLabel.text = LocalizationService.Instance.GetTextByKey("AuctionLobby.ENTER");
 			if (starsPrice == 0) {
-				actionButtonLabel.text = "JOIN";
 				starsPanel.gameObject.SetActive (false);
 			} else {
-				actionButtonLabel.text = "ENTER";
 				starsPanel.gameObject.SetActive (true);
-				starsPriceLabel.text = starsPrice.ToString ("N0");
+				starsPriceLabel.text = starsPrice.ToString ("#,0;-#,0;-");
 			}
 		}
 

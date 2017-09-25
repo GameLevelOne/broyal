@@ -1,2 +1,11 @@
 Id,English
+General.LOBBY,LOBBY
+General.SHARE,SHARE
 SignIn.OR,- OR -
+Landing.CURRENT_AUCTION,CURRENT AUCTION
+AuctionLobby.OPEN_BID,Open Bid
+AuctionLobby.NEXT_INCREMENT,Next Increment
+AuctionLobby.MAX_PRICE,Max Price
+AuctionLobby.CLAIM,CLAIM
+AuctionLobby.ENTER,ENTER
+

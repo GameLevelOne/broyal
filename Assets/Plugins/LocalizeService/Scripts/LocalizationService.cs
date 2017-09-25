@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-public class LocalizationService : MonoSingleton<LocalizationService>
+public class LocalizationService : MonoBehaviour
 {
     private const string DefaultLocalizationName = "English";
     public static string LocalizationPath = "Localization/";
@@ -16,6 +16,24 @@ public class LocalizationService : MonoSingleton<LocalizationService>
     private static string _localization = "English";
     private Dictionary<string,string> localizationLibrary;
 
+	//===========================Singleton Coding=======================================================
+	static LocalizationService _instance = null;
+	void Awake() {
+		if (_instance == null) {
+			_instance = this;
+		} else if (_instance!=this) {
+			Destroy (gameObject);			
+		}
+		DontDestroyOnLoad (gameObject);
+		Initialize();
+	}
+	public static LocalizationService Instance {
+		get {
+			return _instance;
+		}
+	}
+	//==================================================================================================
+
     public string Localization
     {
         get { return _localization; }
@@ -27,11 +45,6 @@ public class LocalizationService : MonoSingleton<LocalizationService>
 
 			OnChangeLocalization.SafeInvoke();
         }
-    }
-
-	private void Awake()
-    {
-        Initialize();
     }
 
     #region Localize Logic

@@ -25,7 +25,7 @@ public class DBManager : MonoBehaviour {
 
 	public DBManagerSettings config;
 	string tokenType = null;
-	string accessToken = null;
+	public string accessToken = null;
 
 //===========================Bid Rumble Game=======================================================
 	public void GetBidRumbleRoundDetails(int auctionId, 
@@ -362,7 +362,7 @@ public class DBManager : MonoBehaviour {
 		yield return www;
 		if (www.error == null) {
 			DebugMsg ("","RESULT: \n"+www.text);
-			Debug.Log ("ResponseHeaders: "+www.responseHeaders["content-type"]);
+//			Debug.Log ("ResponseHeaders: "+www.responseHeaders["content-type"]);
 			if (onComplete!=null)
 				onComplete(www.text);
 		} else {

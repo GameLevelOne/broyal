@@ -14,6 +14,7 @@ public class LandingPageManager : BasePage {
 
 	void Start ()
 	{
+		LocalizationService.Instance.Localization = "English";
 		if (FBManager.Instance != null) {
 			if (FBManager.Instance.FBLogin) {
 				Debug.Log ("fb");

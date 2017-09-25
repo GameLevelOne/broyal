@@ -22,7 +22,7 @@ public class PagesIntroOutro : MonoBehaviour {
 				
 	void FinishIntroEvent()
 	{
-		Debug.Log ("Reset Trigger: " + name);
+//		Debug.Log ("Reset Trigger: " + name);
 		anim.ResetTrigger ("Intro");
 		if (OnFinishIntro != null)
 			OnFinishIntro();

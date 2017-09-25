@@ -36,7 +36,7 @@ public class PagesManager : MonoBehaviour {
 	{
 //		pagesStack.Add (page);
 		currentPage.OnFinishOutro -= NextPageIntro;
-		Debug.Log ("PageIntro: "+nextPage.name);
+//		Debug.Log ("PageIntro: "+nextPage.name);
 		nextPage.Activate (true);
 		currentPage = nextPage;
 		if ((IsSmallPage (nextPage)) && (!headerNav.gameObject.activeSelf))
@@ -46,7 +46,7 @@ public class PagesManager : MonoBehaviour {
 	public void CurrentPageOutro(BasePage destinationPage)
 	{
 		nextPage = destinationPage;
-		Debug.Log ("PageOutro: "+currentPage.name);
+//		Debug.Log ("PageOutro: "+currentPage.name);
 		currentPage.Activate (false);
 		currentPage.OnFinishOutro += NextPageIntro;
 		if ((IsSmallPage (currentPage)) && (!IsSmallPage (nextPage)))

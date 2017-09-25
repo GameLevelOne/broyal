@@ -8,6 +8,8 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Mask))]
 [RequireComponent(typeof(ScrollRect))]
 public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler {
+	public delegate void ScrollSnapEvent(Transform child);
+	public event ScrollSnapEvent OnChangePage;
 
     [Tooltip("Set starting page index - starting from 0")]
     public int startingPage = 0;
@@ -309,14 +311,16 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
 
 	private void FinishChangePage()
 	{
-		Debug.Log ("Current Page: "+_currentPage);
+//		Debug.Log ("Current Page: "+_currentPage);
+		if (OnChangePage != null)
+			OnChangePage (_container.GetChild(_currentPage));
 	}
 
-	public void UpdateContainerSize()
+	public void UpdateContainerSize(int cPage = 1)
 	{
 		_pageCount = _container.childCount;
 		SetPagePositions ();
-		SetPage (1);
+		SetPage (cPage);
 	}
 
 	public Transform GetCurrentPage()
