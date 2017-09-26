@@ -22,6 +22,7 @@ public class ColorPairing : MonoBehaviour {
 	float gameTimer = 0f;
 	float gameTimeLimit = 6f;
 
+	Color[] tileColors = new Color[2]{new Color(0.91f,0.29f,0.29f,1),new Color(0.07f,0.71f,0.83f,1)};
 	GameObject[] tileObjects = new GameObject[16];
 	int tileCounter = 0;
 
@@ -89,10 +90,10 @@ public class ColorPairing : MonoBehaviour {
 		int blue = 0;
 		int red = 0;
 		for(int i=0;i<tileObjects.Length;i++){
-			if(tileObjects[i].GetComponent<Image>().color == Color.blue){
+			if(tileObjects[i].GetComponent<Image>().color == tileColors[0]){
 				blue++;
 			} 
-			else if(tileObjects[i].GetComponent<Image>().color == Color.red){
+			else if(tileObjects[i].GetComponent<Image>().color == tileColors[1]){
 				red++;
 			}
 		}
