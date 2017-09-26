@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ColorPairingTile : MonoBehaviour {
 	bool isBlue = false; //blue or red
 
-	public delegate void TileClicked(bool isBlue);
+	public delegate void TileClicked();
 	public static event TileClicked OnTileClicked;
 
 	public void InitTile(bool isBlue){
@@ -20,16 +20,13 @@ public class ColorPairingTile : MonoBehaviour {
 		}
 	}
 
-	public void OnClick(){
+	public void ChangeColor(){
 		Image tileImg = GetComponent<Image>();
-		tileImg.raycastTarget=false;
 		if(tileImg.color == Color.blue){
 			tileImg.color=Color.red;
-			isBlue = false;
 		} else{
 			tileImg.color=Color.blue;
-			isBlue = true;
 		}
-		OnTileClicked(isBlue);
+		OnTileClicked();
 	}
 }
