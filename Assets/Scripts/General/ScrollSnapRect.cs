@@ -318,9 +318,11 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
 
 	public void UpdateContainerSize(int cPage = 1)
 	{
-		_pageCount = _container.childCount;
-		SetPagePositions ();
-		SetPage (cPage);
+		if (_container != null) {
+			_pageCount = _container.childCount;
+			SetPagePositions ();
+			SetPage (cPage);
+		}
 	}
 
 	public Transform GetCurrentPage()

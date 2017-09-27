@@ -13,6 +13,7 @@ public enum AuctionMode
 public class AuctionLobbyManager : BasePage {
 	public Fader fader;
 	public ConnectingPanel connectingPanel;
+	public AuctionCarrouselPopUp carrouselPopUp;
 
 	public AuctionMode auctionMode;
 	public int auctionIndex;
@@ -176,8 +177,10 @@ public class AuctionLobbyManager : BasePage {
 //		panelClaimConfirmation.SetActive(true);
 	}
 
-	public void ClickProductDetail(){
-//		panelProductDetail.SetActive(true);
+	public void ClickImageDetail(int index){
+		carrouselPopUp.imageUrl = rooms [index].imageUrl;
+		Debug.Log ("PopUpIndex: "+index);
+		carrouselPopUp.Activate (true);
 	}
 
 	void OnDestroy()

@@ -74,6 +74,7 @@ public class ImageLoader : MonoBehaviour {
 	public void SetLoading ()
 	{                      
 		loadAnim.SetInteger ("AnimState",(int)ImageLoaderState.LOADING);
+		loadImage.sprite = loadingIcon;
 	}
 
 	IEnumerator LoadFromWWW(string url, bool useCached)
