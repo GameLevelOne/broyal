@@ -14,6 +14,7 @@ public class ColorPairing : MonoBehaviour {
 	int areaSize = 4;
 	int totalBlue = 8;
 	int totalRed = 8;
+	int totalTiles = 16;
 	int counterBlue = 0;
 	int counterRed = 0;
 	bool gameOver = false;
@@ -21,6 +22,7 @@ public class ColorPairing : MonoBehaviour {
 	float gameTimer = 0f;
 	float gameTimeLimit = 6f;
 
+	Color[] tileColors = new Color[2]{new Color(0.91f,0.29f,0.29f,1),new Color(0.07f,0.71f,0.83f,1)};
 	GameObject[] tileObjects = new GameObject[16];
 	int tileCounter = 0;
 
@@ -38,20 +40,14 @@ public class ColorPairing : MonoBehaviour {
 		ColorPairingTile.OnTileClicked -= HandleOnTileClicked;
 	}
 
-	void HandleOnTileClicked (bool isBlue)
+	void HandleOnTileClicked ()
 	{
-		if(counterBlue != totalBlue && counterRed != totalRed){
-			if(isBlue){
-				counterBlue++;
-			}else{
-				counterRed++;
-			}
-			if(counterBlue == totalBlue || counterRed == totalRed){
+		bool result = AllTilesMatched();
+			if(result){
 				gameOver=true;
 				isWinning = true;
 				GameOver();
 			}
-		} 
 	}
 
 	void GenerateTiles ()
@@ -71,8 +67,6 @@ public class ColorPairing : MonoBehaviour {
 	}
 
 	void RandomColor(GameObject obj){
-		Debug.Log("counterBlue:"+counterBlue);
-		Debug.Log("counterRed:"+counterRed);
 		if(counterBlue < 2 && counterRed < 2){
 			if(Random.value <= 0.5f){
 				obj.GetComponent<ColorPairingTile>().InitTile(true);
@@ -89,6 +83,24 @@ public class ColorPairing : MonoBehaviour {
 				obj.GetComponent<ColorPairingTile>().InitTile(true);
 				counterBlue++;
 			}
+		}
+	}
+
+	bool AllTilesMatched(){
+		int blue = 0;
+		int red = 0;
+		for(int i=0;i<tileObjects.Length;i++){
+			if(tileObjects[i].GetComponent<Image>().color == tileColors[0]){
+				blue++;
+			} 
+			else if(tileObjects[i].GetComponent<Image>().color == tileColors[1]){
+				red++;
+			}
+		}
+		if(blue == totalTiles || red == totalTiles){
+			return true;
+		} else{
+			return false;
 		}
 	}
 
