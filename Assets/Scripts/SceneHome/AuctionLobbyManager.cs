@@ -11,7 +11,6 @@ public enum AuctionMode
 }
 
 public class AuctionLobbyManager : BasePage {
-	public Fader fader;
 	public ConnectingPanel connectingPanel;
 	public AuctionCarrouselPopUp carrouselPopUp;
 
