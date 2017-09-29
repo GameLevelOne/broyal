@@ -19,6 +19,7 @@ public class ImageLoader : MonoBehaviour {
 	public Sprite errorIcon;
 	public Sprite loadingIcon;
 	string loadedURL;
+	Sprite currentSprite;
 
 	void Awake () {
 		loadAnim = GetComponent<Animator> ();
@@ -63,6 +64,7 @@ public class ImageLoader : MonoBehaviour {
 			loadedURL = url;
 		} else {
 			loadAnim.SetInteger ("AnimState",(int)ImageLoaderState.LOADED);
+			loadImage.sprite = currentSprite;
 		}
 	}                     
                           
@@ -86,7 +88,8 @@ public class ImageLoader : MonoBehaviour {
 		if (string.IsNullOrEmpty (www.error)) {
 //			Debug.Log ("Success");
 			loadAnim.SetInteger ("AnimState",(int)ImageLoaderState.LOADED);
-			loadImage.sprite = Sprite.Create (www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0, 0));
+			currentSprite = Sprite.Create (www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0, 0));
+			loadImage.sprite = currentSprite;
 			if (!useCached) {
 				string filePath = Application.dataPath;
 				filePath += "/ImageCache/" + Utilities.GetInt64HashCode (url);

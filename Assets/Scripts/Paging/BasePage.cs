@@ -6,7 +6,6 @@ public class BasePage : PagesIntroOutro {
 
 	protected new void OnEnable()
 	{
-		Debug.Log ("Heloooooooooooo");
 		Init ();
 		base.OnEnable ();
 	}

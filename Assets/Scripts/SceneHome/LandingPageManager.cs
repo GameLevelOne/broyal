@@ -14,7 +14,7 @@ public class LandingPageManager : BasePage {
 
 	void Start ()
 	{
-		LocalizationService.Instance.Localization = "English";
+//		LocalizationService.Instance.Localization = "English";
 		if (FBManager.Instance != null) {
 			if (FBManager.Instance.FBLogin) {
 				Debug.Log ("fb");
@@ -42,6 +42,9 @@ public class LandingPageManager : BasePage {
 				JSONNode jsonData = JSON.Parse(response);
 				bidRoyalPic.LoadImageFromUrl(jsonData["bidRoyaleAuction"]["productImage"]);
 				bidRumblePic.LoadImageFromUrl(jsonData["bidRumbleAuction"]["productImage"]);
+
+				GetComponent<Animator>().ResetTrigger ("Intro");
+				GetComponent<Animator>().ResetTrigger ("Outro");
 			},
 			(error) => {
 				connectingPanel.Connecting(false);

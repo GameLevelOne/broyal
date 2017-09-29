@@ -13,6 +13,7 @@ public enum AuctionMode
 public class AuctionLobbyManager : BasePage {
 	public ConnectingPanel connectingPanel;
 	public AuctionCarrouselPopUp carrouselPopUp;
+	public AuctionRoomManager auctionRoomManager;
 
 	public AuctionMode auctionMode;
 	public int auctionIndex;
@@ -52,7 +53,6 @@ public class AuctionLobbyManager : BasePage {
 				connectingPanel.Connecting(false);
 				JSONNode jsonData = JSON.Parse(response);
 				ReturnAllContainer();
-				Debug.Log(response);
 				int totalData = 0;
 				AuctionRoomData data;
 				for (int i=0;i<jsonData["pastAuctions"].Count;i++) {
@@ -72,6 +72,7 @@ public class AuctionLobbyManager : BasePage {
 						0,
 						jsonData["pastAuctions"][i]["claimable"].AsBool
 					);
+					data.actionButton.onClick.RemoveAllListeners();
 					totalData++;
 				}
 
@@ -101,6 +102,8 @@ public class AuctionLobbyManager : BasePage {
 						jsonData["currentAuction"]["enterPrice"].AsInt,
 						jsonData["currentAuction"]["claimable"].AsBool
 					);
+					data.actionButton.onClick.RemoveAllListeners();
+					data.actionButton.onClick.AddListener(()=>{ClickJoin(jsonData["currentAuction"]["auctionId"].AsInt);});
 					totalData++;
 				}
 				for (int i=0;i<jsonData["futureAuctions"].Count;i++) {
@@ -120,6 +123,7 @@ public class AuctionLobbyManager : BasePage {
 						jsonData["futureAuctions"][i]["enterPrice"].AsInt,
 						jsonData["futureAuctions"][i]["claimable"].AsBool
 					);
+					data.actionButton.onClick.RemoveAllListeners();
 					totalData++;
 				}
 
@@ -128,7 +132,7 @@ public class AuctionLobbyManager : BasePage {
 				} else {
 					maxData = end;
 				}
-				Debug.Log("TotalData: "+totalData);
+//				Debug.Log("TotalData: "+totalData);
 				for (int i=totalData;i<rooms.Length;i++)
 				{
 					rooms[i].transform.SetParent(unused);
@@ -163,12 +167,14 @@ public class AuctionLobbyManager : BasePage {
 			LoadData (minData+bufferData,maxData+bufferData);
 		} else {
 			AuctionRoomData data = child.GetComponent<AuctionRoomData> ();
+//			Debug.Log ("masukSiniiii");
 			data.OnRoomShow ();
 		}
 	}
 
-	public void ClickJoin (){
+	public void ClickJoin (int dataAuctionId){
 		auctionIndex = 0;
+		auctionRoomManager.auctionId = dataAuctionId;
 		NextPage ("AUCTIONROOM");
 	}
 

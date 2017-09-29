@@ -3,6 +3,7 @@ General.LOBBY,LOBI
 General.SHARE,BAGI
 General.BACK,KEMBALI
 SignIn.OR,- ATAU -
+Header.GET_PET,DAPATKAN PELIHARAAN
 Landing.CURRENT_AUCTION,LELANG SAAT INI
 AuctionLobby.OPEN_BID,Tawaran Awal
 AuctionLobby.NEXT_INCREMENT,Tawaran Selanjutnya

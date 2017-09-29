@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using SunCubeStudio.Localization;
 
 public class SettingsManager : MonoBehaviour {
 	public GameObject panelLandingPage;
@@ -26,49 +27,34 @@ public class SettingsManager : MonoBehaviour {
 	}
 
 	public void OnClickClose (){
-		panelLandingPage.SetActive(true);
+//		panelLandingPage.SetActive(true);
 		this.gameObject.SetActive(false);
 	}
 
 	public void OnClickNotif (bool optionOn)
 	{
-		if (optionOn) {
-			buttonNotifOn.GetComponent<Image> ().enabled = false;
-			buttonNotifOff.GetComponent<Image> ().enabled = true;
-		} else {
-			buttonNotifOn.GetComponent<Image> ().enabled = true;
-			buttonNotifOff.GetComponent<Image> ().enabled = false;
-		}
+		buttonNotifOn.GetComponent<Image> ().enabled = optionOn;
+		buttonNotifOff.GetComponent<Image> ().enabled = !optionOn;
 	}
 
 	public void OnClickSound (bool optionOn){
-		if (optionOn) {
-			buttonSoundOn.GetComponent<Image> ().enabled = false;
-			buttonSoundOff.GetComponent<Image> ().enabled = true;
-		} else {
-			buttonSoundOn.GetComponent<Image> ().enabled = true;
-			buttonSoundOff.GetComponent<Image> ().enabled = false;
-		}
+		buttonSoundOn.GetComponent<Image> ().enabled = optionOn;
+		buttonSoundOff.GetComponent<Image> ().enabled = !optionOn;
 	}
 
 	public void OnClickLanguage (bool optionEN){
+		buttonLangEN.GetComponent<Image> ().enabled = optionEN;
+		buttonLangID.GetComponent<Image> ().enabled = !optionEN;
 		if (optionEN) {
-			buttonLangEN.GetComponent<Image> ().enabled = false;
-			buttonLangID.GetComponent<Image> ().enabled = true;
+			LocalizationService.Instance.Localization = "English";
 		} else {
-			buttonLangEN.GetComponent<Image> ().enabled = true;
-			buttonLangID.GetComponent<Image> ().enabled = false;
+			LocalizationService.Instance.Localization = "Bahasa";
 		}
 	}
 
 	public void OnClickSubscribe (bool optionSubscribe){
-		if (optionSubscribe) {
-			buttonSubscribe.GetComponent<Image> ().enabled = false;
-			buttonUnsubscribe.GetComponent<Image> ().enabled = true;
-		} else {
-			buttonSubscribe.GetComponent<Image> ().enabled = true;
-			buttonUnsubscribe.GetComponent<Image> ().enabled = false;
-		}
+		buttonSubscribe.GetComponent<Image> ().enabled = optionSubscribe;
+		buttonUnsubscribe.GetComponent<Image> ().enabled = !optionSubscribe;
 	}
 
 	public void OnClickPrivacyPolicy(){

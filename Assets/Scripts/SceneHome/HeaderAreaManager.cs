@@ -73,7 +73,7 @@ public class HeaderAreaManager : MonoBehaviour {
 	}
 
 	public void OnClickSettings(){
-		navigationBar.CloseCurrentActivePanel();
+//		navigationBar.CloseCurrentActivePanel();
 		panelSettings.SetActive(true);
 	}
 
