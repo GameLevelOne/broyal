@@ -10,6 +10,7 @@ public class PagesManager : MonoBehaviour {
 
 //	public List<BasePage> pagesStack;
 	public PagesIntroOutro headerNav;
+	public NavigationBarManager navigationBar;
 	BasePage nextPage;
 	BasePage currentPage;
 
@@ -45,12 +46,15 @@ public class PagesManager : MonoBehaviour {
 
 	public void CurrentPageOutro(BasePage destinationPage)
 	{
-		nextPage = destinationPage;
+		if (currentPage.IsIdle ()) {
+			nextPage = destinationPage;
 //		Debug.Log ("PageOutro: "+currentPage.name);
-		currentPage.Activate (false);
-		currentPage.OnFinishOutro += NextPageIntro;
-		if ((IsSmallPage (currentPage)) && (!IsSmallPage (nextPage)))
-			headerNav.Activate (false);
+			currentPage.Activate (false);
+			currentPage.OnFinishOutro += NextPageIntro;
+			navigationBar.CheckHighlightBox (nextPage);
+			if ((IsSmallPage (currentPage)) && (!IsSmallPage (nextPage)))
+				headerNav.Activate (false);
+		}
 	}
 		
 	public BasePage GetPagesByName(string nextPage)

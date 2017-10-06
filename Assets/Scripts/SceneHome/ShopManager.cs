@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopManager : MonoBehaviour {
+public class ShopManager : BasePage {
 	public GameObject panelPetDescription;
 	public GameObject panelPetNaming;
 
@@ -13,13 +13,13 @@ public class ShopManager : MonoBehaviour {
 	float elapsedTime = 0f;
 	float time = 2f;
 
-	void OnEnable (){
-		NumberCountUpEffect.OnCountUpFinished += OnCountFinished;
-	}
-
-	void OnDisable(){
-		NumberCountUpEffect.OnCountUpFinished -= OnCountFinished;
-	}
+//	void OnEnable (){
+//		NumberCountUpEffect.OnCountUpFinished += OnCountFinished;
+//	}
+//
+//	void OnDisable(){
+//		NumberCountUpEffect.OnCountUpFinished -= OnCountFinished;
+//	}
 
 	public void OnClickPetDesc(){
 		panelPetDescription.SetActive(true);

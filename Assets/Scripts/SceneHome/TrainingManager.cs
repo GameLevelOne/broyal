@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TrainingManager : MonoBehaviour {
+public class TrainingManager : BasePage {
 	public LoadingProgress panelLoadingBar;
 
 	public GameObject panelTypeTheCode;

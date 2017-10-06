@@ -48,8 +48,8 @@ public class ProfilesManager : MonoBehaviour {
 	}
 
 	public void OnClickBack(){
-		navigationBar.CloseCurrentActivePanel();
-		navigationBar.BackToHome();
+//		navigationBar.CloseCurrentActivePanel();
+//		navigationBar.BackToHome();
 		panelLandingPage.SetActive(true);
 		this.gameObject.SetActive(false);
 	}

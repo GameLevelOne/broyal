@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WinnersManager : MonoBehaviour {
+public class WinnersManager : BasePage {
 	public Transform buttonHighlight;
 
 	float buttonRumbleXPos = -156f;

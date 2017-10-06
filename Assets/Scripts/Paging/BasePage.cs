@@ -21,6 +21,13 @@ public class BasePage : PagesIntroOutro {
 			PagesManager.instance.CurrentPageOutro (futurePage);
 	}
 
+	public bool IsIdle()
+	{
+		Animator anim = GetComponent<Animator>();
+		bool idle = anim.GetCurrentAnimatorStateInfo (0).IsName ("Idle");
+		return idle;
+	}
+
 //	public void BackPage()
 //	{
 //		PagesManager.instance.BackToPrevPage ();

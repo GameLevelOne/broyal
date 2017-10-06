@@ -59,14 +59,14 @@ public class HeaderAreaManager : MonoBehaviour {
 	}
 
 	public void OnClickUserProfile(){
-		navigationBar.CloseCurrentActivePanel();
+//		navigationBar.CloseCurrentActivePanel();
 		panelParentProfile.SetActive(true);
 		panelUserProfile.SetActive(true);
 		panelPetProfile.SetActive(false);
 	}
 
 	public void OnClickPetProfile(){
-		navigationBar.CloseCurrentActivePanel();
+//		navigationBar.CloseCurrentActivePanel();
 		panelParentProfile.SetActive(true);
 		panelPetProfile.SetActive(true);
 		panelUserProfile.SetActive(false);
