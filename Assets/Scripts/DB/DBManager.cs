@@ -192,7 +192,7 @@ public class DBManager : MonoBehaviour {
 		string url = config.restURL + config.createTopUp;
 		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
-			"\"stars\":\""+stars+"\"\n"+
+			"\"stars\":"+stars+"\n"+
 			"}";
 
 		DebugMsg ("CREATE TOP UP Request","\nurl = "+url+"\ndata = "+jsondata);
@@ -367,9 +367,10 @@ public class DBManager : MonoBehaviour {
 			if (onComplete!=null)
 				onComplete(www.text);
 		} else {
-			DebugError ("ERROR: "+www.error);
-			if (onError!=null)
-				onError(www.text);
+			DebugError ("ERROR: "+www.error, www.text);
+			if (onError != null) {
+				onError (www.error+"|"+www.text);
+			}
 		}
 	}
 

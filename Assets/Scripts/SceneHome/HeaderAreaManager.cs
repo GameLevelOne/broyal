@@ -14,9 +14,10 @@ public class HeaderAreaManager : MonoBehaviour {
 	public Text userStarsLabel;
 	public RectTransform starsHLG;
 	public int userStars;
-	public Text petExp;
+	public ImageLoader petImage;
 	public Text petName;
 	public Text petRank;
+	public Text petExp;
 	public Button petTrainButton;
 	public Text petTrainLabel;
 	int trainCountDown;
@@ -28,14 +29,22 @@ public class HeaderAreaManager : MonoBehaviour {
 		GetUserStars();
 		GetPetProfile();
 	}
-		
+
+	public void SetStars(int amount) {
+		if (amount < 1) {
+			userStarsLabel.text = "-";
+		} else {
+			userStars = amount;
+			userStarsLabel.text = userStars.ToString ("N0");
+		}
+	}
+
 	void GetUserStars() {
-		userStarsLabel.text = "-";
+		SetStars(-1);
 		DBManager.API.GetUserStars(
 			(response)=>{
 				JSONNode jsonData = JSON.Parse(response);
-				userStars = jsonData["availableStars"].AsInt;
-				userStarsLabel.text = userStars.ToString ("N0");
+				SetStars(jsonData["availableStars"].AsInt);
 				LayoutRebuilder.ForceRebuildLayoutImmediate(starsHLG);
 			},
 			(error)=>{
@@ -48,7 +57,7 @@ public class HeaderAreaManager : MonoBehaviour {
 		GetUserStars ();
 	}
 
-	void GetPetProfile() {
+	public void GetPetProfile() {
 		headerWithPet.SetActive (false);
 		headerNoPet.SetActive (false);
 		headerPetLoading.SetActive (true);
@@ -70,11 +79,11 @@ public class HeaderAreaManager : MonoBehaviour {
 						jsonData["petExp"].AsInt,
 						jsonData["petNextRankExp"].AsInt
 					);
-
 					headerWithPet.SetActive (true);
 					headerNoPet.SetActive (false);
 					headerPetLoading.SetActive (false);
-					petTrainButton.enabled = false;
+					UpdatePetData();
+					petTrainButton.interactable = false;
 					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
 					GetTrainingTime();
 				}
@@ -95,19 +104,14 @@ public class HeaderAreaManager : MonoBehaviour {
 			(response) => {
 				JSONNode jsonData = JSON.Parse(response);
 				trainCountDown = jsonData["remainingSeconds"];
-				if (trainCountDown>0) {
-					petTrainButton.enabled = false;
-					petTrainLabel.text = Utilities.SecondsToMinutes(trainCountDown);
-					StartCoroutine(TrainCountDown());
-				} else if (trainCountDown<0) {
-					petTrainButton.enabled = true;
-					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.CLAIM");
-				} else {
-					petTrainButton.enabled = true;
-					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
-				}
+				CheckTrainCountDown();
 			}, 
 			(error) => {
+				string errorNum = error.Split('|')[0].Trim();
+				if (errorNum=="400") {
+					petTrainButton.interactable = true;
+					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
+				}
 			}
 		);
 	}
@@ -118,7 +122,7 @@ public class HeaderAreaManager : MonoBehaviour {
 			petTrainLabel.text = Utilities.SecondsToMinutes(trainCountDown);
 			yield return new WaitForSeconds (1);
 		}
-		petTrainButton.enabled = true;
+		petTrainButton.interactable = true;
 		petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.CLAIM");
 	}
 
@@ -132,14 +136,53 @@ public class HeaderAreaManager : MonoBehaviour {
 	}
 
 	public void TrainClicked() {
-		petTrainButton.enabled = false;
+		petTrainButton.interactable = false;
 		if (petTrainLabel.text == LocalizationService.Instance.GetTextByKey ("Header.TRAIN")) {
+			DBManager.API.StartTrainingTime (
+				(response) => {
+					JSONNode jsonData = JSON.Parse(response);
+					trainCountDown = jsonData["remainingSeconds"];
+					CheckTrainCountDown();
+				}, 
+				(error) => {
+				}
+			);
+
 		} else {
+			DBManager.API.ClaimPetTrainExp (
+				(response) => {
+					GetPetProfile();
+				}, 
+				(error) => {
+				}
+			);
+		}
+	}
+
+	void CheckTrainCountDown() {
+		if (trainCountDown>0) {
+			petTrainButton.interactable = false;
+			petTrainLabel.text = Utilities.SecondsToMinutes(trainCountDown);
+			StartCoroutine(TrainCountDown());
+		} 
+		else if (trainCountDown<0) {
+			petTrainButton.interactable = true;
+			petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.CLAIM");
+		} else {
+			petTrainButton.interactable = true;
+			petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
 		}
 	}
 
 	public void GetPetClicked() {
 		BasePage futurePage = PagesManager.instance.GetPagesByName("SHOP");
 		PagesManager.instance.CurrentPageOutro (futurePage);
+	}
+
+	void UpdatePetData()
+	{
+		petImage.LoadImageFromUrl (petData.imageUrl);
+		petName.text = petData.name;
+		petExp.text = "EXP. " + petData.exp.ToString ("N0") + " / " + petData.nextRankExp.ToString ("N0");
 	}
 }

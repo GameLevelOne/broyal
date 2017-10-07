@@ -59,7 +59,7 @@ public class ImageLoader : MonoBehaviour {
 				wwwFilePath = url;
 			}       
                 
-			Debug.Log ("Image LoadFrom: " + wwwFilePath);
+//			Debug.Log ("Image LoadFrom: " + wwwFilePath);
 			StartCoroutine (LoadFromWWW (wwwFilePath, useCached));
 			loadedURL = url;
 		} else {

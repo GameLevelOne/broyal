@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Security.Cryptography;
+using UnityEngine;
 
 namespace BidRoyale.Core
 {
@@ -30,8 +31,19 @@ namespace BidRoyale.Core
 
 		public static string SecondsToMinutes(int sec) {
 			int mins = sec / 60;
+			int hours = mins / 60;
 			int secs = sec % 60;
-			return mins.ToString ("N2") + ":" + secs.ToString ("N2");
+			if (hours > 0) {
+				return hours.ToString ("00") + "h";
+			} else {
+				return mins.ToString ("00") + ":" + secs.ToString ("00");
+			}
+		}
+		public static void ClearChildren(Transform parent) {
+			int childCount = parent.childCount;
+			for (int i = 0; i < childCount; i++) {
+				GameObject.Destroy(parent.GetChild (0).gameObject);
+			}
 		}
 
 	}
