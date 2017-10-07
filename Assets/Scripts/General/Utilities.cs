@@ -27,5 +27,13 @@ namespace BidRoyale.Core
 			}
 			return (hashCode);
 		}        
+
+		public static string SecondsToMinutes(int sec) {
+			int mins = sec / 60;
+			int secs = sec % 60;
+			return mins.ToString ("N2") + ":" + secs.ToString ("N2");
+		}
+
 	}
+
 }

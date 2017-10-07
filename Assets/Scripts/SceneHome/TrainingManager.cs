@@ -13,20 +13,21 @@ public class TrainingManager : BasePage {
 	public NumberCountUpEffect textPetExp;
 
 	public void OnClickOpenTrainingPanel(int type){
-		if (type == (int)TrainingType.TypeTheCode) {
-			//panelTypeTheCode.SetActive(true);
-			PlayerData.Instance.CurrentTrainingType = TrainingType.TypeTheCode;
-		} else if(type == (int)TrainingType.MemoryGame){
-			//panelMemoryGame.SetActive(true);
-			PlayerData.Instance.CurrentTrainingType = TrainingType.MemoryGame;
-		} else if(type == (int)TrainingType.ColorPairing){
-			//panelColorPairing.SetActive(true);
-			PlayerData.Instance.CurrentTrainingType = TrainingType.ColorPairing;
-		} else if(type == (int)TrainingType.Sequence){
-			//panelSequence.SetActive(true);
-			PlayerData.Instance.CurrentTrainingType = TrainingType.Sequence;
-		}
-		PlayerData.Instance.CurrentGameType = GameType.Training;
+//		if (type == (int)TrainingType.TypeTheCode) {
+//			//panelTypeTheCode.SetActive(true);
+//			PlayerData.Instance.CurrentTrainingType = TrainingType.TypeTheCode;
+//		} else if(type == (int)TrainingType.MemoryGame){
+//			//panelMemoryGame.SetActive(true);
+//			PlayerData.Instance.CurrentTrainingType = TrainingType.MemoryGame;
+//		} else if(type == (int)TrainingType.ColorPairing){
+//			//panelColorPairing.SetActive(true);
+//			PlayerData.Instance.CurrentTrainingType = TrainingType.ColorPairing;
+//		} else if(type == (int)TrainingType.Sequence){
+//			//panelSequence.SetActive(true);
+//			PlayerData.Instance.CurrentTrainingType = TrainingType.Sequence;
+//		}
+		PlayerPrefs.SetInt("RumbleGame",type);
+		PlayerPrefs.SetInt("GameMode",(int)GameMode.TRAINING);
 		panelLoadingBar.gameObject.SetActive(true);
 		panelLoadingBar.ChangeScene("SceneGame");
 	}
@@ -37,24 +38,24 @@ public class TrainingManager : BasePage {
 	{
 		//TODO: adjust exp with the actual values
 
-		int currExp = PlayerData.Instance.PetExp;
+		int currExp = 0;
 		int rewardExp = 0; 
 
-		if (type == (int)TrainingType.TypeTheCode) {
+		if (type == (int)RumbleGame.TYPETHECODE) {
 			panelTypeTheCode.SetActive(false);
 			rewardExp = 100;
-		} else if(type == (int)TrainingType.MemoryGame){
+		} else if(type == (int)RumbleGame.MEMORYGAME){
 			panelMemoryGame.SetActive(false);
 			rewardExp = 200;
-		} else if(type == (int)TrainingType.ColorPairing){
+		} else if(type == (int)RumbleGame.COLORPAIRING){
 			panelColorPairing.SetActive(false);
 			rewardExp = 100;
-		} else if(type == (int)TrainingType.Sequence){
+		} else if(type == (int)RumbleGame.SEQUENCE){
 			panelSequence.SetActive(false);
 			rewardExp = 200;
 		}
 		int totalExp = currExp + rewardExp;
-		PlayerData.Instance.PetExp = totalExp;
+//		PlayerData.Instance.PetExp = totalExp;
 		textPetExp.DoAnimCountUp(currExp,totalExp);
 	}
 

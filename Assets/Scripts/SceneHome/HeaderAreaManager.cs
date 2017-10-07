@@ -3,128 +3,143 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
+using BidRoyale.Core;
 
 public class HeaderAreaManager : MonoBehaviour {
-	public NavigationBarManager navigationBar;
-
+	public GameObject headerPetLoading;
 	public GameObject headerWithPet;
 	public GameObject headerNoPet;
 
-	public GameObject panelLandingPage;
-	public GameObject panelParentProfile;
-	public GameObject panelUserProfile;
-	public GameObject panelPetProfile;
-	public GameObject panelSettings;
-	public GameObject panelPetLevelUpPopup;
-	public Text usernameText;
-	public Text usernameProfileDisplay;
-	public Text userStars;
-	public Text petCurrExp;
+	public Text usernameLabel;
+	public Text userStarsLabel;
+	public RectTransform starsHLG;
+	public int userStars;
+	public Text petExp;
 	public Text petName;
+	public Text petRank;
+	public Button petTrainButton;
+	public Text petTrainLabel;
+	int trainCountDown;
 
-	bool hasPet = false;
-
-	int maxExp = 1000; //temp
-
-	void Start(){
-		headerWithPet.SetActive (false);
-		headerNoPet.SetActive (false);
-		GetCurrentUserProfile();
-		GetCurrentUserPetProfile();
-	}
+	public PetData petData;
 
 	void OnEnable(){
-		NumberCountUpEffect.OnCountUpFinished += OnCountFinished;
+		usernameLabel.text = DBManager.API.username;
+		GetUserStars();
+		GetPetProfile();
 	}
-
-	void OnDisable(){
-		NumberCountUpEffect.OnCountUpFinished -= OnCountFinished;
-	}
-
-	void OnCountFinished ()
-	{
-		CheckPetLevelUp();
-	}
-
-	void CheckPetLevelUp(){
-		int currExp = PlayerData.Instance.PetExp;
-
-		if(currExp >= 1000){
-			//pet level up
-			panelPetLevelUpPopup.SetActive(true);
-			panelPetLevelUpPopup.transform.GetChild(1).GetComponent<Text>().text = 
-			"Congratulations! "+PlayerData.Instance.PetName+ " has leveled up!";
-			petCurrExp.text = "0";
-		}
-	}
-
-	public void OnClickUserProfile(){
-//		navigationBar.CloseCurrentActivePanel();
-		panelParentProfile.SetActive(true);
-		panelUserProfile.SetActive(true);
-		panelPetProfile.SetActive(false);
-	}
-
-	public void OnClickPetProfile(){
-//		navigationBar.CloseCurrentActivePanel();
-		panelParentProfile.SetActive(true);
-		panelPetProfile.SetActive(true);
-		panelUserProfile.SetActive(false);
-	}
-
-	public void OnClickSettings(){
-//		navigationBar.CloseCurrentActivePanel();
-		panelSettings.SetActive(true);
-	}
-
-	void GetCurrentUserProfile(){
-		DBManager.API.GetUserProfile(
-		(response)=>{
-			JSONNode jsonData = JSON.Parse(response);
-			PlayerData.Instance.Email = jsonData["email"];
-			PlayerData.Instance.Gender = jsonData["gender"];
-			PlayerData.Instance.PhoneNum = jsonData["phoneNumber"];
-			PlayerData.Instance.StarsSpent = jsonData["starsSpent"];
-			PlayerData.Instance.AvailableStars = jsonData["availableStars"];
-			PlayerData.Instance.ProfilePic = jsonData["profilePicture"];
-			UpdateDisplay();
-		},
-		(error)=>{
-			Debug.Log("ERROR");
-		}
+		
+	void GetUserStars() {
+		userStarsLabel.text = "-";
+		DBManager.API.GetUserStars(
+			(response)=>{
+				JSONNode jsonData = JSON.Parse(response);
+				userStars = jsonData["availableStars"].AsInt;
+				userStarsLabel.text = userStars.ToString ("N0");
+				LayoutRebuilder.ForceRebuildLayoutImmediate(starsHLG);
+			},
+			(error)=>{
+				UserStarsError();
+			}
 		);
 	}
 
-	void GetCurrentUserPetProfile(){
+	void UserStarsError() {
+		GetUserStars ();
+	}
+
+	void GetPetProfile() {
+		headerWithPet.SetActive (false);
+		headerNoPet.SetActive (false);
+		headerPetLoading.SetActive (true);
 		DBManager.API.GetUserPetProfile(
 			(response)=>{
 				JSONNode jsonData = JSON.Parse(response);
 				string msg = jsonData["message"];
 				if(!string.IsNullOrEmpty(msg)){
-					hasPet=false;
+					petData = null;
+					headerWithPet.SetActive (false);
+					headerNoPet.SetActive (true);
+					headerPetLoading.SetActive (false);
 				} else{
-					PlayerData.Instance.PetName = jsonData["petName"];
+					petData = new PetData();
 
+					petData.InitHeader(jsonData["petName"],
+						jsonData["petModelImage"],
+						jsonData["petRank"],
+						jsonData["petExp"].AsInt,
+						jsonData["petNextRankExp"].AsInt
+					);
+
+					headerWithPet.SetActive (true);
+					headerNoPet.SetActive (false);
+					headerPetLoading.SetActive (false);
+					petTrainButton.enabled = false;
+					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
+					GetTrainingTime();
 				}
 
-				UpdateDisplay();
 			},
 			(error)=>{
-				Debug.Log("ERROR");
+				PetProfileError();
+			}
+		);
+	}		
+
+	void PetProfileError() {
+		GetPetProfile ();
+	}
+
+	void GetTrainingTime() {
+		DBManager.API.CheckTrainingTime (
+			(response) => {
+				JSONNode jsonData = JSON.Parse(response);
+				trainCountDown = jsonData["remainingSeconds"];
+				if (trainCountDown>0) {
+					petTrainButton.enabled = false;
+					petTrainLabel.text = Utilities.SecondsToMinutes(trainCountDown);
+					StartCoroutine(TrainCountDown());
+				} else if (trainCountDown<0) {
+					petTrainButton.enabled = true;
+					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.CLAIM");
+				} else {
+					petTrainButton.enabled = true;
+					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
+				}
+			}, 
+			(error) => {
 			}
 		);
 	}
 
-	void UpdateDisplay ()
+	IEnumerator TrainCountDown()
 	{
-		usernameText.text = usernameProfileDisplay.text = PlayerData.Instance.Username;
-		userStars.text = PlayerData.Instance.AvailableStars.ToString ();
-		if (hasPet) {
-			petCurrExp.text = PlayerData.Instance.PetExp.ToString ();
-			petName.text = PlayerData.Instance.PetName;
-			headerWithPet.SetActive(true);
-		} else{
-			headerNoPet.SetActive(true);
+		while (trainCountDown > 0) {
+			petTrainLabel.text = Utilities.SecondsToMinutes(trainCountDown);
+			yield return new WaitForSeconds (1);
 		}
+		petTrainButton.enabled = true;
+		petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.CLAIM");
+	}
+
+	public void ProfileClicked(int profileType) {
+	}
+
+	public void SettingsClicked() {
+		SettingsManager futurePage = (SettingsManager) PagesManager.instance.GetPagesByName("SETTINGS");
+		futurePage.prevPage = PagesManager.instance.GetCurrentPage ();
+		PagesManager.instance.CurrentPageOutro (futurePage);
+	}
+
+	public void TrainClicked() {
+		petTrainButton.enabled = false;
+		if (petTrainLabel.text == LocalizationService.Instance.GetTextByKey ("Header.TRAIN")) {
+		} else {
+		}
+	}
+
+	public void GetPetClicked() {
+		BasePage futurePage = PagesManager.instance.GetPagesByName("SHOP");
+		PagesManager.instance.CurrentPageOutro (futurePage);
 	}
 }

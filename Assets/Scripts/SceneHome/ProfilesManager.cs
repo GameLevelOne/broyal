@@ -192,7 +192,7 @@ public class ProfilesManager : MonoBehaviour {
 			(response)=>{
 				Debug.Log("username changed successfully");
 				panelEditUsername.SetActive(false);
-				PlayerData.Instance.Username = username;
+				DBManager.API.username = username;
 				ChangeEditProfileDisplay();
 			},
 			(error)=>{
@@ -222,8 +222,8 @@ public class ProfilesManager : MonoBehaviour {
 	}
 
 	void ChangeEditProfileDisplay(){
-		fieldUsername.text = PlayerData.Instance.Username;
-		fieldEmail.text = PlayerData.Instance.Email;
-		fieldPhone.text = PlayerData.Instance.PhoneNum;
+//		fieldUsername.text = PlayerData.Instance.Username;
+//		fieldEmail.text = PlayerData.Instance.Email;
+//		fieldPhone.text = PlayerData.Instance.PhoneNum;
 	}
 }

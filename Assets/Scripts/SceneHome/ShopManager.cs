@@ -39,14 +39,14 @@ public class ShopManager : BasePage {
 	}
 
 	public void OnClickBuyStars(int amount){ //temporary
-		int currValue = PlayerData.Instance.AvailableStars;
+		int currValue = 0;
 		int targetValue = currValue + amount;
 
 		StartCoroutine(ScaleUpDownStar(true));
 		textStarAmount.DoAnimCountUp(currValue,targetValue);
 
-		PlayerData.Instance.StarsSpent += amount;
-		PlayerData.Instance.AvailableStars = targetValue;
+//		PlayerData.Instance.StarsSpent += amount;
+//		PlayerData.Instance.AvailableStars = targetValue;
 	}
 
 	IEnumerator ScaleUpDownStar (bool scaleUp)

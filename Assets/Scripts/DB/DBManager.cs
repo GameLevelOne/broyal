@@ -24,8 +24,9 @@ public class DBManager : MonoBehaviour {
 
 
 	public DBManagerSettings config;
+	public string username = null;
 	string tokenType = null;
-	public string accessToken = null;
+	string accessToken = null;
 
 //===========================Bid Rumble Game=======================================================
 	public void GetBidRumbleRoundDetails(int auctionId, 

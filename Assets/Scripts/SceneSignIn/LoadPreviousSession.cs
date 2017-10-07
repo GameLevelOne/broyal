@@ -46,8 +46,7 @@ public class LoadPreviousSession : MonoBehaviour {
 	void DoLogin(string signInUsername,string signInPassword){
 		DBManager.API.UserLogin(signInUsername,signInPassword,
 			(response)=>{
-				PlayerData.Instance.Username = signInUsername;
-				PlayerData.Instance.Password = signInPassword;
+				DBManager.API.username = signInUsername;
 				LoginResult(true);
 			},
 			(error)=>{

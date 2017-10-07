@@ -105,8 +105,7 @@ public class SignInManager : MonoBehaviour {
 	void DoLogin(){
 		DBManager.API.UserLogin(signInUsername,signInPassword,
 			(response)=>{
-				PlayerData.Instance.Username = signInUsername;
-				PlayerData.Instance.Password = signInPassword;
+				DBManager.API.username = signInUsername;
 				nextPanel = PanelsFromSignIn.Game;
 				fader.FadeOut();
 			},

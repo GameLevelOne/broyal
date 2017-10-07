@@ -15,15 +15,15 @@ public class PanelTrainingReady : MonoBehaviour {
 	}
 
 	void CheckTrainingType(){
-		TrainingType type = PlayerData.Instance.CurrentTrainingType;
+		RumbleGame type = (RumbleGame) PlayerPrefs.GetInt ("RumbleGame",0);;
 
-		if(type == TrainingType.TypeTheCode){
+		if(type == RumbleGame.TYPETHECODE){
 			panelTypeTheCode.SetActive(true);
-		} else if(type == TrainingType.MemoryGame){
+		} else if(type == RumbleGame.MEMORYGAME){
 			panelMemoryGame.SetActive(true);
-		} else if(type == TrainingType.ColorPairing){
+		} else if(type == RumbleGame.COLORPAIRING){
 			panelColorPairing.SetActive(true);
-		} else if(type == TrainingType.Sequence){
+		} else if(type == RumbleGame.SEQUENCE){
 			panelSequence.SetActive(true);
 		}
 	}

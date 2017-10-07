@@ -4,6 +4,8 @@ General.SHARE,SHARE
 General.BACK,BACK
 SignIn.OR,- OR -
 Header.GET_PET,GET PET
+Header.TRAIN,TRAIN
+Header.CLAIM,CLAIM
 Navigation.WINNER,WINNER
 Navigation.NEWS,NEWS
 Navigation.HOME,HOME

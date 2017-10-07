@@ -80,12 +80,12 @@ public class PagesManager : MonoBehaviour {
 		else
 			return false;
 	}
+		
+	public BasePage GetCurrentPage()
+	{
+		return currentPage;
+	}
 
-//	public BasePage GetCurrentPage()
-//	{
-//		return pagesStack [pagesStack.Count - 1];
-//	}
-//
 //	public void BackToPrevPage()
 //	{
 //		if (pagesStack.Count > 1) {

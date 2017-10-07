@@ -14,7 +14,9 @@ enum ImageLoaderState {
 
 public class ImageLoader : MonoBehaviour {
 
+	[SerializeField]
 	Animator loadAnim;
+	[SerializeField]
 	Image loadImage;
 	public Sprite errorIcon;
 	public Sprite loadingIcon;
@@ -22,8 +24,6 @@ public class ImageLoader : MonoBehaviour {
 	Sprite currentSprite;
 
 	void Awake () {
-		loadAnim = GetComponent<Animator> ();
-		loadImage = GetComponent<Image> ();
 		loadedURL = "";
 
 		string dirPath = Application.dataPath + "/ImageCache/";

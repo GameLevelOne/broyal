@@ -6,7 +6,6 @@ using SimpleJSON;
 
 public class LandingPageManager : BasePage {
 	public Fader fader;
-	public ConnectingPanel connectingPanel;
 	public AuctionLobbyManager auctionLobby;
 	public GameObject panelCompleteProfile;
 	public ImageLoader bidRoyalPic;
@@ -21,7 +20,6 @@ public class LandingPageManager : BasePage {
 				panelCompleteProfile.SetActive (true);
 			}
 		}
-
 		fader.FadeIn ();
 		fader.OnFadeInFinished += OnFadeInFinished;
 	}
@@ -35,10 +33,10 @@ public class LandingPageManager : BasePage {
 	protected override void Init ()
 	{
 		base.Init ();
-		connectingPanel.Connecting (true);
+		bidRoyalPic.SetLoading();
+		bidRumblePic.SetLoading();
 		DBManager.API.GetLandingAuctionData (
 			(response) => {
-				connectingPanel.Connecting(false);
 				JSONNode jsonData = JSON.Parse(response);
 				bidRoyalPic.LoadImageFromUrl(jsonData["bidRoyaleAuction"]["productImage"]);
 				bidRumblePic.LoadImageFromUrl(jsonData["bidRumbleAuction"]["productImage"]);
@@ -47,7 +45,6 @@ public class LandingPageManager : BasePage {
 				GetComponent<Animator>().ResetTrigger ("Outro");
 			},
 			(error) => {
-				connectingPanel.Connecting(false);
 				bidRoyalPic.SetError();
 				bidRumblePic.SetError();
 			}

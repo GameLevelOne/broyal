@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using SunCubeStudio.Localization;
 
-public class SettingsManager : MonoBehaviour {
+public class SettingsManager : BasePage {
 	public GameObject panelLandingPage;
 	public GameObject buttonNotifOn;
 	public GameObject buttonNotifOff;
@@ -14,21 +14,19 @@ public class SettingsManager : MonoBehaviour {
 	public GameObject buttonLangID;
 	public GameObject buttonSubscribe;
 	public GameObject buttonUnsubscribe;
+	public BasePage prevPage;
 
-	void OnEnable (){
-		TempInit();
-	}
-
-	void TempInit (){
+	protected override void Init (){
+		base.Init ();
 		OnClickNotif(true);
 		OnClickSound(true);
-		OnClickLanguage(true);
+		OnClickLanguage(LocalizationService.Instance.Localization == "English");
 		OnClickSubscribe(true);
 	}
 
 	public void OnClickClose (){
 //		panelLandingPage.SetActive(true);
-		this.gameObject.SetActive(false);
+		PagesManager.instance.CurrentPageOutro(prevPage);
 	}
 
 	public void OnClickNotif (bool optionOn)

@@ -2,6 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum GameMode{
+	TRAINING,
+	BIDROYALE,
+	BIDRUMBLE,
+}
+
+public enum RumbleGame{
+	TYPETHECODE,
+	MEMORYGAME,
+	COLORPAIRING,
+	SEQUENCE
+}
+
 public class SceneGameManager : MonoBehaviour {
 	public GameObject panelGameReady;
 	public GameObject panelTrainingReady;
@@ -11,13 +24,14 @@ public class SceneGameManager : MonoBehaviour {
 	}
 
 	void CheckGameType(){
-		if(PlayerData.Instance.CurrentGameType == GameType.BidRoyale){
+		GameMode mode = (GameMode) PlayerPrefs.GetInt ("GameMode",0);
+		if(mode == GameMode.BIDROYALE){
 			panelGameReady.SetActive(true);
 			panelTrainingReady.SetActive(false);
-		} else if(PlayerData.Instance.CurrentGameType == GameType.BidRumble){
+		} else if(mode == GameMode.BIDRUMBLE){
 			panelGameReady.SetActive(true); //temp
 			panelTrainingReady.SetActive(false);
-		} else if(PlayerData.Instance.CurrentGameType == GameType.Training){
+		} else if(mode == GameMode.TRAINING){
 			panelTrainingReady.SetActive(true);
 			panelGameReady.SetActive(false);
 		}
