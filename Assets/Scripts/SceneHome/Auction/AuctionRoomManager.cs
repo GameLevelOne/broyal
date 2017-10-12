@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
+using BidRoyale.Core;
 
 public class AuctionRoomManager : BasePage {
 	public Fader fader;
@@ -21,13 +22,15 @@ public class AuctionRoomManager : BasePage {
 	public string productWeight;
 	public string productDescription;
 	public int numberBidders;
-	public long timeToNextIncrement;
+	public int timeToNextCycle;
 
 	public Animator roomAnimator;
 	public Text auctionIdRoomlabel;
 	public ImageLoader roomImage;
 	public GameObject biddersLayer;
 	public Text numberBiddersLabel;
+	public GameObject countDownLayer;
+	public Text countDownLabel;
 	public Animator countDownAnim;
 	public Text productNameLabel;
 	public Text currentPriceLabel;
@@ -39,6 +42,7 @@ public class AuctionRoomManager : BasePage {
 	public Text detailsDataLabel;
 	public Text detailsDescriptionLabel;
 	public Image bannerImage;
+	public Button bidButton;
 
 	void Start()
 	{
@@ -71,14 +75,15 @@ public class AuctionRoomManager : BasePage {
 				currentPrice = jsonData["openBid"].AsInt;
 				nextIncrement = jsonData["nextIncrement"].AsInt;
 				maxPrice = jsonData["maxPrice"].AsInt;
-				productCategory = jsonData["category"];
+				productCategory = jsonData["productCategory"];
 				productLength = jsonData["length"].AsInt;
 				productWidth = jsonData["width"].AsInt;
 				productHeight = jsonData["height"].AsInt;
-				productWeight = jsonData["weight"];
+				productWeight = jsonData["weight"] + " " + jsonData["unit"];
 				productDescription = jsonData["description"];
-				numberBidders = jsonData["numberBidders"].AsInt;
-				timeToNextIncrement = jsonData["timeToNextIncrement"].AsInt;
+				numberBidders = jsonData["noOfLastCycleBidders"].AsInt;
+				timeToNextCycle = jsonData["timeToNextCycle"].AsInt;
+				bidButton.interactable = jsonData["bidEnable"].AsBool;
 
 				//Display Data Room
 				auctionIdRoomlabel.text = "<#"+auctionId+">";
@@ -109,14 +114,18 @@ public class AuctionRoomManager : BasePage {
 	IEnumerator IncrementCountdown()
 	{
 		bool starting = false;
-		while (timeToNextIncrement > 0) {
+		while (timeToNextCycle > 0) {
 			starting = true;
-			timeToNextIncrement--;
+			timeToNextCycle--;
 
-			if (timeToNextIncrement <= 5000) {
+			if (timeToNextCycle <= 5) {
 				countDownAnim.gameObject.SetActive (true);
+				countDownLayer.SetActive (false);
+			} else if (timeToNextCycle > 5) {
+				countDownLayer.SetActive (false);
+				countDownLabel.text = Utilities.SecondsToMinutes (timeToNextCycle);
 			}
-			yield return new WaitForSeconds (0.001f);
+			yield return new WaitForSeconds (1);
 		}
 
 		if (starting) {
@@ -125,6 +134,17 @@ public class AuctionRoomManager : BasePage {
 	}
 
 	public void ClickBid(){
+		connectingPanel.Connecting (true);
+		DBManager.API.AuctionBidding (auctionId,
+			(response)=>{
+				JSONNode jsonData = JSON.Parse(response);
+				bidButton.interactable = false;
+				connectingPanel.Connecting (false);
+			},
+			(error)=>{
+				connectingPanel.Connecting (false);
+			}
+		);
 	}
 
 	public void ClickBack(){		

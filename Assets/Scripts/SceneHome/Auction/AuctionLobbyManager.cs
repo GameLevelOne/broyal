@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
+using BidRoyale.Core;
 
 public enum AuctionMode
 {
@@ -14,6 +16,7 @@ public class AuctionLobbyManager : BasePage {
 	public ConnectingPanel connectingPanel;
 	public AuctionCarrouselPopUp carrouselPopUp;
 	public AuctionRoomManager auctionRoomManager;
+	public HeaderAreaManager header;
 
 	public AuctionMode auctionMode;
 	public int auctionIndex;
@@ -65,11 +68,16 @@ public class AuctionLobbyManager : BasePage {
 						jsonData["pastAuctions"][i]["auctionId"].AsInt,
 						AuctionState.PAST,
 						imgUrl,
+						DateTime.Now,
 						jsonData["pastAuctions"][i]["productName"],
 						0,
 						0,
 						0,
 						0,
+						jsonData["pastAuctions"][i]["winnerName"],
+						jsonData["pastAuctions"][i]["winningPrice"].AsInt,
+						jsonData["pastAuctions"][i]["winningDate"],
+						jsonData["pastAuctions"][i]["noOfParticipants"].AsInt,
 						jsonData["pastAuctions"][i]["claimable"].AsBool
 					);
 					data.actionButton.onClick.RemoveAllListeners();
@@ -95,35 +103,46 @@ public class AuctionLobbyManager : BasePage {
 						jsonData["currentAuction"]["auctionId"].AsInt,
 						AuctionState.CURRENT,
 						imgUrl,
+						DateTime.Now,
 						jsonData["currentAuction"]["productName"],
 						jsonData["currentAuction"]["openBid"].AsInt,
 						jsonData["currentAuction"]["nextIncrement"].AsInt,
 						jsonData["currentAuction"]["maxPrice"].AsInt,
 						jsonData["currentAuction"]["enterPrice"].AsInt,
-						jsonData["currentAuction"]["claimable"].AsBool
+						"",
+						0,
+						"",
+						0,
+						false
 					);
 					data.actionButton.onClick.RemoveAllListeners();
-					data.actionButton.onClick.AddListener(()=>{ClickJoin(jsonData["currentAuction"]["auctionId"].AsInt);});
+					data.actionButton.onClick.AddListener(()=>{ClickJoin(jsonData["currentAuction"]["auctionId"].AsInt,(jsonData["currentAuction"]["enterPrice"].AsInt > 0));});
 					totalData++;
 				}
 				for (int i=0;i<jsonData["futureAuctions"].Count;i++) {
 					data = rooms[totalData];
 					string[] imgUrl = new string[3];
-					imgUrl[0] = jsonData["pastAuctions"][i]["productImages"][0];
-					imgUrl[1] = jsonData["pastAuctions"][i]["productImages"][1];
-					imgUrl[2] = jsonData["pastAuctions"][i]["productImages"][2];
+					imgUrl[0] = jsonData["futureAuctions"][i]["productImages"][0];
+					imgUrl[1] = jsonData["futureAuctions"][i]["productImages"][1];
+					imgUrl[2] = jsonData["futureAuctions"][i]["productImages"][2];
 					data.InitData(
 						jsonData["futureAuctions"][i]["auctionId"].AsInt,
 						AuctionState.FUTURE,
 						imgUrl,
+						Utilities.StringLongToDateTime(jsonData["futureAuctions"][i]["dateOpen"]),
 						jsonData["futureAuctions"][i]["productName"],
 						jsonData["futureAuctions"][i]["openBid"].AsInt,
 						jsonData["futureAuctions"][i]["nextIncrement"].AsInt,
 						jsonData["futureAuctions"][i]["maxPrice"].AsInt,
 						jsonData["futureAuctions"][i]["enterPrice"].AsInt,
-						jsonData["futureAuctions"][i]["claimable"].AsBool
+						"",
+						0,
+						"",
+						0,
+						false
 					);
 					data.actionButton.onClick.RemoveAllListeners();
+					data.actionButton.onClick.AddListener(()=>{ClickJoin(jsonData["futureAuctions"][i]["auctionId"].AsInt,(jsonData["futureAuctions"][i]["enterPrice"].AsInt > 0));});
 					totalData++;
 				}
 
@@ -148,7 +167,7 @@ public class AuctionLobbyManager : BasePage {
 				connectingPanel.Connecting(false);
 			});	
 	}
-		
+
 	public void ReturnAllContainer()
 	{
 		firstLoading.SetAsFirstSibling ();
@@ -172,10 +191,25 @@ public class AuctionLobbyManager : BasePage {
 		}
 	}
 
-	public void ClickJoin (int dataAuctionId){
+	public void ClickJoin (int dataAuctionId, bool payment){
 		auctionIndex = 0;
 		auctionRoomManager.auctionId = dataAuctionId;
-		NextPage ("AUCTIONROOM");
+		if (payment) {
+			connectingPanel.Connecting (true);
+			DBManager.API.AuctionJoin (dataAuctionId,
+				(response)=>{
+					JSONNode jsonData = JSON.Parse(response);
+					header.GetUserStars();
+					connectingPanel.Connecting (false);
+					NextPage ("AUCTIONROOM");
+				},
+				(error)=>{
+					connectingPanel.Connecting (false);
+				}
+			);
+		} else {
+			NextPage ("AUCTIONROOM");
+		}
 	}
 
 	public void ClickClaim(){

@@ -46,6 +46,21 @@ namespace BidRoyale.Core
 			}
 		}
 
+		public static string TimeToNow(DateTime adate) {
+			DateTime now = DateTime.Now;
+			TimeSpan delta = (adate - now);
+			string s = "-" + delta.TotalHours.ToString ("00");
+			s += ":" + delta.Minutes.ToString ("00");
+			s += ":" + delta.Seconds.ToString ("00");
+			return s;
+		}
+
+		public static DateTime StringLongToDateTime(string s) {
+			long l = (long)Convert.ToInt64 (s);
+			DateTime start = new DateTime(1970, 1, 1, 0, 0, 0);
+			DateTime resultdate= start.AddMilliseconds(l);
+			return resultdate;
+		}
 	}
 
 }

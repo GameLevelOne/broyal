@@ -39,7 +39,7 @@ public class HeaderAreaManager : MonoBehaviour {
 		}
 	}
 
-	void GetUserStars() {
+	public void GetUserStars() {
 		SetStars(-1);
 		DBManager.API.GetUserStars(
 			(response)=>{
