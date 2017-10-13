@@ -92,7 +92,6 @@ public class AuctionRoomManager : BasePage {
 					biddersLayer.gameObject.SetActive(true);
 					numberBiddersLabel.text = numberBidders.ToString("N0");
 				}
-				StartCoroutine(IncrementCountdown());
 				productNameLabel.text = productName;
 				currentPriceLabel.text = LocalizationService.Instance.GetTextByKey("AuctionRoom.CURRENT_PRICE") + ": " + currentPrice.ToString ("IDR #,0;IDR -#,0;-");
 				nextIncrementLabel.text = LocalizationService.Instance.GetTextByKey("AuctionRoom.NEXT_INCREMENT") + ": " + nextIncrement.ToString ("IDR #,0;IDR -#,0;-");
@@ -105,6 +104,13 @@ public class AuctionRoomManager : BasePage {
 				detailsDataLabel.text += "\n" + LocalizationService.Instance.GetTextByKey("AuctionRoom.WEIGHT") + ": " + productWeight;
 				detailsDescriptionLabel.text = productDescription;
 
+				if ((numberBidders<=0) && (bidButton.interactable)) {
+					GoToGame();
+				} else {
+					if (timeToNextCycle>0)
+						StartCoroutine(IncrementCountdown());
+				}
+					
 			},
 			(error) => {
 				connectingPanel.Connecting (false);
@@ -113,9 +119,7 @@ public class AuctionRoomManager : BasePage {
 
 	IEnumerator IncrementCountdown()
 	{
-		bool starting = false;
 		while (timeToNextCycle > 0) {
-			starting = true;
 			timeToNextCycle--;
 
 			if (timeToNextCycle <= 5) {
@@ -127,9 +131,10 @@ public class AuctionRoomManager : BasePage {
 			}
 			yield return new WaitForSeconds (1);
 		}
-
-		if (starting) {
-			//Go to Game
+		if (nextIncrement == maxPrice) {
+			GoToGame ();
+		} else {
+			Init ();
 		}
 	}
 
@@ -145,6 +150,11 @@ public class AuctionRoomManager : BasePage {
 				connectingPanel.Connecting (false);
 			}
 		);
+	}
+
+	public void GoToGame()
+	{
+		//Go to Game
 	}
 
 	public void ClickBack(){		
