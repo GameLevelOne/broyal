@@ -25,7 +25,8 @@ public class PetDescriptionPopUp : BasePage {
 	}
 		
 	public void BuyClick() {
-		connectingPanel.Connecting (true);
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        connectingPanel.Connecting(true);
 		DBManager.API.PurchasePet (petData.id,
 			(response) => {
 				JSONNode jsonData = JSON.Parse(response);
@@ -38,6 +39,12 @@ public class PetDescriptionPopUp : BasePage {
 			}
 		);
 	}
+
+    public void CancelClick()
+    {
+        SoundManager.Instance.PlaySFX(SFXList.Button02);
+        Activate(false);
+    }
 
 	void FinishOutro() {
 		OnFinishOutro -= FinishOutro;

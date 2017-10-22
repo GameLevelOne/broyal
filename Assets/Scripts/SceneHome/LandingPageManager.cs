@@ -14,6 +14,7 @@ public class LandingPageManager : BasePage {
 	void Start ()
 	{
 //		LocalizationService.Instance.Localization = "English";
+        SoundManager.Instance.PlayBGM(BGMList.BGMMenu02);
 		if (FBManager.Instance != null) {
 			if (FBManager.Instance.FBLogin) {
 				Debug.Log ("fb");
@@ -53,6 +54,7 @@ public class LandingPageManager : BasePage {
 
 	public void BidRoyaleClicked()
 	{
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
 		auctionLobby.auctionMode = AuctionMode.BIDROYALE;
 		auctionLobby.auctionIndex = 0;
 		NextPage ("LOBBY");
@@ -60,7 +62,8 @@ public class LandingPageManager : BasePage {
 
 	public void BidRumbleClicked()
 	{
-		auctionLobby.auctionMode = AuctionMode.BIDRUMBLE;
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        auctionLobby.auctionMode = AuctionMode.BIDRUMBLE;
 		auctionLobby.auctionIndex = 0;
 		NextPage ("LOBBY");
 	}

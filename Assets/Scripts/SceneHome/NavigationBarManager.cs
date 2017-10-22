@@ -23,7 +23,8 @@ public class NavigationBarManager : MonoBehaviour {
 
 	public void GoToPage(string pageName)
 	{
-		BasePage nextPage = PagesManager.instance.GetPagesByName (pageName);
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        BasePage nextPage = PagesManager.instance.GetPagesByName(pageName);
 		PagesManager.instance.CurrentPageOutro (nextPage);
 	}
 

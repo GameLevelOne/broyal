@@ -88,13 +88,15 @@ public class ShopManager : BasePage {
 
 
 	public void ClickPet (PetData petData){
-		petDescription.Activate (true);
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        petDescription.Activate(true);
 		petDescription.InitData (petData);
 	}
 
 	//Cheat
-	public void BuyStars(int amount) { 
-		connectingPanel.Connecting (true);
+	public void BuyStars(int amount) {
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        connectingPanel.Connecting(true);
 		DBManager.API.CreateTopUp (amount,
 			(response) => {
 				connectingPanel.Connecting (false);

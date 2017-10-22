@@ -127,16 +127,19 @@ public class HeaderAreaManager : MonoBehaviour {
 	}
 
 	public void ProfileClicked(int profileType) {
-	}
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+    }
 
 	public void SettingsClicked() {
-		SettingsManager futurePage = (SettingsManager) PagesManager.instance.GetPagesByName("SETTINGS");
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        SettingsManager futurePage = (SettingsManager)PagesManager.instance.GetPagesByName("SETTINGS");
 		futurePage.prevPage = PagesManager.instance.GetCurrentPage ();
 		PagesManager.instance.CurrentPageOutro (futurePage);
 	}
 
 	public void TrainClicked() {
-		petTrainButton.interactable = false;
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        petTrainButton.interactable = false;
 		if (petTrainLabel.text == LocalizationService.Instance.GetTextByKey ("Header.TRAIN")) {
 			DBManager.API.StartTrainingTime (
 				(response) => {
@@ -175,7 +178,8 @@ public class HeaderAreaManager : MonoBehaviour {
 	}
 
 	public void GetPetClicked() {
-		BasePage futurePage = PagesManager.instance.GetPagesByName("SHOP");
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        BasePage futurePage = PagesManager.instance.GetPagesByName("SHOP");
 		PagesManager.instance.CurrentPageOutro (futurePage);
 	}
 

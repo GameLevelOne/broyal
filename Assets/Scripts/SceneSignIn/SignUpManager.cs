@@ -101,7 +101,8 @@ public class SignUpManager : MonoBehaviour {
 	#endregion
 
 	public void OnClickContinue (){
-		CheckInputContents();
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        CheckInputContents();
 	}
 
 	void UpdateGenderOptionDisplay ()

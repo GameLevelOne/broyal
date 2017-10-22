@@ -13,6 +13,8 @@ public class TrainingManager : BasePage {
 	public NumberCountUpEffect textPetExp;
 
 	public void OnClickOpenTrainingPanel(int type){
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+
 //		if (type == (int)TrainingType.TypeTheCode) {
 //			//panelTypeTheCode.SetActive(true);
 //			PlayerData.Instance.CurrentTrainingType = TrainingType.TypeTheCode;

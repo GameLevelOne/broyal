@@ -49,8 +49,11 @@ public class SoundManager : MonoBehaviour {
 	}
 
 	public void PlayBGM  (BGMList bgm){
-		audioSource.clip = BGM[(int)bgm];
-		audioSource.Play();
+        if (audioSource.clip != BGM[(int)bgm])
+        {
+            audioSource.clip = BGM[(int)bgm];
+            audioSource.Play();
+        }
 	}
 
 	public void PlaySFX (SFXList sfx){

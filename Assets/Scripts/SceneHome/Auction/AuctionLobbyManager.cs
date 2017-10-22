@@ -192,7 +192,8 @@ public class AuctionLobbyManager : BasePage {
 	}
 
 	public void ClickJoin (int dataAuctionId, bool payment){
-		auctionIndex = 0;
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        auctionIndex = 0;
 		auctionRoomManager.auctionId = dataAuctionId;
 		if (payment) {
 			connectingPanel.Connecting (true);
@@ -214,10 +215,12 @@ public class AuctionLobbyManager : BasePage {
 
 	public void ClickClaim(){
 //		panelClaimConfirmation.SetActive(true);
-	}
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+    }
 
 	public void ClickImageDetail(int index){
-		carrouselPopUp.imageUrl = rooms [index].imageUrl;
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        carrouselPopUp.imageUrl = rooms[index].imageUrl;
 		Debug.Log ("PopUpIndex: "+index);
 		carrouselPopUp.Activate (true);
 	}

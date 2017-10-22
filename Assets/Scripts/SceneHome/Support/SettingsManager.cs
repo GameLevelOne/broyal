@@ -26,22 +26,26 @@ public class SettingsManager : BasePage {
 
 	public void OnClickClose (){
 //		panelLandingPage.SetActive(true);
-		PagesManager.instance.CurrentPageOutro(prevPage);
+        SoundManager.Instance.PlaySFX(SFXList.Button02);
+        PagesManager.instance.CurrentPageOutro(prevPage);
 	}
 
 	public void OnClickNotif (bool optionOn)
 	{
-		buttonNotifOn.GetComponent<Image> ().enabled = optionOn;
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        buttonNotifOn.GetComponent<Image>().enabled = optionOn;
 		buttonNotifOff.GetComponent<Image> ().enabled = !optionOn;
 	}
 
 	public void OnClickSound (bool optionOn){
-		buttonSoundOn.GetComponent<Image> ().enabled = optionOn;
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        buttonSoundOn.GetComponent<Image>().enabled = optionOn;
 		buttonSoundOff.GetComponent<Image> ().enabled = !optionOn;
 	}
 
 	public void OnClickLanguage (bool optionEN){
-		buttonLangEN.GetComponent<Image> ().enabled = optionEN;
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        buttonLangEN.GetComponent<Image>().enabled = optionEN;
 		buttonLangID.GetComponent<Image> ().enabled = !optionEN;
 		if (optionEN) {
 			LocalizationService.Instance.Localization = "English";
@@ -51,23 +55,28 @@ public class SettingsManager : BasePage {
 	}
 
 	public void OnClickSubscribe (bool optionSubscribe){
-		buttonSubscribe.GetComponent<Image> ().enabled = optionSubscribe;
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        buttonSubscribe.GetComponent<Image>().enabled = optionSubscribe;
 		buttonUnsubscribe.GetComponent<Image> ().enabled = !optionSubscribe;
 	}
 
 	public void OnClickPrivacyPolicy(){
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
 
 	}
 
 	public void OnClickTandC(){
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
 
 	}
 
 	public void OnClickAboutUs (){
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
 
 	}
 
 	public void OnClickTutorial(){
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
 
 	}
 

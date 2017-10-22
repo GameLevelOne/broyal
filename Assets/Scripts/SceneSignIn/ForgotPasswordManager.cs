@@ -60,13 +60,15 @@ public class ForgotPasswordManager : MonoBehaviour {
 	}
 
 	public void OnClickSend(){ //forgot 1 -> goto OTP page
-		DoRequestForgotPassword();
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        DoRequestForgotPassword();
 		//panelForgotPass1.SetActive(false);
 		//panelForgotPass2.SetActive(true);
 	}
 
 	public void OnClickEnter(){ //forgot 2 -> goto sign in page
-		DoResetPassword();
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        DoResetPassword();
 	}
 
 	void DoRequestForgotPassword (){

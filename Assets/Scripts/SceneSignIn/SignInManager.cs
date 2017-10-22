@@ -23,13 +23,9 @@ public class SignInManager : MonoBehaviour {
 
 	PanelsFromSignIn nextPanel;
 
-	public void testChangeLoc()
-	{
-		LocalizationService.Instance.Localization = "Bahasa";
-	}
-
 	void Awake() {
 		//fader.FadeIn ();
+        SoundManager.Instance.PlayBGM(BGMList.BGMMenu01);
 	}
 
 	void OnEnable(){
@@ -42,7 +38,6 @@ public class SignInManager : MonoBehaviour {
 
 	void OnFadeOutFinished ()
 	{
-		Debug.Log("asd");
 		if (nextPanel == PanelsFromSignIn.Game) {
 			panelLoading.SetActive (true);
 			panelLoading.GetComponent<LoadingProgress>().ChangeScene(sceneLandingPage);
@@ -70,21 +65,25 @@ public class SignInManager : MonoBehaviour {
 
 	public void OnClickSignIn(){
 		//go to loading scene
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
 		CheckInputContents();
 	}
 
 	public void OnClickFBLogin (){
 		FBManager.Instance.OnFBLogin();
-	}
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+    }
 
 	public void OnClickForgotPassword(){
 		nextPanel = PanelsFromSignIn.Password;
-		fader.FadeOut();
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        fader.FadeOut();
 	}
 
 	public void OnClickSignUp(){
 		nextPanel = PanelsFromSignIn.SignUp;
-		fader.FadeOut();
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        fader.FadeOut();
 	}
 
 	void CheckInputContents ()

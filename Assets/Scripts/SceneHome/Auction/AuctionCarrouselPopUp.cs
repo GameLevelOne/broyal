@@ -24,6 +24,12 @@ public class AuctionCarrouselPopUp : BasePage {
 		imageContent [index].LoadImageFromUrl (imageUrl[index]);
 	}
 
+    public void ClickClose()
+    {
+        SoundManager.Instance.PlaySFX(SFXList.Button02);
+        Activate(false);
+    }
+
 	void OnDestroy()
 	{
 		scrollSnap.OnChangePage -= OnChangePage;

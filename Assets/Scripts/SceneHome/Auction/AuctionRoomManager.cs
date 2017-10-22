@@ -139,7 +139,8 @@ public class AuctionRoomManager : BasePage {
 	}
 
 	public void ClickBid(){
-		connectingPanel.Connecting (true);
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        connectingPanel.Connecting(true);
 		DBManager.API.AuctionBidding (auctionId,
 			(response)=>{
 				JSONNode jsonData = JSON.Parse(response);
@@ -157,18 +158,21 @@ public class AuctionRoomManager : BasePage {
 		//Go to Game
 	}
 
-	public void ClickBack(){		
-		NextPage ("LOBBY");
+	public void ClickBack(){
+        SoundManager.Instance.PlaySFX(SFXList.Button02);
+        NextPage("LOBBY");
 	}
 
 	public void ClickRight(){
-		scrollSnapDetail.UpdateContainerSize (0);		
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        scrollSnapDetail.UpdateContainerSize(0);		
 		detailImages [0].LoadImageFromUrl (imageUrl[0]);
 		roomAnimator.SetTrigger("GoRight");
 	}
 
 	public void ClickLeft(){
-		roomAnimator.SetTrigger("GoLeft");
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        roomAnimator.SetTrigger("GoLeft");
 	}
 
 	public void OnChangePage(Transform child)
