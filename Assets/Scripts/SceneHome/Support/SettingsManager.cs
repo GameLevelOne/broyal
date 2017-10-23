@@ -81,6 +81,8 @@ public class SettingsManager : BasePage {
 	}
 
 	public void OnClickLogout(){
-
+		SoundManager.Instance.PlaySFX(SFXList.Button01);
+		PlayerPrefs.DeleteAll ();
+		Application.LoadLevel ("SceneSignIn");
 	}
 }
