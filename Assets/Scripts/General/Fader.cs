@@ -48,6 +48,7 @@ public class Fader : MonoBehaviour {
 	}
 	public void FadeOut()
 	{
+//		Debug.Log ("FaderState: "+ faderState);
 		if ((faderState != FaderState.FadeIn) && (faderState != FaderState.FadeOut)) {
 			gameObject.SetActive (true);
 			faderState = FaderState.FadeOut;

@@ -5,44 +5,53 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class LoadingProgress : MonoBehaviour {
-	public static LoadingProgress Instance{ get { return instance;}}
+	public Fader fader;
 	public Image progressBar;
+	public CanvasGroup cg;
+	public string nextScene;
+	AsyncOperation asyncOp;
 
-	private static LoadingProgress instance;
-	bool barIsFilled = false;
-	string nextScene;
-
-	void Awake ()
-	{
-		if (instance != null && instance != this) {
-			Destroy (this.gameObject);
-		} else {
-			instance = this;
-		}
+	void OnEnable() {
+		cg.alpha = 0;
+		StartCoroutine(FadeIn());
 	}
 
-	public void ChangeScene(string nextScene){
-		this.nextScene = nextScene;
+	IEnumerator FadeIn() {
+		while (cg.alpha < 1) {
+			cg.alpha += (Time.deltaTime * 2f);
+			yield return null;
+		}
+		cg.alpha = 1;
+		yield return null;
 		StartCoroutine(LoadNextScene());
 	}
-
+		
 	IEnumerator LoadNextScene ()
 	{
-//		Debug.Log("start loading");
-		AsyncOperation asyncOp = SceneManager.LoadSceneAsync(nextScene);
+//		Debug.Log("Start loading");
+		asyncOp = SceneManager.LoadSceneAsync(nextScene);
 		asyncOp.allowSceneActivation = false;
+		float delayProgress = 0f;
 
-		while (!barIsFilled) {
-			progressBar.fillAmount += 0.05f;
-			if (progressBar.fillAmount == 1f) {
-				barIsFilled=true;
-			}
+		while (progressBar.fillAmount<0.9f) {
+			progressBar.fillAmount = ( asyncOp.progress > delayProgress ? delayProgress : asyncOp.progress);
+			delayProgress += Time.deltaTime;
+//			Debug.Log("Progress: "+progressBar.fillAmount);
 			yield return null;
 		}
 
-		if(barIsFilled){
-//			Debug.Log("load scene");
-			asyncOp.allowSceneActivation=true;
-		}
+//		Debug.Log("Progress: "+asyncOp.progress);
+		progressBar.fillAmount = 1;
+		yield return null;
+
+		fader.OnFadeOutFinished += OnFinishFadeOut;
+		fader.FadeOut ();
 	}
+
+	void OnFinishFadeOut() {
+		fader.OnFadeOutFinished -= OnFinishFadeOut;
+		asyncOp.allowSceneActivation=true;
+		Debug.Log("Load: "+nextScene);
+	}
+
 }

@@ -13,7 +13,7 @@ public class PanelTrainingScores : MonoBehaviour {
 
 	public void OnClickNext(){
 		loadingBar.gameObject.SetActive(true);
-		loadingBar.ChangeScene("SceneHome");
+//		loadingBar.ChangeScene("SceneHome");
 	}
 	
 }

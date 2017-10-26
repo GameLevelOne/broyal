@@ -11,187 +11,150 @@ enum MessageType{
 	VerifyError
 }
 
-public class SignUpManager : MonoBehaviour {
+public class SignUpManager : AppInitPages {
 	public Fader fader;
-	public PopupManager panelPopupMsg;
-	public GameObject panelSignIn;
-	public GameObject panelPopupVerify;
+	public ConnectingPanel connectingPanel;
+	public LoadingProgress panelLoading;
+	public NotificationPopUp notificationPopUp;
+	public VerifyOTPPopUp verifyOTPPopUp;
+	public SignInManager panelSignIn;
 
-	public Image[] genderRadioButtons = new Image[2];
-	public Image checkBoxNewsletter;
-	public Image checkBoxTnC;
-
-	public Sprite[] radioButtonOnOff = new Sprite[2]; //0 = off, 1 = on
-	public Sprite[] checkBoxOnOff = new Sprite[2]; //0 = off, 1 = on
+	public InputField usernameInput;
+	public InputField emailInput;
+	public InputField phoneInput;
+	public InputField passwordInput;
+	public InputField confirmInput;
+	public Toggle maleInput;
+	public Toggle femaleInput;
+	public Toggle subscribeInput;
+	public Toggle tncInput;
 
 	string signUpUsername;
 	string signUpEmail;
 	string signUpPhone;
 	string signUpPassword;
 	string signUpConfirmPassword;
-	string signUpOTP;
 
-	string triggerPanelOpen = "panelOpen";
-	string triggerPanelClose = "panelClose";
+	int genderOption; // 1 = male, 2 = female
 
-	MessageType currRegistrationStatus = MessageType.RegisterError;
+	bool subscribe;
+	bool tnc;
 
-	int genderOption = 0; // 1 = male, 2 = female
+	public void ClickBack() {
+		SoundManager.Instance.PlaySFX(SFXList.Button02);
+		CloseAndGoToNextPage (panelSignIn);
 
-	bool tickNewsletter = false;
-	bool tickTnC = false;
-
-	void OnEnable(){
-		fader.OnFadeOutFinished += OnFadeOutFinished;
 	}
 
-	void OnDisable(){
-		fader.OnFadeOutFinished -= OnFadeOutFinished;
-	}
-
-	void OnFadeOutFinished ()
-	{
-		panelSignIn.SetActive(true);
-		fader.FadeIn();
-		this.gameObject.SetActive(false);
-	}
-
-	#region InputFields
-
-	public void GetInputUsername(InputField obj){
-		signUpUsername = obj.text;
-	}
-
-	public void GetInputEmail(InputField obj){
-		signUpEmail = obj.text;
-	}
-
-	public void GetInputPhone(InputField obj){
-		signUpPhone = obj.text;
-	}
-
-	public void GetInputPassword(InputField obj){
-		signUpPassword = obj.text;
-	}
-
-	public void GetInputConfirmPassword(InputField obj){
-		signUpConfirmPassword = obj.text;
-	}
-
-	public void GetInputGenderOption(int opt){
-		genderOption = opt;
-		UpdateGenderOptionDisplay();
-	}
-
-	public void GetInputNewsletter ()
-	{
-		tickNewsletter = !tickNewsletter;
-		UpdateNewsletterDisplay();
-	}
-
-	public void GetInputTnC(){
-		tickTnC = !tickTnC;
-		UpdateTnCDisplay(); 
-	}
-
-	public void GetInputOTP(InputField obj){
-		signUpOTP = obj.text;
-	}
-
-	#endregion
-
-	public void OnClickContinue (){
+	public void ClickContinue (){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
+		GetAllFields ();
         CheckInputContents();
 	}
 
-	void UpdateGenderOptionDisplay ()
-	{
-		if (genderOption == 1) {
-			genderRadioButtons[0].sprite = radioButtonOnOff[1];
-			genderRadioButtons[1].sprite = radioButtonOnOff[0];
-		} else {
-			genderRadioButtons[0].sprite = radioButtonOnOff[0];
-			genderRadioButtons[1].sprite = radioButtonOnOff[1];
-		}
-	}
+	void GetAllFields() {
+		signUpUsername = usernameInput.text;
+		signUpEmail = emailInput.text;
+		signUpPhone = phoneInput.text;
+		signUpPassword = passwordInput.text;
+		signUpConfirmPassword = confirmInput.text;
 
-	void UpdateNewsletterDisplay ()
-	{
-		if (tickNewsletter) {
-			checkBoxNewsletter.sprite = checkBoxOnOff [1];
-		} else {
-			checkBoxNewsletter.sprite = checkBoxOnOff[0];
+		genderOption = 0;
+		if (maleInput.isOn) {
+			genderOption = 1;
+		} else if (femaleInput.isOn) {
+			genderOption = 2;
 		}
-	}
 
-	void UpdateTnCDisplay ()
-	{
-		if (tickTnC) {
-			checkBoxTnC.sprite = checkBoxOnOff [1];
-		} else {
-			checkBoxTnC.sprite = checkBoxOnOff[0];
-		}
+		subscribe = subscribeInput.isOn;
+		tnc = tncInput.isOn;
+
 	}
 
 	void CheckInputContents () //missing check username/email/phonenumber
 	{
-		if (string.IsNullOrEmpty (signUpUsername) || string.IsNullOrEmpty (signUpEmail) || string.IsNullOrEmpty (signUpPhone) ||
-		    string.IsNullOrEmpty (signUpPassword) || string.IsNullOrEmpty (signUpConfirmPassword) || genderOption == 0) {
-			DisplayMessagePopup ("Please fill in all fields");
+		if ((string.IsNullOrEmpty (signUpUsername)) || (string.IsNullOrEmpty (signUpEmail)) || (string.IsNullOrEmpty (signUpPhone))
+			|| (string.IsNullOrEmpty (signUpPassword)) || (string.IsNullOrEmpty (signUpConfirmPassword)) ) {
+			notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignUp.FILL_ALL"));
+		} else if (!IsEmailAddress (signUpEmail)) {
+			notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignUp.ERROR_INCORRECT_EMAIL"));
 		} else if (signUpPassword != signUpConfirmPassword) {
-			DisplayMessagePopup ("Passwords do not match");
-		} else if (!tickTnC) {
-			DisplayMessagePopup ("Please agree to the terms and conditions");
+			notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignUp.ERROR_PASSWORD_MATCH"));
+		} else if (genderOption == 0) {
+			notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignUp.ERROR_GENDER"));
+		} else if (!tnc) {
+			notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("SignUp.ERROR_AGREE_TNC"));
 		} else {
-			DoRegister();
+			DoRegister ();
 		}
 	}
 
-	void DisplayMessagePopup (string msgText)
-	{
-		panelPopupMsg.gameObject.SetActive(true);
-		panelPopupMsg.SetText(msgText);
-		panelPopupMsg.OpenPanel();
-	}
+	bool IsEmailAddress(string address) {
+		int at = address.IndexOf ("@");
+		int dot = address.IndexOf (".");
 
-	public void OnClickClosePopup ()
-	{
-//		panelPopupMsg.SetActive (false);
-		if (currRegistrationStatus == MessageType.RegisterSuccess) {
-			panelPopupVerify.SetActive (true);
-			panelPopupVerify.GetComponent<Animator>().SetTrigger(triggerPanelOpen);
-		} else if (currRegistrationStatus == MessageType.VerifySuccess) {
-			fader.FadeOut();
-		}
-	}
-
-	public void OnClickSendOTP(){
-		DBManager.API.VerifyUser(signUpUsername,signUpOTP,
-			(response)=>{
-				currRegistrationStatus = MessageType.VerifySuccess;
-				panelPopupVerify.GetComponent<Animator>().SetTrigger(triggerPanelClose);
-				DisplayMessagePopup("Verification success!");
-			},
-			(error)=>{
-				JSONNode jsonData = JSON.Parse(error);
-				DisplayMessagePopup(jsonData["errors"]["username"]);
-				currRegistrationStatus = MessageType.VerifyError;
-			}
-		);
+		if ((at >= 0) && (dot >= 0) && (at < dot))
+			return true;
+		else
+			return false;
 	}
 
 	void DoRegister(){
-		DBManager.API.UserRegistration(tickTnC,genderOption,signUpUsername,signUpPassword,signUpPhone,signUpEmail,
+		connectingPanel.Connecting(true);
+		DBManager.API.UserRegistration(true,genderOption,signUpUsername,signUpPassword,signUpPhone,signUpEmail,
 			(response)=>{
-				currRegistrationStatus = MessageType.RegisterSuccess;
-				DisplayMessagePopup("Registration success!");
+				connectingPanel.Connecting(false);
+				Debug.Log("Register Success");
+				verifyOTPPopUp.OnFinishOutro += OnVerifyClosed;
+				verifyOTPPopUp.ShowPopUp(signUpUsername);
 			},
 			(error)=>{
+				connectingPanel.Connecting(false);
+				Debug.Log("Register Failed");
 				JSONNode jsonData = JSON.Parse(error);
-				DisplayMessagePopup(jsonData["errors"]["username"]);
-				currRegistrationStatus = MessageType.RegisterError;
+				string erroruser = jsonData["errors"]["username"];
+				string erroremail = jsonData["errors"]["email"];
+
+				if (erroruser=="This username is already taken.") {
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("SignUp.ERROR_AGREE_TNC"));
+				} else {
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("SignUp.ERROR_TRY_AGAIN"));
+				}
+
+				Debug.Log("Error user :"+erroruser);
+				Debug.Log("Error email :"+erroremail);
 			}
 		);	
 	}
+
+	void OnVerifyClosed() {
+		verifyOTPPopUp.OnFinishOutro -= OnVerifyClosed;
+		if (verifyOTPPopUp.otpSuccess) {
+			DoLogin ();
+		} else {
+			CloseAndGoToNextPage (panelSignIn);
+		}
+	}
+
+	void DoLogin(){
+		connectingPanel.Connecting (true);
+		DBManager.API.UserLogin(signUpUsername,signUpPassword,
+			(response)=>{
+				connectingPanel.Connecting (false);
+				Activate(false);
+				fader.OnFadeOutFinished+= FadeOutToLoading;
+				fader.FadeOut();				
+			},
+			(error)=>{
+				connectingPanel.Connecting (false);
+				notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignIn.WRONG"));
+				CloseAndGoToNextPage (panelSignIn);
+			}
+		);
+	}
+	void FadeOutToLoading() {
+		fader.OnFadeOutFinished-= FadeOutToLoading;
+		panelLoading.gameObject.SetActive(true);
+	}
+
 }

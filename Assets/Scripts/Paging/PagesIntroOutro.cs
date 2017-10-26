@@ -10,14 +10,17 @@ public class PagesIntroOutro : MonoBehaviour {
 	Animator anim;
 
 	void Awake() {
+//		Debug.Log ("Awake");
 		anim = GetComponent<Animator> ();
 	}
 
 	public void Activate(bool show)
 	{
 		gameObject.SetActive (true);
-		if (!show)
+		if (!show) {
+			anim.ResetTrigger ("Intro");
 			anim.SetTrigger ("Outro");
+		}
 	}
 				
 	void FinishIntroEvent()
@@ -37,8 +40,8 @@ public class PagesIntroOutro : MonoBehaviour {
 
 	protected void OnEnable()
 	{
+//		Debug.Log ("OnEnable");
 		anim.SetTrigger ("Intro");
-//		Debug.Log ("Intro: " + name);
 	}
 
 	protected void OnDisable()

@@ -30,6 +30,7 @@ public class DBManagerSettings : ScriptableObject {
 	public string getShopList;
 	public string userRegistrationAPI;
 	public string verifyUserAPI;
+	public string getResendOTPAPI;
 	public string userLoginAPI;
 	public string createTopUp;
 	public string getUserStarsAPI;

@@ -5,55 +5,36 @@ using UnityEngine.UI;
 using Facebook.Unity;
 using SimpleJSON;
 
-public enum PanelsFromSignIn{
-	Game,SignUp,Password
-}
-
-public class SignInManager : MonoBehaviour {
+public class SignInManager : AppInitPages {
 	public Fader fader;
-	public GameObject panelLoading;
+	public ConnectingPanel connectingPanel;
+	public LoadingProgress panelLoading;
 	public GameObject panelForgotPassword;
 	public GameObject panelForgotPassword2;
-	public GameObject panelSignUp;
-	public PopupManager panelPopupMsg;
+	public SignUpManager panelSignUp;
+	public NotificationPopUp notificationPopUp;
 
-	string sceneLandingPage = "SceneHome";
 	string signInUsername;
 	string signInPassword;
 
-	PanelsFromSignIn nextPanel;
-
-	void Awake() {
-		//fader.FadeIn ();
-        SoundManager.Instance.PlayBGM(BGMList.BGMMenu01);
+	void Start() {
+		fader.SetFaderActive (true);
+		OnFinishIntro += CheckPreviousSignIn;
 	}
 
-	void OnEnable(){
-		fader.OnFadeOutFinished += OnFadeOutFinished;
-	}
+	void CheckPreviousSignIn(){
+		OnFinishIntro -= CheckPreviousSignIn;
+//		Debug.Log ("CheckSignIn");
+		signInUsername = PlayerPrefs.GetString("LastUserLogin","");
+		signInPassword = PlayerPrefs.GetString("LastUserPassword","");
 
-	void OnDisable(){
-		fader.OnFadeOutFinished -= OnFadeOutFinished;
-	}
-
-	void OnFadeOutFinished ()
-	{
-		if (nextPanel == PanelsFromSignIn.Game) {
-			panelLoading.SetActive (true);
-			panelLoading.GetComponent<LoadingProgress>().ChangeScene(sceneLandingPage);
-			this.gameObject.SetActive(false);
-		} else if(nextPanel == PanelsFromSignIn.Password){
-			this.gameObject.SetActive(false);
-			panelForgotPassword2.SetActive(false);
-			panelForgotPassword.SetActive(true);
+		if (string.IsNullOrEmpty(signInUsername)) {
+			SoundManager.Instance.PlayBGM(BGMList.BGMMenu01);
 			fader.FadeIn();
-		} else if(nextPanel == PanelsFromSignIn.SignUp){
-			this.gameObject.SetActive(false);
-			panelForgotPassword2.SetActive(false);
-			panelSignUp.SetActive(true);
-			fader.FadeIn();
+		}else{
+			DoLogin(true);
 		}
-	}
+	} 
 
 	public void GetInputUsername (InputField obj){
 		signInUsername = obj.text;
@@ -63,56 +44,60 @@ public class SignInManager : MonoBehaviour {
 		signInPassword = obj.text;
 	}
 
-	public void OnClickSignIn(){
+	public void ClickEnter(){
 		//go to loading scene
         SoundManager.Instance.PlaySFX(SFXList.Button01);
-		CheckInputContents();
+		if (string.IsNullOrEmpty (signInUsername) || string.IsNullOrEmpty (signInPassword)) {
+			notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignIn.PLEASE_ENTER"));
+		} else {
+			DoLogin(false);
+		}
 	}
 
-	public void OnClickFBLogin (){
+	public void ClickFBLogin (){
 		FBManager.Instance.OnFBLogin();
         SoundManager.Instance.PlaySFX(SFXList.Button01);
     }
 
-	public void OnClickForgotPassword(){
-		nextPanel = PanelsFromSignIn.Password;
+	public void ClickForgotPassword(){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
-        fader.FadeOut();
 	}
 
-	public void OnClickSignUp(){
-		nextPanel = PanelsFromSignIn.SignUp;
+	public void ClickSignUp(){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
-        fader.FadeOut();
+		CloseAndGoToNextPage (panelSignUp);
 	}
 
-	void CheckInputContents ()
-	{
-		if (string.IsNullOrEmpty (signInUsername) || string.IsNullOrEmpty (signInPassword)) {
-			DisplayMessage ("Please fill in all fields");
-		} else {
-			DoLogin();
-		}
-	}
-
-	void DisplayMessage (string msgText){
-		panelPopupMsg.gameObject.SetActive(true);
-		panelPopupMsg.SetText(msgText);
-		panelPopupMsg.OpenPanel();
-	}
-
-	void DoLogin(){
+	void DoLogin(bool fadeIn){
+		connectingPanel.Connecting (true);
+//		Debug.Log ("------Do Login");
 		DBManager.API.UserLogin(signInUsername,signInPassword,
 			(response)=>{
-				DBManager.API.username = signInUsername;
-				nextPanel = PanelsFromSignIn.Game;
-				fader.FadeOut();
+				connectingPanel.Connecting (false);
+				Activate(false);
+				if (fadeIn) {
+					fader.OnFadeInFinished+= FadeInToLoading;
+					fader.FadeIn();				
+				} else {
+					fader.OnFadeOutFinished+= FadeOutToLoading;
+					fader.FadeOut();				
+				}
 			},
 			(error)=>{
-				//JSONNode jsonData = JSON.Parse(error);
-				//DisplayMessage(jsonData["errors"]["username"]);
-				DisplayMessage("fail to login");
+//				Debug.Log ("------Do Login Fail");
+				connectingPanel.Connecting (false);
+				notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignIn.WRONG"));
 			}
 		);
 	}
+
+	void FadeOutToLoading() {
+		fader.OnFadeOutFinished-= FadeOutToLoading;
+		panelLoading.gameObject.SetActive(true);
+	}
+	void FadeInToLoading() {
+		fader.OnFadeInFinished-= FadeInToLoading;
+		panelLoading.gameObject.SetActive(true);
+	}
+		
 }

@@ -17,7 +17,7 @@ public class PreGameManager : MonoBehaviour {
 	public void OnCloseAds(){
 		PlayerPrefs.SetInt ("GameMode",(int)GameMode.BIDROYALE);
 		panelLoadingBar.SetActive(true);
-		panelLoadingBar.GetComponent<LoadingProgress>().ChangeScene(sceneGame);
+//		panelLoadingBar.GetComponent<LoadingProgress>().ChangeScene(sceneGame);
 	}
 
 	IEnumerator RunCountdown ()

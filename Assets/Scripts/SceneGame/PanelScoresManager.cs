@@ -32,14 +32,14 @@ public class PanelScoresManager : MonoBehaviour {
 			panelScore.SetActive(false);
 		} else {
 			panelLoadingBar.SetActive(true);
-			panelLoadingBar.GetComponent<LoadingProgress>().ChangeScene(sceneGame);
+//			panelLoadingBar.GetComponent<LoadingProgress>().ChangeScene(sceneGame);
 		}
 
 	}
 
 	public void OnClickNextToHome(){ //to be replaced with claim prize page (SceneHome)
 		panelLoadingBar.SetActive(true);
-		panelLoadingBar.GetComponent<LoadingProgress>().ChangeScene(sceneHome);
+//		panelLoadingBar.GetComponent<LoadingProgress>().ChangeScene(sceneHome);
 	}
 	
 }

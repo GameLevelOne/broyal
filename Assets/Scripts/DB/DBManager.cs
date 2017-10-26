@@ -165,6 +165,16 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithKey(),onComplete, onError);
 	}
 
+	public void GetResendOTP(string userName, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getResendOTPAPI + userName;
+		UTF8Encoding encoder = new UTF8Encoding ();
+
+		DebugMsg ("GET RESEND OTP","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithKey(),onComplete, onError);
+	}
+
 	public void UserLogin(string userName, string password, 
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
@@ -181,6 +191,9 @@ public class DBManager : MonoBehaviour {
 				JSONNode jdata = JSON.Parse(response);
 				tokenType = jdata["token_type"];
 				accessToken = jdata["access_token"];
+				username = userName;
+				PlayerPrefs.SetString("LastUserLogin",userName);
+				PlayerPrefs.SetString("LastUserPassword",password);
 				if (onComplete!=null)
 					onComplete(response);
 			}, onError);

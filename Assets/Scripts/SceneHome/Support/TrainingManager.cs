@@ -31,7 +31,7 @@ public class TrainingManager : BasePage {
 		PlayerPrefs.SetInt("RumbleGame",type);
 		PlayerPrefs.SetInt("GameMode",(int)GameMode.TRAINING);
 		panelLoadingBar.gameObject.SetActive(true);
-		panelLoadingBar.ChangeScene("SceneGame");
+//		panelLoadingBar.ChangeScene("SceneGame");
 	}
 
 	#region tempTouchBox
