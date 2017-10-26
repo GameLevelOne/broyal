@@ -9,10 +9,12 @@ public class SignInManager : AppInitPages {
 	public Fader fader;
 	public ConnectingPanel connectingPanel;
 	public LoadingProgress panelLoading;
-	public GameObject panelForgotPassword;
-	public GameObject panelForgotPassword2;
+	public ForgotPasswordManager panelForgotPassword;
 	public SignUpManager panelSignUp;
 	public NotificationPopUp notificationPopUp;
+
+	public InputField userNameInput;
+	public InputField passwordInput;
 
 	string signInUsername;
 	string signInPassword;
@@ -20,6 +22,13 @@ public class SignInManager : AppInitPages {
 	void Start() {
 		fader.SetFaderActive (true);
 		OnFinishIntro += CheckPreviousSignIn;
+	}
+		
+	protected override void Init ()
+	{
+		userNameInput.text = "";
+		passwordInput.text = "";
+		base.Init ();
 	}
 
 	void CheckPreviousSignIn(){
@@ -36,17 +45,13 @@ public class SignInManager : AppInitPages {
 		}
 	} 
 
-	public void GetInputUsername (InputField obj){
-		signInUsername = obj.text;
-	}
-
-	public void GetInputPassword (InputField obj){
-		signInPassword = obj.text;
-	}
-
 	public void ClickEnter(){
 		//go to loading scene
         SoundManager.Instance.PlaySFX(SFXList.Button01);
+
+		signInUsername = userNameInput.text;
+		signInPassword = passwordInput.text;
+
 		if (string.IsNullOrEmpty (signInUsername) || string.IsNullOrEmpty (signInPassword)) {
 			notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignIn.PLEASE_ENTER"));
 		} else {
@@ -61,6 +66,7 @@ public class SignInManager : AppInitPages {
 
 	public void ClickForgotPassword(){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
+		CloseAndGoToNextPage (panelForgotPassword);
 	}
 
 	public void ClickSignUp(){
@@ -79,8 +85,7 @@ public class SignInManager : AppInitPages {
 					fader.OnFadeInFinished+= FadeInToLoading;
 					fader.FadeIn();				
 				} else {
-					fader.OnFadeOutFinished+= FadeOutToLoading;
-					fader.FadeOut();				
+					OnFinishOutro += FadeOutToLoading;
 				}
 			},
 			(error)=>{
@@ -92,7 +97,7 @@ public class SignInManager : AppInitPages {
 	}
 
 	void FadeOutToLoading() {
-		fader.OnFadeOutFinished-= FadeOutToLoading;
+		OnFinishOutro -= FadeOutToLoading;
 		panelLoading.gameObject.SetActive(true);
 	}
 	void FadeInToLoading() {

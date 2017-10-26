@@ -4,110 +4,104 @@ using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
 
-enum PanelsFromPassword{
-	Null,Forgot2,SignIn
-}
+public class ForgotPasswordManager : AppInitPages {
+	public ConnectingPanel connectingPanel;
+	public NotificationPopUp notificationPopUp;
 
-public class ForgotPasswordManager : MonoBehaviour {
-	public Fader fader;
+	public SignInManager panelSignIn;
+	public GameObject panelSendOTP;
+	public GameObject panelEnterOTP;
 
-	public GameObject panelForgotPass1;
-	public GameObject panelForgotPass2;
-	public GameObject panelSignIn;
+	public InputField userNameInput;
+	public InputField otpInput;
+	public InputField passwordInput;
+	public InputField confirmInput;
 
 	string username;
 	string otp;
-	string newPass1;
-	string newPass2;
+	string newPassword;
+	string confirmPassword;
 
-	PanelsFromPassword nextPanel = PanelsFromPassword.Null;
-
-	void OnEnable(){
-		fader.OnFadeOutFinished += OnFadeOutFinished;
-	}
-
-	void OnDisable(){
-		fader.OnFadeOutFinished -= OnFadeOutFinished;
-	}
-
-	void OnFadeOutFinished ()
+	protected override void Init ()
 	{
-		if(nextPanel == PanelsFromPassword.Forgot2){
-			panelForgotPass1.SetActive(false);
-			panelForgotPass2.SetActive(true);
-		} else if(nextPanel == PanelsFromPassword.SignIn){
-			panelForgotPass1.SetActive(false);
-			panelForgotPass2.SetActive(false);
-			panelSignIn.SetActive(true);
-		}
-		fader.FadeIn();
+		panelSendOTP.SetActive (true);
+		panelEnterOTP.SetActive (false);
+
+		userNameInput.text = "";
+		otpInput.text = "";
+		passwordInput.text = "";
+		confirmInput.text = "";
+
+		base.Init ();
 	}
 
-	public void GetInputUsername(InputField obj){
-		username = obj.text;
-	}
-
-	public void GetInputOTP (InputField obj){
-		otp = obj.text;
-	}
-
-	public void GetInputNewPass1 (InputField obj){ //new password
-		newPass1 = obj.text;
-	}
-
-	public void GetInputNewPass2(InputField obj){ //confirm password
-		newPass2 = obj.text;
-	}
-
-	public void OnClickSend(){ //forgot 1 -> goto OTP page
+	public void ClickSend(){ //forgot 1 -> goto OTP page
         SoundManager.Instance.PlaySFX(SFXList.Button01);
+		username = userNameInput.text;
         DoRequestForgotPassword();
-		//panelForgotPass1.SetActive(false);
-		//panelForgotPass2.SetActive(true);
 	}
 
-	public void OnClickEnter(){ //forgot 2 -> goto sign in page
+	public void ClickEnter(){ //forgot 2 -> goto sign in page
         SoundManager.Instance.PlaySFX(SFXList.Button01);
+		otp = otpInput.text;
+		newPassword = passwordInput.text;
+		confirmPassword = confirmInput.text;
         DoResetPassword();
 	}
+		
+	public void ClickBack() {
+		SoundManager.Instance.PlaySFX(SFXList.Button02);
+		CloseAndGoToNextPage (panelSignIn);
+	}
 
-	void DoRequestForgotPassword (){
+	void DoRequestForgotPassword (){		
 		if(!string.IsNullOrEmpty(username)){
+			connectingPanel.Connecting (true);
 			DBManager.API.UserForgotPassword(username,
-			(response)=>{
-				JSONNode jsonData = JSON.Parse(response);
-				Debug.Log(jsonData["message"]);
-				nextPanel = PanelsFromPassword.Forgot2;
-				fader.FadeOut();
-			},
-			(error)=>{
-				Debug.Log("ERROR");
-			}
+				(response)=>{
+					JSONNode jsonData = JSON.Parse(response);
+					connectingPanel.Connecting (false);
+					panelSendOTP.SetActive(false);
+					panelEnterOTP.SetActive(true);
+				},
+				(error)=>{
+					connectingPanel.Connecting (false);
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Verify.FAILED_OTP"));
+				}
 			);
 		} else{
-			Debug.Log("field is empty");
+			notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("ForgotPassword.PLEASE_INPUT"));
 		}
 	}
 
 	void DoResetPassword ()
 	{
-		if (string.IsNullOrEmpty (otp) || string.IsNullOrEmpty (newPass1) || string.IsNullOrEmpty (newPass2)) {
-			Debug.Log ("please fill in all fields");
-		} else if (newPass1 != newPass2) {
-			Debug.Log ("passwords not match");
+		if ((string.IsNullOrEmpty (otp)) || (string.IsNullOrEmpty (newPassword)) || string.IsNullOrEmpty (confirmPassword)) {
+			notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignUp.FILL_ALL"));
+		} else if (newPassword != confirmPassword) {
+			notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignUp.ERROR_PASSWORD_MATCH"));
 		} else {
-			DBManager.API.UserResetPassword (username, otp, newPass1, newPass2,
+			connectingPanel.Connecting (true);
+			DBManager.API.UserResetPassword (username, otp, newPassword, confirmPassword,
 				(response) => {
-					Debug.Log ("password reset success");
-					nextPanel = PanelsFromPassword.SignIn;
-					fader.FadeOut();
+//					Debug.Log ("password reset success");
+					connectingPanel.Connecting (false);
+					notificationPopUp.OnFinishOutro += AfterReset;
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("ForgotPassword.CHANGE_SUCCESS"));
 				},
 				(error) => {
-					JSONNode jsonData = JSON.Parse (error);
-					Debug.Log (jsonData ["confirmPassword"]);
-					Debug.Log (jsonData ["verificationOtp"]);
+					connectingPanel.Connecting (false);
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("ForgotPassword.FAILED_PASSWORD"));
+//					JSONNode jsonData = JSON.Parse (error);
+//					Debug.Log (jsonData ["confirmPassword"]);
+//					Debug.Log (jsonData ["verificationOtp"]);
 				}
 			);
 		}
+	}
+
+	void AfterReset() {
+		notificationPopUp.OnFinishOutro -= AfterReset;
+		CloseAndGoToNextPage (panelSignIn);
 	}
 }

@@ -40,6 +40,20 @@ public class SignUpManager : AppInitPages {
 	bool subscribe;
 	bool tnc;
 
+	protected override void Init ()
+	{
+		usernameInput.text = "";
+		emailInput.text = "";
+		phoneInput.text = "";
+		passwordInput.text = "";
+		confirmInput.text = "";
+		maleInput.isOn = false;
+		femaleInput.isOn = false;
+		subscribeInput.isOn = true;
+		tncInput.isOn = false;
+		base.Init ();
+	}
+
 	public void ClickBack() {
 		SoundManager.Instance.PlaySFX(SFXList.Button02);
 		CloseAndGoToNextPage (panelSignIn);
