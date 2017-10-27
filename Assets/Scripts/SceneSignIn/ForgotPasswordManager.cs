@@ -49,9 +49,13 @@ public class ForgotPasswordManager : AppInitPages {
         DoResetPassword();
 	}
 		
-	public void ClickBack() {
+	public void ClickSendBack() {
 		SoundManager.Instance.PlaySFX(SFXList.Button02);
 		CloseAndGoToNextPage (panelSignIn);
+	}
+	public void ClickEnterBack() {
+		SoundManager.Instance.PlaySFX(SFXList.Button02);
+		Init ();
 	}
 
 	void DoRequestForgotPassword (){		
