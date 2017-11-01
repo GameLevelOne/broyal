@@ -17,36 +17,44 @@ public class DBManagerSettings : ScriptableObject {
 	[Space(10)]
 
 	[Header("API STRING")]
-	public string getBidRumbleRoundDetails;
-	public string submitBidRumbleResult;
-	public string petListing;
-	public string getUserPetProfile;
-	public string claimPetTrainExp;
-	public string claimPetShareExp;
-	public string purchasePet;
-	public string changePetName;
-	public string startTrainingTime;
-	public string checkTrainingTime;
-	public string getShopList;
 	public string userRegistrationAPI;
 	public string verifyUserAPI;
 	public string getResendOTPAPI;
 	public string userLoginAPI;
-	public string createTopUp;
-	public string getUserStarsAPI;
-	public string getUserProfileAPI;
-	public string unsubscribeUserAPI;
-	public string updateUserNameAPI;
-	public string updateUserProfileAPI;
 	public string userForgotPasswordAPI;
 	public string userResetPasswordAPI;
 	public string userChangePasswordAPI;
-	public string auctionBidding;
+	[Space(10)]
+	public string getLandingAuctionData;
+	public string getAuctionListing;
 	public string auctionJoin;
 	public string getAuctionDetails;
+	public string auctionBidding;
+	public string getEligibleToEnterGame;
+	[Space(10)]
+	public string getBidRumbleGame;
+	public string submitBidRumbleResult;
+	public string submitBidRoyaleResult;
+	public string getPassingUserResult;
+	[Space(10)]
+	public string getUserStarsAPI;
+	public string createTopUp;
+	public string unsubscribeUserAPI;
+	public string updateUserNameAPI;
+	public string updateUserProfileAPI;
+	public string getUserProfileAPI;
+	[Space(10)]
+	public string getUserPetProfile;
+	public string claimPetTrainExp;
+	public string claimPetShareExp;
+	public string changePetName;
+	public string startTrainingTime;
+	public string checkTrainingTime;
+	[Space(10)]
 	public string getWinnerList;
-	public string getAuctionListing;
-	public string getLandingAuctionData;
+	public string petListing;
+	public string purchasePet;
+	public string getShopList;
 
 
 

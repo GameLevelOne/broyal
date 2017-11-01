@@ -8,6 +8,7 @@ using BidRoyale.Core;
 public class AuctionRoomManager : BasePage {
 	public Fader fader;
 	public ConnectingPanel connectingPanel;
+	public LoadingProgress loadingPanel;
 
 	public int auctionId;
 	public string[] imageUrl;
@@ -82,7 +83,7 @@ public class AuctionRoomManager : BasePage {
 				productWeight = jsonData["weight"] + " " + jsonData["unit"];
 				productDescription = jsonData["description"];
 				numberBidders = jsonData["noOfLastCycleBidders"].AsInt;
-				timeToNextCycle = jsonData["timeToNextCycle"].AsInt;
+				timeToNextCycle = (jsonData["timeToNextCycle"].AsInt) / 1000;
 				bidButton.interactable = jsonData["bidEnable"].AsBool;
 
 				//Display Data Room
@@ -105,7 +106,9 @@ public class AuctionRoomManager : BasePage {
 				detailsDescriptionLabel.text = productDescription;
 
 				if ((numberBidders<=0) && (bidButton.interactable)) {
-					GoToGame();
+					CheckEligible();
+				} if (numberBidders==1) {
+					NextPage("LOBBY");
 				} else {
 					if (timeToNextCycle>0)
 						StartCoroutine(IncrementCountdown());
@@ -129,10 +132,10 @@ public class AuctionRoomManager : BasePage {
 				countDownLayer.SetActive (false);
 				countDownLabel.text = Utilities.SecondsToMinutes (timeToNextCycle);
 			}
-			yield return new WaitForSeconds (1);
+			yield return new WaitForSeconds (1f);
 		}
 		if (nextIncrement == maxPrice) {
-			GoToGame ();
+			CheckEligible ();
 		} else {
 			Init ();
 		}
@@ -145,6 +148,27 @@ public class AuctionRoomManager : BasePage {
 			(response)=>{
 				JSONNode jsonData = JSON.Parse(response);
 				bidButton.interactable = false;
+				connectingPanel.Connecting (false);
+			},
+			(error)=>{
+				connectingPanel.Connecting (false);
+			}
+		);
+	}
+
+	public void CheckEligible() {
+		connectingPanel.Connecting (true);
+		DBManager.API.GetEligibleToEnterGame (auctionId,
+			(response)=>{
+				JSONNode jsonData = JSON.Parse(response);
+				bool isEligible = jsonData["isEligible"].AsBool;
+				int timeToGame = jsonData["timeToFirstGameRound"].AsInt-1000;
+
+				if (isEligible) {
+					GoToGame();
+				} else {
+					NextPage("LOBBY");
+				}
 				connectingPanel.Connecting (false);
 			},
 			(error)=>{

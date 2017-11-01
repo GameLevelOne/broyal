@@ -28,27 +28,60 @@ public class DBManager : MonoBehaviour {
 	string tokenType = null;
 	string accessToken = null;
 
-//===========================Bid Rumble Game=======================================================
-	public void GetBidRumbleRoundDetails(int auctionId, 
+//===========================Game=======================================================
+	public void GetEligibleToEnterGame(int auctionId, 
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
-		string url = config.restURL + config.getBidRumbleRoundDetails + auctionId;
-		DebugMsg ("GET BID RUMBLE ROUND DETAILS Request","\nurl = "+url);
+		string url = config.restURL + config.getEligibleToEnterGame + auctionId;
+		DebugMsg ("GET ELIGIBLE TO ENTER GAME Request","\nurl = "+url);
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
-	public void SubmitBidRumbleResult(int auctionId, int roundNumber,
+	public void GetBidRumbleGame(int auctionId, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getBidRumbleGame + auctionId;
+		DebugMsg ("GET BID RUMBLE GAME Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void SubmitBidRumbleResult(int auctionId, int roundNumber, float score,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.submitBidRumbleResult;
 		UTF8Encoding encoder = new UTF8Encoding ();
+		long longScore = (long)(score * 1000000000);
 		string jsondata = "{\n"+
-			"\"auctionId\":\""+auctionId+"\",\n"+
-			"\"roundNumber\":\""+roundNumber+"\",\n"+
+			"\"auctionId\":"+auctionId+",\n"+
+			"\"roundNumber\":"+roundNumber+",\n"+
+			"\"score\":"+longScore+"\n"+
 			"}";
 
 		DebugMsg ("SUBMIT BID RUMBLE RESULT Request","\nurl = "+url+"\ndata = "+jsondata);
 		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
+	}
+
+	public void SubmitBidRoyaleResult(int auctionId, int roundNumber, int answer,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.submitBidRoyaleResult;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"auctionId\":"+auctionId+",\n"+
+			"\"roundNumber\":"+roundNumber+",\n"+
+			"\"chest\":"+answer+"\n"+
+			"}";
+
+		DebugMsg ("SUBMIT BID ROYALE RESULT Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
+	}
+
+	public void GetPassingUserResult(int auctionId, int roundNumber,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getPassingUserResult + auctionId + "&roundNumber=" + roundNumber;
+		DebugMsg ("GET PASSING USER RESULT Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
 //===========================Pet API=======================================================
