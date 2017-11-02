@@ -10,6 +10,7 @@ public class AuctionRoomManager : BasePage {
 	public ConnectingPanel connectingPanel;
 	public LoadingProgress loadingPanel;
 
+	public AuctionMode auctionMode;
 	public int auctionId;
 	public string[] imageUrl;
 	public string productName;
@@ -162,24 +163,48 @@ public class AuctionRoomManager : BasePage {
 			(response)=>{
 				JSONNode jsonData = JSON.Parse(response);
 				bool isEligible = jsonData["isEligible"].AsBool;
-				int timeToGame = jsonData["timeToFirstGameRound"].AsInt-1000;
-
+				int timeToGame = (jsonData["timeToFirstGameRound"].AsInt-1000);
+				PlayerPrefs.SetInt("TimeToGame",timeToGame);
 				if (isEligible) {
 					GoToGame();
 				} else {
+					connectingPanel.Connecting (false);
 					NextPage("LOBBY");
 				}
-				connectingPanel.Connecting (false);
 			},
 			(error)=>{
 				connectingPanel.Connecting (false);
+				NextPage("LOBBY");
 			}
 		);
 	}
 
-	public void GoToGame()
+	void GoToGame()
 	{
-		//Go to Game
+		PlayerPrefs.SetInt("GameMode",(int)auctionMode);
+		if (auctionMode == AuctionMode.BIDRUMBLE) {
+			DBManager.API.GetBidRumbleGame (auctionId,
+				(response) => {
+					JSONNode jsonData = JSON.Parse (response);
+					int rumbleGame = jsonData ["gameTypeId"].AsInt - 1;
+					connectingPanel.Connecting (false);
+					PlayerPrefs.SetInt ("RumbleGame", rumbleGame);
+					OnFinishOutro += LoadAfterOutro;
+					Activate (false);
+				},
+				(error) => {
+					CheckEligible();
+				}
+			);
+		} else {
+			OnFinishOutro += LoadAfterOutro;
+			Activate (false);
+		}
+	}
+
+	void LoadAfterOutro() {
+		OnFinishOutro -= LoadAfterOutro;
+		loadingPanel.gameObject.SetActive (true);
 	}
 
 	public void ClickBack(){

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TypeTheCode : MonoBehaviour {
+public class TypeTheCode : PagesIntroOutro {
+	public SceneGameManager gameManager;
 	public PanelTrainingScores panelScore;
 	public Keyboard keyboard;
 	public Text countdownText;
@@ -111,8 +112,10 @@ public class TypeTheCode : MonoBehaviour {
 //		if(isWinning){
 			Debug.Log(gameTimer);
 			StopAllCoroutines();
-			panelScore.gameObject.SetActive(true);
-			panelScore.SetScoreText(gameTimer.ToString());
+		Activate (false);
+		gameManager.EndGame (gameTimer,0f);
+//			panelScore.gameObject.SetActive(true);
+//			panelScore.SetScoreText(gameTimer.ToString());
 
 //		} else{
 //			gameTimer=0f;

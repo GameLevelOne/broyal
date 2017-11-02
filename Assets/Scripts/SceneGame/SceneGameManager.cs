@@ -3,38 +3,62 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum GameMode{
-	TRAINING,
 	BIDROYALE,
 	BIDRUMBLE,
+	TRAINING
 }
 
 public enum RumbleGame{
-	TYPETHECODE,
 	MEMORYGAME,
 	COLORPAIRING,
+	TYPETHECODE,
 	SEQUENCE
 }
 
 public class SceneGameManager : MonoBehaviour {
-	public GameObject panelGameReady;
-	public GameObject panelTrainingReady;
+	public LoadingProgress loadingPanel;
+	public PanelGameReady panelGameReady;
+	public PagesIntroOutro[] gamePanel;
+
+	GameMode gameMode;
+	RumbleGame rumbleGame;
+	int nextGame;
+	int round;
+	int countdownTimer;
+	int remainingPlayer;
 
 	void Start () {
-		CheckGameType();
+		gameMode = (GameMode) PlayerPrefs.GetInt ("GameMode",0);
+		rumbleGame = (RumbleGame) PlayerPrefs.GetInt ("RumbleGame",0);
+		if (gameMode == GameMode.BIDROYALE) {
+			nextGame = 4;
+		} else {
+			nextGame = (int) rumbleGame;
+		}
+		round = 1;
+		countdownTimer = PlayerPrefs.GetInt ("TimeToGame",0);
+		remainingPlayer = 0;
+		InitGame ();
 	}
 
-	void CheckGameType(){
-		GameMode mode = (GameMode) PlayerPrefs.GetInt ("GameMode",0);
-		if(mode == GameMode.BIDROYALE){
-			panelGameReady.SetActive(true);
-			panelTrainingReady.SetActive(false);
-		} else if(mode == GameMode.BIDRUMBLE){
-			panelGameReady.SetActive(true); //temp
-			panelTrainingReady.SetActive(false);
-		} else if(mode == GameMode.TRAINING){
-			panelTrainingReady.SetActive(true);
-			panelGameReady.SetActive(false);
+	void InitGame(){
+		panelGameReady.ReadyGame (gameMode, round, countdownTimer, remainingPlayer);
+		panelGameReady.OnFinishOutro += LoadNextGame;
+	}
+
+	void LoadNextGame() {
+		panelGameReady.OnFinishOutro -= LoadNextGame;
+		gamePanel [nextGame].Activate (true);
+	}
+
+	public string GetRound() {
+		return round.ToString ("00");
+	}
+
+	public void EndGame(float score, float timeToPopulate) {
+		if (gameMode == GameMode.TRAINING) {
+			loadingPanel.gameObject.SetActive (true);
+		} else {
 		}
 	}
-
 }

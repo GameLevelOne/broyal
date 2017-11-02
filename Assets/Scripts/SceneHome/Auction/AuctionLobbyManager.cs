@@ -202,6 +202,7 @@ public class AuctionLobbyManager : BasePage {
 					JSONNode jsonData = JSON.Parse(response);
 					header.GetUserStars();
 					connectingPanel.Connecting (false);
+					auctionRoomManager.auctionMode = auctionMode;
 					NextPage ("AUCTIONROOM");
 				},
 				(error)=>{
@@ -209,6 +210,7 @@ public class AuctionLobbyManager : BasePage {
 				}
 			);
 		} else {
+			auctionRoomManager.auctionMode = auctionMode;
 			NextPage ("AUCTIONROOM");
 		}
 	}

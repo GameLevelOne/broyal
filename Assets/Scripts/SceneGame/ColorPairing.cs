@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ColorPairing : MonoBehaviour {
+public class ColorPairing : PagesIntroOutro {
+	public SceneGameManager gameManager;
 	public PanelTrainingScores panelScore;
 	public Transform tileParent;
 	public GameObject tilePrefab;
@@ -128,8 +129,10 @@ public class ColorPairing : MonoBehaviour {
 //		if(isWinning){
 //			Debug.Log(gameTimer);
 			StopAllCoroutines();
-			panelScore.gameObject.SetActive(true);
-			panelScore.SetScoreText(gameTimer.ToString());
+		Activate (false);
+		gameManager.EndGame (gameTimer,0f);
+//			panelScore.gameObject.SetActive(true);
+//			panelScore.SetScoreText(gameTimer.ToString());
 
 //		} else{
 //			gameTimer=0f;

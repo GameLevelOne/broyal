@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MemoryGame : MonoBehaviour {
+public class MemoryGame : PagesIntroOutro {
+	public SceneGameManager gameManager;
 	public PanelTrainingScores panelScore;
 
 	public Transform tileParent;
@@ -136,10 +137,13 @@ public class MemoryGame : MonoBehaviour {
 //			StartCoroutine(WaitForResetTile(6));
 //		} else{
 //			if(gameTimer < gameTimeLimit){
-				StopAllCoroutines();
-				Debug.Log(gameTimer);
-				panelScore.gameObject.SetActive(true);
-				panelScore.SetScoreText(gameTimer.ToString());
+		StopAllCoroutines();
+		Debug.Log(gameTimer);
+
+		Activate (false);
+		gameManager.EndGame (gameTimer,0f);
+//				panelScore.gameObject.SetActive(true);
+//				panelScore.SetScoreText(gameTimer.ToString());
 //			}
 //		}
 	}

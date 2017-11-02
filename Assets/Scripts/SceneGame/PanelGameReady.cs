@@ -3,59 +3,83 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PanelGameReady : MonoBehaviour {
-	public GameObject panelGame;
-	public GameObject panelRemainingPlayers;
-	public Text textRemainingPlayers;
-	public Text textReady;
-	public Text textRound;
+public class PanelGameReady : PagesIntroOutro {
+	public Text roundLabel;
+	public Text titleLabel;
+	public Text readyLabel;
+	public GameObject panelInfo;
+	public GameObject playerInfo;
+	public Text infoTitle;
+	public Text infoLabel;
+	public Text gameDescription;
+	public Text countDownLabel;
 
-	int totalPlayers = 1000;
-	int roundCount = 0;
+	public float totalCountdown;
+	public float countdown;
 
-	public int TotalPlayers { 
-		set { totalPlayers = value;}
-		get	{ return totalPlayers;}
+	public void ReadyGame(GameMode gameMode, int round, int countDownTimer, int remainingPlayer=0) {
+		if (gameMode == GameMode.BIDROYALE) {
+			titleLabel.text = LocalizationService.Instance.GetTextByKey ("Game.BID_ROYALE");
+		} else if (gameMode == GameMode.BIDRUMBLE) {
+			titleLabel.text = LocalizationService.Instance.GetTextByKey ("Game.BID_RUMBLE");
+		} else {
+			titleLabel.text = LocalizationService.Instance.GetTextByKey ("Game.TRAINING");
+		}
+
+		panelInfo.SetActive (true);
+		if (remainingPlayer == 0) {
+			roundLabel.text = LocalizationService.Instance.GetTextByKey ("Game.ENTERING");
+			playerInfo.SetActive (false);
+			gameDescription.gameObject.SetActive (true);
+		} else {
+			roundLabel.text = LocalizationService.Instance.GetTextByKey ("Game.ROUND") + " " + round;
+			playerInfo.SetActive (true);
+			gameDescription.gameObject.SetActive (false);
+			infoLabel.text = remainingPlayer.ToString("N0");
+		}
+			
+		totalCountdown = countDownTimer/1000f;
+		countdown = 0f;
+		ReadySetGo ();
+
+		Activate (true);
 	}
 
-	public int RoundCount { 
-		get	{ return roundCount;}
-	}
-
-	void OnEnable(){
-		StartCountdown();
-	}
-
-	public void StartCountdown ()
-	{
-		if (totalPlayers > 0) {
-			roundCount++;
-			SetTextDisplay(roundCount,totalPlayers);
-			StartCoroutine (ReadySetGo ());
+	void ReadySetGo() {
+		float remaining = totalCountdown - countdown;
+		countDownLabel.text = ((int)(remaining - 3f)).ToString ("D0");
+		if (remaining >= 3f) {
+			readyLabel.gameObject.SetActive (false);
+			panelInfo.gameObject.SetActive (true);
+			countDownLabel.gameObject.SetActive (true);
+		} else {			
+			readyLabel.gameObject.SetActive (true);
+			panelInfo.gameObject.SetActive (false);
+			countDownLabel.gameObject.SetActive (false);
+			if (remaining < 1f) {
+				readyLabel.text = LocalizationService.Instance.GetTextByKey ("Game.GO");
+			} else if (remaining < 2f) {
+				readyLabel.text = LocalizationService.Instance.GetTextByKey ("Game.GET_SET");
+			} else {
+				readyLabel.text = LocalizationService.Instance.GetTextByKey ("Game.READY");
+			} 
 		}
 	}
 
-	public bool CheckNextRound (){
-		return true;
+	new protected void OnEnable() {
+		base.OnEnable();
+		StartCoroutine (StartCountdown ());
 	}
 
-	void SetTextDisplay(int roundCount, int playerCount){
-		textRound.text = "Round "+roundCount.ToString();
-		textRemainingPlayers.text = playerCount.ToString();
+	IEnumerator StartCountdown ()
+	{
+		while (countdown < totalCountdown) {
+			yield return null;
+			countdown += Time.deltaTime;
+			ReadySetGo ();
+		}
+		Activate (false);
 	}
 
-	IEnumerator ReadySetGo (){
-		yield return new WaitForSeconds(3);
-		textReady.gameObject.SetActive(true);
-		panelRemainingPlayers.SetActive(false);
-		yield return new WaitForSeconds(1);
-		textReady.text = "GET SET!";
-		yield return new WaitForSeconds(1);
-		textReady.text = "GO!";
-		yield return new WaitForSeconds(1);
-		this.gameObject.SetActive(false);
-//		SoundManager.Instance.PlaySFX(SFXList.GameStart);
-		panelGame.SetActive(true);
-		this.gameObject.SetActive(false);
-	}
+
 }

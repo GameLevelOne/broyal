@@ -7,7 +7,8 @@ enum ChestSprites{
 	BrownEmpty,BrownFilled,RedEmpty,RedFilled
 }
 
-public class TwoChests : MonoBehaviour {
+public class TwoChests : PagesIntroOutro {
+	public SceneGameManager gameManager;
 	public GameObject panelResult;
 	public PanelGameReady panelGameReady;
 	public GameObject panelScores;
