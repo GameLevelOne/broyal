@@ -189,6 +189,7 @@ public class AuctionRoomManager : BasePage {
 					int rumbleGame = jsonData ["gameTypeId"].AsInt - 1;
 					connectingPanel.Connecting (false);
 					PlayerPrefs.SetInt ("RumbleGame", rumbleGame);
+                    PlayerPrefs.SetInt("GameAuctionId",auctionId);
 					OnFinishOutro += LoadAfterOutro;
 					Activate (false);
 				},

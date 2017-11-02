@@ -109,18 +109,10 @@ public class TypeTheCode : PagesIntroOutro {
 
 	void GameOver(){
 		overlay.SetActive(true);
-//		if(isWinning){
-			Debug.Log(gameTimer);
-			StopAllCoroutines();
+		Debug.Log(gameTimer);
+		StopAllCoroutines();
 		Activate (false);
-		gameManager.EndGame (gameTimer,0f);
-//			panelScore.gameObject.SetActive(true);
-//			panelScore.SetScoreText(gameTimer.ToString());
-
-//		} else{
-//			gameTimer=0f;
-//			StartCoroutine(WaitForReset());
-//		}
+		gameManager.EndGame (gameTimer);
 	}
 
 	void ResetAnswer(){

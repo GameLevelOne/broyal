@@ -93,19 +93,22 @@ public class MemoryGame : PagesIntroOutro {
 		for (int i = 0; i < 6; i++) {
 			slots.Add (i);
 		}
-		for (int i = 0; i < 6; i++) {
+        List<int> picIndex = new List<int>();
+        for (int i = 0; i < tilePictures.Length; i++)
+        {
+            picIndex.Add(i);
+        }
+
+		for (int i = 0; i < 3; i++) {
+            int picTemp = Random.Range(0, picIndex.Count);
 			int temp = Random.Range (0, slots.Count);
-			if (pairCounter < 2) {
-				pairCounter++;
-			} else {
-				pairCounter = 1;
-				picCounter++;
-			}
-			tileObjects [slots[temp]].GetComponent<MemoryGameTile>().InitTile(picCounter,slots[temp],tilePictures[picCounter]);
+            tileObjects[slots[temp]].GetComponent<MemoryGameTile>().InitTile(picIndex[picTemp], slots[temp], tilePictures[picIndex[picTemp]]);
 			slots.RemoveAt(temp);
-		}
-		pairCounter=0;
-		picCounter=0;
+            temp = Random.Range(0, slots.Count);
+            tileObjects[slots[temp]].GetComponent<MemoryGameTile>().InitTile(picIndex[picTemp], slots[temp], tilePictures[picIndex[picTemp]]);
+            slots.RemoveAt(temp);
+            picIndex.RemoveAt(picTemp);
+        }
 	}
 
 	void ResetTile (int amount)
@@ -122,40 +125,19 @@ public class MemoryGame : PagesIntroOutro {
 		overlayTile.SetActive(false);
 	}
 
-	void ResetGame(){
-		gameTimer=0;
-		Debug.Log(gameTimer);
-		StartCoroutine(Countdown());
-		StartCoroutine(CountPlayTime());
-	}
-
 	void GameOver(){
 		overlay.SetActive(true);
 
-//		if(answerCount <3){
-//			answerCount=0;
-//			StartCoroutine(WaitForResetTile(6));
-//		} else{
-//			if(gameTimer < gameTimeLimit){
 		StopAllCoroutines();
 		Debug.Log(gameTimer);
 
-		Activate (false);
-		gameManager.EndGame (gameTimer,0f);
-//				panelScore.gameObject.SetActive(true);
-//				panelScore.SetScoreText(gameTimer.ToString());
-//			}
-//		}
+		gameManager.EndGame (gameTimer);
 	}
 
 	IEnumerator WaitForResetTile(int amount){
 		overlayTile.SetActive(true);
 		yield return new WaitForSeconds(0.5f);
 		ResetTile(amount);
-		if(amount == 6){
-			Debug.Log(gameTimer);
-			ResetGame();
-		}
 	}
 
 	IEnumerator Countdown ()

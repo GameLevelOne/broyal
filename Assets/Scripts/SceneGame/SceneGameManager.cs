@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SimpleJSON;
 
 public enum GameMode{
 	BIDROYALE,
@@ -18,16 +19,19 @@ public enum RumbleGame{
 public class SceneGameManager : MonoBehaviour {
 	public LoadingProgress loadingPanel;
 	public PanelGameReady panelGameReady;
-	public PagesIntroOutro[] gamePanel;
+    public NotificationPopUp notifPopUp;
+    public PagesIntroOutro[] gamePanel;
 
 	GameMode gameMode;
 	RumbleGame rumbleGame;
+    int auctionId;
 	int nextGame;
 	int round;
 	int countdownTimer;
 	int remainingPlayer;
 
 	void Start () {
+        auctionId = PlayerPrefs.GetInt("GameAuctionId", 0);
 		gameMode = (GameMode) PlayerPrefs.GetInt ("GameMode",0);
 		rumbleGame = (RumbleGame) PlayerPrefs.GetInt ("RumbleGame",0);
 		if (gameMode == GameMode.BIDROYALE) {
@@ -55,10 +59,33 @@ public class SceneGameManager : MonoBehaviour {
 		return round.ToString ("00");
 	}
 
-	public void EndGame(float score, float timeToPopulate) {
+	public void EndGame(float score) {
 		if (gameMode == GameMode.TRAINING) {
-			loadingPanel.gameObject.SetActive (true);
-		} else {
-		}
+            gamePanel[nextGame].Activate(false);
+            gamePanel[nextGame].OnFinishOutro += LoadToHome;
+		} else if (gameMode == GameMode.BIDRUMBLE) {
+            DBManager.API.SubmitBidRumbleResult(auctionId,round,score,
+                (response) =>
+                {
+                    JSONNode jsonData = JSON.Parse(response);
+                },
+                (error) =>
+                {
+                    notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey ("Game.ERROR"));
+                }
+            );
+        }
 	}
+
+    public void ClickNotifPopUp()
+    {
+        gamePanel[nextGame].Activate(false);
+        gamePanel[nextGame].OnFinishOutro += LoadToHome;        
+    }
+
+    void LoadToHome()
+    {
+        gamePanel[nextGame].OnFinishOutro -= LoadToHome;
+        loadingPanel.gameObject.SetActive(true);
+    }
 }
