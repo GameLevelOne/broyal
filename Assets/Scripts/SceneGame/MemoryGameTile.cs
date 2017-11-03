@@ -13,8 +13,10 @@ public class MemoryGameTile : MonoBehaviour {
 	public static event MemoryTileClicked OnMemoryTileClicked;
 
 	Sprite tilePic;
+	Sprite closedTile;
 
 	public void InitTile(int value,int idx,Sprite pic){
+		closedTile = GetComponent<Image> ().sprite;
 		picValue = value;
 		tileIdx = idx;
 		tilePic = pic;
@@ -23,5 +25,9 @@ public class MemoryGameTile : MonoBehaviour {
 	public void OnClick(){
 		GetComponent<Image>().sprite = tilePic;
 		OnMemoryTileClicked(picValue,tileIdx);
+	}
+
+	public void Reset() {
+		GetComponent<Image> ().sprite = closedTile;
 	}
 }

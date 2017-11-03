@@ -2,139 +2,95 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
-enum ChestSprites{
-	BrownEmpty,BrownFilled,RedEmpty,RedFilled
-}
+using SimpleJSON;
 
 public class TwoChests : PagesIntroOutro {
 	public SceneGameManager gameManager;
-	public GameObject panelResult;
-	public PanelGameReady panelGameReady;
-	public GameObject panelScores;
+	public ConnectingPanel connectingPanel;
 
-	public GameObject panelTimeOut;
-	public GameObject chestBrownButton;
-	public GameObject chestRedButton;
+	public Animator chestBrownButton;
+	public Animator chestRedButton;
+	public Animator resultPanel;
+	public Image correctChest;
+	public Image wrongChest;
 	public Text timerText;
 
-	public Text resultText;
+	public Sprite[] correctChestSprite; 
+	public Sprite[] wrongChestSprite; 
 
-	public Image chestBigImage;
-	public Sprite[] chestSprite = new Sprite[4]; 
+	int curChoice;
+	int auctionId;
+	int round;
 
-	List<int> scores = new List<int>();
-
-	Coroutine currCor = null;
-
-	int currentPlayer = 0;
-	int treasureNo = 0;
-
-	string triggerResultRight = "resultRight";
-	string triggerResultWrong = "resultWrong";
-
-	void Start ()
-	{
-//		for (int i = 0; i < totalPlayers; i++) {
-//			scores.Add(0);
-//		}
-		
+	void InitGame() {
+		chestBrownButton.SetInteger ("ChestState",0);
+		chestRedButton.SetInteger ("ChestState",0);
+		resultPanel.SetInteger ("ChestResult",0);
+		resultPanel.gameObject.SetActive (false);
+		curChoice = -1;
+		auctionId = PlayerPrefs.GetInt("GameAuctionId", 0);
+		round = PlayerPrefs.GetInt("GameRound", 0);
 	}
 
 	void OnEnable(){
-		StartTimer ();
+		InitGame ();
+		StartCoroutine(StartCountdown());
 	}
 
 	public void OnClickChest (int chest)
 	{
-		StopTimer();
-
-		treasureNo = Random.Range (0, 2);
-
-		if (treasureNo == chest) {
-			panelScores.GetComponent<PanelScoresManager>().RightAnswer=true;
-			UpdateResultDisplay(true,chest);	
+		if (chest==0) {
+			chestBrownButton.SetInteger ("ChestState",1);
+			chestRedButton.SetInteger ("ChestState",-1);
 		} else {
-			panelScores.GetComponent<PanelScoresManager>().RightAnswer=false;
-			UpdateResultDisplay(false,chest);
+			chestBrownButton.SetInteger ("ChestState",-1);
+			chestRedButton.SetInteger ("ChestState",1);
 		}
+		curChoice = chest;
+
 	}
-
-	public void OnClickResult(){
-		panelScores.SetActive(true);
-		this.gameObject.SetActive(false);
-	}
-
-	void UpdateResultDisplay (bool rightAnswer, int chestColor)
-	{
-		Animator resultAnim = panelResult.GetComponent<Animator> ();
-		if (rightAnswer) {
-			if (chestColor == 0) {
-				chestBigImage.sprite = chestSprite [(int)ChestSprites.BrownFilled];
-			} else if (chestColor == 1) {
-				chestBigImage.sprite = chestSprite [(int)ChestSprites.RedFilled];
-			}
-			resultAnim.SetTrigger (triggerResultRight);
-			resultText.text = "CONGRATULATIONS!";
-		} else {
-			if (chestColor == 0) {
-				chestBigImage.sprite = chestSprite [(int)ChestSprites.BrownEmpty];
-			} else if (chestColor == 1) {
-				chestBigImage.sprite = chestSprite [(int)ChestSprites.RedEmpty];
-			}
-			resultAnim.SetTrigger (triggerResultWrong);
-			resultText.text = "OOPS! TOO BAD...";
-		}
-		panelResult.GetComponent<Image> ().enabled = true;
-	}
-
-	void NextRound ()
-	{
-		scores.RemoveAll(t => t == 0);
-		Debug.Log("Reset round, current players: "+scores.Count);
-		currentPlayer = 0;
-	}
-
-	static bool ScoreIsZero (int i)
-	{
-		if (i == 0) {
-			return true;
-		} else 
-		return false;
-	}
-
-	void StartTimer(){
-		currCor = StartCoroutine(StartCountdown());
-		Debug.Log("start timer");
-	}
-
-	void StopTimer (){
-		StopCoroutine(currCor);
-		Debug.Log("timer stopped");
-	}
-
-	void ShowChestAfterTimeOut ()
-	{
-		if (treasureNo == 0) {
-			chestBrownButton.transform.GetChild (0).GetComponent<Image> ().sprite = chestSprite [(int)ChestSprites.BrownFilled];
-			chestRedButton.transform.GetChild (0).GetComponent<Image> ().sprite = chestSprite [(int)ChestSprites.RedEmpty];
-		} else {
-			chestBrownButton.transform.GetChild(0).GetComponent<Image>().sprite = chestSprite[(int)ChestSprites.BrownEmpty];
-			chestRedButton.transform.GetChild(0).GetComponent<Image>().sprite = chestSprite[(int)ChestSprites.RedFilled];
-		}
-
-		chestBrownButton.GetComponent<Animator>().SetTrigger("showResult");
-		chestRedButton.GetComponent<Animator>().SetTrigger("showResult");
-	}
-
+		
 	IEnumerator StartCountdown ()
 	{
-		for (int i = 9; i >= 0; i--) {
+		for (int i = 6; i >= 0; i--) {
 			yield return new WaitForSeconds(1);
 			timerText.text = "0"+i.ToString();
 		}
-		ShowChestAfterTimeOut();
-		yield return new WaitForSeconds(2);
-		panelTimeOut.SetActive(true);
+		CheckResult();
+	}
+
+	void CheckResult() {
+		if (curChoice < 0) {
+			resultPanel.gameObject.SetActive (true);
+			resultPanel.SetInteger ("ChestResult",3);
+			StartCoroutine (DelayEnd (2f, false));
+		} else {
+			connectingPanel.Connecting (true);
+			DBManager.API.SubmitBidRoyaleResult(auctionId,round,curChoice,
+				(response) =>
+				{
+					Debug.Log ("Exit Rumble");
+					JSONNode jsonData = JSON.Parse(response);
+					int timeToPopulateServerData = jsonData["timeToPopulateServerData"];
+					bool win = (jsonData["correctAnswer"].AsInt == curChoice) ? true : false;
+
+					resultPanel.gameObject.SetActive (true);
+					resultPanel.SetInteger ("ChestResult",win ? 1 : 2);
+					StartCoroutine (DelayEnd (2f, win, timeToPopulateServerData));
+				},
+				(error) =>
+				{
+//					notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey ("Game.ERROR"));
+//					notifPopUp.OnFinishOutro += LoadToHomeFromNotif;
+					Activate(false);
+					gameManager.loadingPanel.gameObject.SetActive(true);
+				}
+			);
+		}
+	}
+
+	IEnumerator DelayEnd(float secs, bool win,int timeToPopulateServerData=0) {
+		yield return new WaitForSeconds (secs);
+		gameManager.EndRoyale (win, timeToPopulateServerData, curChoice);
 	}
 }

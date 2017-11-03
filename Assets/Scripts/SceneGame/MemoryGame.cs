@@ -10,6 +10,7 @@ public class MemoryGame : PagesIntroOutro {
 	public Transform tileParent;
 	public GameObject tilePrefab;
 	public GameObject overlay;
+	public Text overlayLabel;
 	public GameObject overlayTile;
 	public Text countdownText;
 	public Sprite[] tilePictures;
@@ -22,7 +23,7 @@ public class MemoryGame : PagesIntroOutro {
 	int currPicValue = -1;
 	int currTileIdx = -1;
 	int[] pairTileIdx = new int[2];
-	bool gameOver = false;
+	bool win = false;
 	bool isAPair = false;
 	float gameTimer = 0f;
 	float gameTimeLimit = 6f;
@@ -64,7 +65,7 @@ public class MemoryGame : PagesIntroOutro {
 					answerCount++;
 					isAPair = false;
 					if (answerCount == 3) {
-						gameOver = true;
+						win = true;
 						GameOver ();
 					}
 					Debug.Log ("answerCount:" + answerCount);
@@ -115,10 +116,10 @@ public class MemoryGame : PagesIntroOutro {
 	{
 		for (int i = 0; i < amount; i++) {
 			if (amount == 2) {
-				tileObjects [pairTileIdx [i]].GetComponent<Image> ().sprite = null;
+				tileObjects [pairTileIdx [i]].GetComponent<MemoryGameTile> ().Reset();
 				pairTileIdx [i] = -1;
 			} else{
-				tileObjects [i].GetComponent<Image> ().sprite = null;
+				tileObjects [i].GetComponent<MemoryGameTile> ().Reset();
 			}
 		}
 		overlay.SetActive(false);
@@ -127,9 +128,14 @@ public class MemoryGame : PagesIntroOutro {
 
 	void GameOver(){
 		overlay.SetActive(true);
+		if (win) {
+			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.CONGRATULATIONS");
+		} else {
+			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.TIMES_UP");
+			gameTimer = 6f;
+		}
 
 		StopAllCoroutines();
-		Debug.Log(gameTimer);
 
 		gameManager.EndGame (gameTimer);
 	}
@@ -148,7 +154,7 @@ public class MemoryGame : PagesIntroOutro {
 			countdownText.text = "0" + i.ToString ();
 		}
 //		SoundManager.Instance.PlaySFX(SFXList.TimeUp);
-		gameOver = true;
+		win = false;
 		GameOver();
 	}
 

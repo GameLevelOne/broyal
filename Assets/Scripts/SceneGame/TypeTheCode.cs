@@ -12,6 +12,7 @@ public class TypeTheCode : PagesIntroOutro {
 	public Transform parentAnswer;
 	public GameObject answerObj;
 	public GameObject overlay;
+	public Text overlayLabel;
 
 	Text[] answerObjArray = new Text[8];
 	char[] stringAnswer = new char[8];
@@ -20,8 +21,7 @@ public class TypeTheCode : PagesIntroOutro {
 	int totalChar = 8;
 	int totalInput = 0;
 
-	bool gameOver = false;
-	bool isWinning = false;
+	bool win = false;
 
 	float gameTimer = 0f;
 	float gameTimeLimit = 6f;
@@ -100,8 +100,7 @@ public class TypeTheCode : PagesIntroOutro {
 			}
 		}
 		if(totalTrue == totalChar){
-			gameOver = true;
-			isWinning = true;
+			win = true;
 			GameOver();
 		}
 
@@ -109,9 +108,13 @@ public class TypeTheCode : PagesIntroOutro {
 
 	void GameOver(){
 		overlay.SetActive(true);
-		Debug.Log(gameTimer);
+		if (win) {
+			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.CONGRATULATIONS");
+		} else {
+			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.TIMES_UP");
+			gameTimer = 6f;
+		}
 		StopAllCoroutines();
-		Activate (false);
 		gameManager.EndGame (gameTimer);
 	}
 
@@ -141,8 +144,7 @@ public class TypeTheCode : PagesIntroOutro {
 			countdownText.text = "0"+i.ToString();
 		}
 //		SoundManager.Instance.PlaySFX(SFXList.TimeUp);
-		gameOver = true;
-		overlay.SetActive(true);
+		win = false;
 		GameOver();
 	}
 

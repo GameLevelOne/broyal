@@ -70,7 +70,10 @@ public class LocalizationService : MonoBehaviour
                     result.Add(grid[0, ln], grid[col, ln]);
                 else
                 {
-                   Debug.LogError(string.Format("Key {0} already exist", grid[0, ln]));
+//                   Debug.LogError(string.Format("Key {0} already exist", grid[0, ln]));
+//					foreach (var entry in result) {
+//						Debug.Log ("Lang: "+entry.Key+","+entry.Value);
+//					}
                 }
             }
         return result;

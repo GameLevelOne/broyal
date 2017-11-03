@@ -9,6 +9,7 @@ public class ColorPairing : PagesIntroOutro {
 	public Transform tileParent;
 	public GameObject tilePrefab;
 	public GameObject overlay;
+	public Text overlayLabel;
 	public Text countdownText;
 
 	Vector3 tileStartPos = new Vector3(-230f,230f,0);
@@ -19,7 +20,7 @@ public class ColorPairing : PagesIntroOutro {
 	int counterBlue = 0;
 	int counterRed = 0;
 	bool gameOver = false;
-	bool isWinning = false;
+	bool win = false;
 	float gameTimer = 0f;
 	float gameTimeLimit = 6f;
 
@@ -45,8 +46,7 @@ public class ColorPairing : PagesIntroOutro {
 	{
 		bool result = AllTilesMatched();
 			if(result){
-				gameOver=true;
-				isWinning = true;
+				win = true;
 				GameOver();
 			}
 	}
@@ -126,6 +126,13 @@ public class ColorPairing : PagesIntroOutro {
 
 	void GameOver(){
 		overlay.SetActive(true);
+		if (win) {
+			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.CONGRATULATIONS");
+		} else {
+			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.TIMES_UP");
+			gameTimer = 6f;
+		}
+
 		StopAllCoroutines();
 
         gameManager.EndGame (gameTimer);
@@ -144,7 +151,7 @@ public class ColorPairing : PagesIntroOutro {
 		}
 //		SoundManager.Instance.PlaySFX(SFXList.TimeUp);
 		overlay.SetActive(true);
-		gameOver = true;
+		win = false;
 		GameOver();
 	}
 
