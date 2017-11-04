@@ -31,6 +31,7 @@ public class PanelScoresManager : PagesIntroOutro {
 	bool winner;
 	int timeToNextGameRound;
 	int choice;
+    int passNumber;
 	RumbleScoreData[] rumbleScoreData;
 
 	public void InitScore(GameMode _gameMode,int _round,float _score, int _auctionId = 0, int _timeToPopulateServer = 0, int _choice = 0) {
@@ -54,7 +55,7 @@ public class PanelScoresManager : PagesIntroOutro {
 			simpleInfo.SetActive (true);
 			if (gameMode == GameMode.BIDROYALE) {
 				topLabel.text = LocalizationService.Instance.GetTextByKey ("Game.ROUND") + " " + round;
-				if (score = 0) {
+				if (score == 0) {
 					bottomLabel.text = LocalizationService.Instance.GetTextByKey ("Game.YOU_FAILED");
 					buttonNext.interactable = true;
 				} else {
@@ -87,10 +88,11 @@ public class PanelScoresManager : PagesIntroOutro {
 				status = jsonData["status"];
 				winner = jsonData["winner"].AsBool;
 				timeToNextGameRound = jsonData["timeToNextGameRound"].AsInt;
-				rumbleScoreData = new RumbleScoreData[jsonData["scoreBoard"].Count];
 				if (gameMode==GameMode.BIDRUMBLE) {
 
-					for (int i=0;i<jsonData["scoreBoard"].Count;i++) {
+                    rumbleScoreData = new RumbleScoreData[jsonData["scoreBoard"].Count];
+                    for (int i = 0; i < jsonData["scoreBoard"].Count; i++)
+                    {
 						rumbleScoreData[i] = new RumbleScoreData();
 						rumbleScoreData[i].rank = jsonData["scoreBoard"][i]["rank"].AsInt;
 						rumbleScoreData[i].username = jsonData["scoreBoard"][i]["username"];
@@ -107,15 +109,23 @@ public class PanelScoresManager : PagesIntroOutro {
 					waitingInfo.SetActive(false);
 					resultInfo.SetActive(true);
 				} else {
-
-//					mulai disiniiiii, 
-//					jangan lupa bikin data itemnya di SceneGameManager
-//					untuk scoreboard
-
+                    passNumber = jsonData["scoreBoard"].Count;
+                    RoyaleScoreData data = new RoyaleScoreData();
+                    data.round = round;
+                    data.answer = choice;
+                    data.passed = passNumber;
+                    gameManager.AddRoyaleScore(data);
 				}
 				if ((winner)  || (status!="PASS")) {
 					buttonNext.interactable = true;
-					scoreBoard.InitScoreBoard(rumbleScoreData);
+                    if (gameMode == GameMode.BIDRUMBLE)
+                    {
+                        scoreBoard.InitScoreBoard(rumbleScoreData);
+                    }
+                    else
+                    {
+                        scoreBoard.InitScoreBoard(gameManager.GetRoyaleScores());
+                    }
 				} else {
 					StartCoroutine(DelayNextRound(1f));
 				}
@@ -130,7 +140,8 @@ public class PanelScoresManager : PagesIntroOutro {
 		timeToNextGameRound -= (int)(secs * 1000f);
 		yield return new WaitForSeconds (secs);
 		Activate (false);
-		gameManager.NextRound (timeToNextGameRound,rumbleScoreData.Length);
+        int remPlayers = (gameMode == GameMode.BIDRUMBLE) ? rumbleScoreData.Length : passNumber;
+		gameManager.NextRound (timeToNextGameRound,remPlayers);
 	}
 
 	public void NextClicked() {

@@ -102,6 +102,14 @@ public class SceneGameManager : MonoBehaviour {
 		gamePanel [nextGame].Activate (false);
 		scorePanel.InitScore(gameMode,round,(win ? 0 : 1),auctionId,timeToPopulateServerData,choice);
 	}
+    public void AddRoyaleScore(RoyaleScoreData data)
+    {
+        royaleScores.Add(data);
+    }
+    public RoyaleScoreData[] GetRoyaleScores()
+    {
+        return royaleScores.ToArray();
+    }
 
 
     public void ExitGame()
