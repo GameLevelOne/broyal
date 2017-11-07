@@ -84,7 +84,8 @@ public class AuctionRoomManager : BasePage {
 				productWeight = jsonData["weight"] + " " + jsonData["unit"];
 				productDescription = jsonData["description"];
 				numberBidders = jsonData["noOfLastCycleBidders"].AsInt;
-				timeToNextCycle = (jsonData["timeToNextCycle"].AsInt) / 1000;
+				int getTime = (jsonData["timeToNextCycle"].AsInt == 0) ? jsonData["timeToNextCycle"].AsInt : jsonData["timeToFirstAuctionCycle"].AsInt;
+				timeToNextCycle = getTime / 1000;
 				bidButton.interactable = jsonData["bidEnable"].AsBool;
 
 				//Display Data Room
