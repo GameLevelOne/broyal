@@ -49,9 +49,9 @@ namespace BidRoyale.Core
 		public static string TimeToNow(DateTime adate) {
 			DateTime now = DateTime.Now;
 			TimeSpan delta = (adate - now);
-			string s = "-" + delta.TotalHours.ToString ("00");
-			s += ":" + delta.Minutes.ToString ("00");
-			s += ":" + delta.Seconds.ToString ("00");
+			string s = "" + delta.TotalHours.ToString ("00");
+			s += ":" + Math.Abs(delta.Minutes).ToString ("00");
+			s += ":" + Math.Abs(delta.Seconds).ToString ("00");
 			return s;
 		}
 

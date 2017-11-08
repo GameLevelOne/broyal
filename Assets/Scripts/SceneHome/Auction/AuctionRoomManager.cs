@@ -43,8 +43,9 @@ public class AuctionRoomManager : BasePage {
 	public ScrollSnapRect scrollSnapDetail;
 	public Text detailsDataLabel;
 	public Text detailsDescriptionLabel;
-	public Image bannerImage;
+	public ImageLoader bannerImage;
 	public Button bidButton;
+	public string bannerAction;
 
 	void Start()
 	{
@@ -53,19 +54,20 @@ public class AuctionRoomManager : BasePage {
 
 	protected override void Init ()
 	{
+		Debug.Log ("---------Init Auction Room-----------");
 		roomAnimator.Play ("PanelLeft");
 		roomAnimator.ResetTrigger ("GoLeft");
 		roomAnimator.ResetTrigger ("GoRight");
 
 		biddersLayer.SetActive (false);
-		countDownAnim.Play ("CountDownRun");
 		countDownAnim.gameObject.SetActive (false);
+		countDownAnim.SetInteger ("State",0);
 
 		connectingPanel.Connecting (true);
 		DBManager.API.GetAuctionDetails (auctionId,
 			(response) => {
 				connectingPanel.Connecting (false);
-				Debug.Log (response);
+//				Debug.Log (response);
 				roomImage.LoadImageFromUrl (imageUrl [0]);
 				JSONNode jsonData = JSON.Parse(response);
 				//Data Init
@@ -74,8 +76,8 @@ public class AuctionRoomManager : BasePage {
 				imageUrl[1] = jsonData["productImages"][1];
 				imageUrl[2] = jsonData["productImages"][2];
 				productName = jsonData["productName"];
-				currentPrice = jsonData["openBid"].AsInt;
-				nextIncrement = jsonData["nextIncrement"].AsInt;
+				currentPrice = (jsonData["currentPrice"].AsInt>jsonData["openBid"].AsInt) ? jsonData["currentPrice"].AsInt : jsonData["openBid"].AsInt;
+				nextIncrement = jsonData["nextIncremental"].AsInt;
 				maxPrice = jsonData["maxPrice"].AsInt;
 				productCategory = jsonData["productCategory"];
 				productLength = jsonData["length"].AsInt;
@@ -84,9 +86,11 @@ public class AuctionRoomManager : BasePage {
 				productWeight = jsonData["weight"] + " " + jsonData["unit"];
 				productDescription = jsonData["description"];
 				numberBidders = jsonData["noOfLastCycleBidders"].AsInt;
-				int getTime = (jsonData["timeToNextCycle"].AsInt == 0) ? jsonData["timeToNextCycle"].AsInt : jsonData["timeToFirstAuctionCycle"].AsInt;
+				int getTime = (jsonData["timeToNextCycle"].AsInt > 0) ? jsonData["timeToNextCycle"].AsInt : jsonData["timeToFirstAuctionCycle"].AsInt;
 				timeToNextCycle = getTime / 1000;
 				bidButton.interactable = jsonData["bidEnable"].AsBool;
+				bannerImage.LoadImageFromUrl(jsonData["bannerImageURL"]);
+				bannerAction = jsonData["bannerImageRedirectionURL"];
 
 				//Display Data Room
 				auctionIdRoomlabel.text = "<#"+auctionId+">";
@@ -107,9 +111,11 @@ public class AuctionRoomManager : BasePage {
 				detailsDataLabel.text += "\n" + LocalizationService.Instance.GetTextByKey("AuctionRoom.WEIGHT") + ": " + productWeight;
 				detailsDescriptionLabel.text = productDescription;
 
-				if ((numberBidders<=0) && (bidButton.interactable)) {
+				if ((numberBidders<=0) && (timeToNextCycle<=0)) {
+					Debug.Log ("---------No previous bidder-----------");
 					CheckEligible();
 				} if (numberBidders==1) {
+					Debug.Log ("---------Single bidder-----------");
 					NextPage("LOBBY");
 				} else {
 					if (timeToNextCycle>0)
@@ -129,14 +135,19 @@ public class AuctionRoomManager : BasePage {
 
 			if (timeToNextCycle <= 5) {
 				countDownAnim.gameObject.SetActive (true);
+				countDownAnim.SetInteger ("State",0);
 				countDownLayer.SetActive (false);
 			} else if (timeToNextCycle > 5) {
-				countDownLayer.SetActive (false);
+				countDownLayer.SetActive (true);
+				countDownAnim.gameObject.SetActive (false);
 				countDownLabel.text = Utilities.SecondsToMinutes (timeToNextCycle);
 			}
 			yield return new WaitForSeconds (1f);
 		}
-		if (nextIncrement == maxPrice) {
+		Debug.Log ("---------Countdown Ends-----------");
+		countDownAnim.SetInteger ("State",1);
+		if (nextIncrement == 0) {
+			Debug.Log ("---------Max Price-----------");
 			CheckEligible ();
 		} else {
 			Init ();
@@ -159,6 +170,7 @@ public class AuctionRoomManager : BasePage {
 	}
 
 	public void CheckEligible() {
+		Debug.Log ("---------Check Eligible-----------");
 		connectingPanel.Connecting (true);
 		DBManager.API.GetEligibleToEnterGame (auctionId,
 			(response)=>{
@@ -182,6 +194,7 @@ public class AuctionRoomManager : BasePage {
 
 	void GoToGame()
 	{
+		Debug.Log ("---------Go To Game-----------");
 		PlayerPrefs.SetInt("GameMode",(int)auctionMode);
 		if (auctionMode == AuctionMode.BIDRUMBLE) {
 			DBManager.API.GetBidRumbleGame (auctionId,
@@ -224,6 +237,10 @@ public class AuctionRoomManager : BasePage {
 	public void ClickLeft(){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
         roomAnimator.SetTrigger("GoLeft");
+	}
+
+	public void OnClickBanner() {
+		Application.OpenURL (bannerAction);
 	}
 
 	public void OnChangePage(Transform child)

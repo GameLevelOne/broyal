@@ -79,7 +79,7 @@ public class SceneGameManager : MonoBehaviour {
                 {
 					Debug.Log ("Exit Rumble");
                     JSONNode jsonData = JSON.Parse(response);
-					int timeToPopulateServerData = jsonData["timeToPopulateServerData"];
+					int timeToPopulateServerData = jsonData["timeToServerPopulateData"];
 					scorePanel.InitScore(gameMode,round,score,auctionId,timeToPopulateServerData);
                 },
                 (error) =>

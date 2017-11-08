@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
+using BidRoyale.Core;
 
 public class PanelScoresManager : PagesIntroOutro {
 	public SceneGameManager gameManager;
@@ -19,6 +20,7 @@ public class PanelScoresManager : PagesIntroOutro {
 	public Text statusLabel;
 	public GameObject waitingInfo;
 	public Button buttonNext;
+	public Text buttonText;
 
 	int auctionId;
 	bool passed;
@@ -68,6 +70,7 @@ public class PanelScoresManager : PagesIntroOutro {
 			}
 		}
 
+		ShowTimerOnButton ();
 		Activate (true);
 	}
 
@@ -79,7 +82,14 @@ public class PanelScoresManager : PagesIntroOutro {
 	}
 
 	IEnumerator WaitingForServer() {
-		yield return new WaitForSeconds (timeToPopulateServer);
+		Debug.Log ("Delay to populate server: "+timeToPopulateServer);
+		while (timeToPopulateServer > 0) {
+			timeToPopulateServer -= Time.deltaTime;
+			ShowTimerOnButton ();
+			yield return null;
+		}
+		timeToPopulateServer = 0;
+		ShowTimerOnButton ();
 		DBManager.API.GetPassingUserResult(auctionId,round,
 			(response) =>
 			{
@@ -136,6 +146,14 @@ public class PanelScoresManager : PagesIntroOutro {
 		);
 	}
 
+	void ShowTimerOnButton() {
+		if (timeToPopulateServer <= 0) {
+			buttonText.text = LocalizationService.Instance.GetTextByKey ("Game.NEXT");
+		} else {
+			buttonText.text = Utilities.SecondsToMinutes ((int)timeToPopulateServer);
+		}
+	}
+
 	IEnumerator DelayNextRound(float secs) {
 		timeToNextGameRound -= (int)(secs * 1000f);
 		yield return new WaitForSeconds (secs);
@@ -148,6 +166,7 @@ public class PanelScoresManager : PagesIntroOutro {
 		if (gameMode == GameMode.TRAINING) {
 			gameManager.ExitGame ();
 		} else {
+			Debug.Log ("Close result and show scoreboard");
 			Activate (false);
 			OnFinishOutro += ShowScoreBoard;
 		}

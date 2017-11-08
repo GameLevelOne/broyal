@@ -13,6 +13,7 @@ public class ScoreBoardManager : PagesIntroOutro {
 	public Transform royaleContainer;
 
 	public void InitScoreBoard(RumbleScoreData[] scoreData) {
+		Debug.Log ("Init Score board Rumble");
 		rumbleBoard.SetActive (true);
 		royaleBoard.SetActive (false);
 		Utilities.ClearChildren (rumbleContainer);
@@ -25,6 +26,7 @@ public class ScoreBoardManager : PagesIntroOutro {
 	}
 
 	public void InitScoreBoard(RoyaleScoreData[] scoreData) {
+		Debug.Log ("Init Score board Royale");
 		rumbleBoard.SetActive (false);
 		royaleBoard.SetActive (true);
 		Utilities.ClearChildren (royaleContainer);

@@ -41,6 +41,9 @@ public class SettingsManager : BasePage {
         SoundManager.Instance.PlaySFX(SFXList.Button01);
         buttonSoundOn.GetComponent<Image>().enabled = optionOn;
 		buttonSoundOff.GetComponent<Image> ().enabled = !optionOn;
+
+		SoundManager.Instance.SetVolume (optionOn ? 1f : 0f);
+		PlayerPrefs.SetFloat ("SoundVolume",(optionOn ? 1f : 0f));
 	}
 
 	public void OnClickLanguage (bool optionEN){

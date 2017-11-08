@@ -20,6 +20,7 @@ public class SignInManager : AppInitPages {
 	string signInPassword;
 
 	void Start() {
+		SoundManager.Instance.SetVolume (PlayerPrefs.GetFloat("SoundVolume",1f));
 		fader.SetFaderActive (true);
 		OnFinishIntro += CheckPreviousSignIn;
 	}
