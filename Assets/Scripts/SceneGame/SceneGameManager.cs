@@ -20,10 +20,11 @@ public class SceneGameManager : MonoBehaviour {
 	public LoadingProgress loadingPanel;
 	public PanelGameReady panelGameReady;
     public NotificationPopUp notifPopUp;
-    public PagesIntroOutro[] gamePanel;
+	public BaseGame[] gamePanel;
 	public PanelScoresManager scorePanel;
 	public ScoreBoardManager scoreBoard;
 
+	public int gameTime;
 	public List<RoyaleScoreData> royaleScores;
 
 	GameMode gameMode;
@@ -38,16 +39,16 @@ public class SceneGameManager : MonoBehaviour {
         auctionId = PlayerPrefs.GetInt("GameAuctionId", 0);
 		gameMode = (GameMode) PlayerPrefs.GetInt ("GameMode",0);
 		rumbleGame = (RumbleGame) PlayerPrefs.GetInt ("RumbleGame",0);
-		if (gameMode == GameMode.BIDROYALE) {
-			nextGame = 4;
-		} else {
-			nextGame = (int) rumbleGame;
-		}
-		round = 1;
+		nextGame = (gameMode == GameMode.BIDROYALE) ? 4 : (int) rumbleGame;
+		round = (gameMode == GameMode.TRAINING) ? 1 : 0;
 		countdownTimer = PlayerPrefs.GetInt ("TimeToGame",0);
 		remainingPlayer = 0;
 		royaleScores = new List<RoyaleScoreData> ();
+
 		InitGame ();
+
+		//GameTesting
+//		gamePanel[0].InitGame(gameTime,round);
 	}
 
 	void InitGame(){
@@ -65,7 +66,7 @@ public class SceneGameManager : MonoBehaviour {
 	void LoadNextGame() {
 		panelGameReady.OnFinishOutro -= LoadNextGame;
 		PlayerPrefs.SetInt ("GameRound",round);
-		gamePanel [nextGame].Activate (true);
+		gamePanel [nextGame].InitGame(gameTime,round);
 	}
 
 	public void EndGame(float score) {
@@ -84,8 +85,7 @@ public class SceneGameManager : MonoBehaviour {
                 },
                 (error) =>
                 {
-                    notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey ("Game.ERROR"));
-					notifPopUp.OnFinishOutro += LoadToHomeFromNotif;
+					PopUpBackToHome();
                 }
             );
         }
@@ -114,6 +114,7 @@ public class SceneGameManager : MonoBehaviour {
 
     public void ExitGame()
     {
+		notifPopUp.Activate (false);
 		if (gameMode == GameMode.TRAINING) {
 			scorePanel.Activate (false);
 			scorePanel.OnFinishOutro += LoadToHome;        
@@ -122,6 +123,11 @@ public class SceneGameManager : MonoBehaviour {
 			scoreBoard.OnFinishOutro += LoadToHome;        
 		}
     }
+
+	public void PopUpBackToHome() {
+		notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey ("Game.ERROR"));
+		notifPopUp.OnFinishOutro += LoadToHomeFromNotif;
+	}
 
 	void LoadToHomeFromNotif() {
 		notifPopUp.OnFinishOutro -= LoadToHomeFromNotif;

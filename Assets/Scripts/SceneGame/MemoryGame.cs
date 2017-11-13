@@ -3,165 +3,81 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MemoryGame : PagesIntroOutro {
-	public SceneGameManager gameManager;
-	public PanelTrainingScores panelScore;
-
-	public Transform tileParent;
-	public GameObject tilePrefab;
-	public GameObject overlay;
-	public Text overlayLabel;
-	public GameObject overlayTile;
-	public Text countdownText;
+public class MemoryGame : BaseGame {
+	public MemoryGameTile[] tiles;
 	public Sprite[] tilePictures;
+	public GameObject tileOverlay;
 
-	GameObject[] tileObjects = new GameObject[6];
-	int tileCounter=0;
-	int picCounter=0; 
-	int pairCounter=0; 
-	int answerCount=0;
-	int currPicValue = -1;
-	int currTileIdx = -1;
-	int[] pairTileIdx = new int[2];
-	bool win = false;
-	bool isAPair = false;
-	float gameTimer = 0f;
-	float gameTimeLimit = 6f;
-	List<int> pictureValues = new List<int>();
-	List<int> slots = new List<int>();
+	MemoryGameTile[] pair;
+	int openTile;
+	int correctPair;
 
-	void Start(){
-		GenerateTiles();
-		StartCoroutine(Countdown());
-		StartCoroutine(CountPlayTime());
-	}
-
-	void OnEnable(){
-		MemoryGameTile.OnMemoryTileClicked += HandleOnMemoryTileClicked;
-	}
-
-	void OnDisable(){
-		MemoryGameTile.OnMemoryTileClicked -= HandleOnMemoryTileClicked;
-	}
-
-	void HandleOnMemoryTileClicked (int picValue, int tileIdx)
+	public override void InitGame (int gameTime, int round)
 	{
-		if (currTileIdx != tileIdx) {
-			pairCounter++;
-			if (currPicValue == -1) {
-				currPicValue = picValue;
-				pairTileIdx [0] = tileIdx;
-			} else {
-				pairTileIdx [1] = tileIdx;
-				if (currPicValue == picValue) {
-					isAPair = true;
-				} 
-			}
-
-			if (pairCounter == 2) {
-				pairCounter = 0;
-				currPicValue = -1;
-				if (isAPair) {
-					answerCount++;
-					isAPair = false;
-					if (answerCount == 3) {
-						win = true;
-						GameOver ();
-					}
-					Debug.Log ("answerCount:" + answerCount);
-				} else {
-					StartCoroutine (WaitForResetTile (2));
-				}
-			}
-			currTileIdx = tileIdx;
-		}
-	}
-
-	void GenerateTiles(){
-		for(int i=0;i<3;i++){
-			for(int j=0;j<2;j++){
-				GameObject tileObj = Instantiate(tilePrefab,tileParent,false);
-				tileObj.transform.localPosition = new Vector3((-150f+j*300f),(300-i*300f),0);
-				tileObjects[tileCounter]=tileObj;
-				tileCounter++;
-			}
-		}
-		RandomPic();
-	}
-
-	void RandomPic ()
-	{
-		for (int i = 0; i < 6; i++) {
+		List<int> slots = new List<int> ();
+		for (int i = 0; i < tiles.Length; i++) {
 			slots.Add (i);
 		}
-        List<int> picIndex = new List<int>();
-        for (int i = 0; i < tilePictures.Length; i++)
-        {
-            picIndex.Add(i);
-        }
+		List<int> picPool = new List<int>();
+		for (int i = 0; i < tilePictures.Length; i++)
+		{
+			picPool.Add(i);
+		}
 
-		for (int i = 0; i < 3; i++) {
-            int picTemp = Random.Range(0, picIndex.Count);
-			int temp = Random.Range (0, slots.Count);
-            tileObjects[slots[temp]].GetComponent<MemoryGameTile>().InitTile(picIndex[picTemp], slots[temp], tilePictures[picIndex[picTemp]]);
-			slots.RemoveAt(temp);
-            temp = Random.Range(0, slots.Count);
-            tileObjects[slots[temp]].GetComponent<MemoryGameTile>().InitTile(picIndex[picTemp], slots[temp], tilePictures[picIndex[picTemp]]);
-            slots.RemoveAt(temp);
-            picIndex.RemoveAt(picTemp);
-        }
+		for (int i = 0; i < tiles.Length/2; i++) {
+			int ipic = Random.Range(0, picPool.Count);
+			int islots = Random.Range (0, slots.Count);
+			tiles[slots [islots]].InitTile(tilePictures[picPool [ipic]]);
+			slots.RemoveAt(islots);
+			islots = Random.Range(0, slots.Count);
+			tiles[slots [islots]].InitTile(tilePictures[picPool [ipic]]);
+			slots.RemoveAt(islots);
+			picPool.RemoveAt(ipic);
+		}
+		openTile = 0;
+		correctPair = 0;
+		pair = new MemoryGameTile[2];
+		tileOverlay.SetActive (false);
+		base.InitGame (gameTime, round);
 	}
-
-	void ResetTile (int amount)
-	{
-		for (int i = 0; i < amount; i++) {
-			if (amount == 2) {
-				tileObjects [pairTileIdx [i]].GetComponent<MemoryGameTile> ().Reset();
-				pairTileIdx [i] = -1;
-			} else{
-				tileObjects [i].GetComponent<MemoryGameTile> ().Reset();
+		
+	void CheckTilePair(MemoryGameTile tile) {
+		pair [openTile] = tile;
+		openTile++;
+		if (openTile > 1) {
+			if (pair [0].tileImage.sprite == pair [1].tileImage.sprite) {
+				correctPair++;
+				if (correctPair >= tiles.Length / 2) {
+					EndGame (true);
+				}
+			} else {
+				StartCoroutine(DelayFlipTile (0.5f));
 			}
-		}
-		overlay.SetActive(false);
-		overlayTile.SetActive(false);
-	}
-
-	void GameOver(){
-		overlay.SetActive(true);
-		if (win) {
-			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.CONGRATULATIONS");
-		} else {
-			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.TIMES_UP");
-			gameTimer = 6f;
-		}
-
-		StopAllCoroutines();
-
-		gameManager.EndGame (gameTimer);
-	}
-
-	IEnumerator WaitForResetTile(int amount){
-		overlayTile.SetActive(true);
-		yield return new WaitForSeconds(0.5f);
-		ResetTile(amount);
-	}
-
-	IEnumerator Countdown ()
-	{
-		countdownText.text = "06";
-		for (int i = 5; i >= 0; i--) {
-			yield return new WaitForSeconds (1);
-			countdownText.text = "0" + i.ToString ();
-		}
-//		SoundManager.Instance.PlaySFX(SFXList.TimeUp);
-		win = false;
-		GameOver();
-	}
-
-	IEnumerator CountPlayTime(){
-		while(gameTimer < gameTimeLimit){
-			gameTimer += Time.deltaTime;
-			yield return null;
+			openTile = 0;
 		}
 	}
+	IEnumerator DelayFlipTile(float sec) {
+		tileOverlay.SetActive (true);
+		yield return new WaitForSeconds (sec);
+		tileOverlay.SetActive (false);
+		pair [0].FlipTile();
+		pair [1].FlipTile();
+	}
+
+
+	new protected void OnEnable() {
+		base.OnEnable ();
+		for (int i = 0; i < tiles.Length; i++) {
+			tiles [i].OnFinishFlip += CheckTilePair;
+		}
+	}
+	new protected void OnDisable() {
+		base.OnDisable ();
+		for (int i = 0; i < tiles.Length; i++) {
+			tiles [i].OnFinishFlip -= CheckTilePair;
+		}
+	}
+
+
+
 }

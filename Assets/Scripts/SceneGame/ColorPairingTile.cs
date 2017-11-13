@@ -4,29 +4,42 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ColorPairingTile : MonoBehaviour {
-	bool isBlue = false; //blue or red
 	Color[] tileColors = new Color[2]{new Color(0.91f,0.29f,0.29f,1),new Color(0.07f,0.71f,0.83f,1)};
+	public delegate void ColorPairingEvent();
+	public event ColorPairingEvent OnFinishFlip;
 
-	public delegate void TileClicked();
-	public static event TileClicked OnTileClicked;
+	public Image tileImage;
+	public Animator tileAnim;
+	bool tileAnimate;
 
-	public void InitTile(bool isBlue){
-		Image tileImg = GetComponent<Image>();
-		this.isBlue=isBlue;
-		if(isBlue){
-			tileImg.color = tileColors[0];
-		} else{
-			tileImg.color = tileColors[1];
+	public void InitTile(int colIndex){
+		tileImage.color = tileColors [colIndex];
+		tileAnimate = false;
+	}
+	public void ClickTile() {
+		if (!tileAnimate) {
+			SoundManager.Instance.PlaySFX(SFXList.Button01);
+			FlipTile ();
 		}
 	}
 
-	public void ChangeColor(){
-		Image tileImg = GetComponent<Image>();
-		if(tileImg.color == tileColors[0]){
-			tileImg.color=tileColors[1];
-		} else{
-			tileImg.color=tileColors[0];
+	public void FlipTile() {
+		tileAnim.SetTrigger ("Flip");
+		tileAnimate = true;
+	}
+
+	void ChangeImage() {
+		if (tileImage.color == tileColors [0]) {
+			tileImage.color = tileColors [1];
+		} else {
+			tileImage.color = tileColors [0];
 		}
-		OnTileClicked();
+	}
+
+	void EndTileFlip() {
+		tileAnim.ResetTrigger ("Flip");
+		if (OnFinishFlip != null)
+			OnFinishFlip ();
+		tileAnimate = false;
 	}
 }

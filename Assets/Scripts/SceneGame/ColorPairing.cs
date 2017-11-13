@@ -3,162 +3,56 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ColorPairing : PagesIntroOutro {
-	public SceneGameManager gameManager;
-	public PanelTrainingScores panelScore;
-	public Transform tileParent;
-	public GameObject tilePrefab;
-	public GameObject overlay;
-	public Text overlayLabel;
-	public Text countdownText;
+public class ColorPairing : BaseGame {
 
-	Vector3 tileStartPos = new Vector3(-230f,230f,0);
-	int areaSize = 4;
-	int totalBlue = 8;
-	int totalRed = 8;
-	int totalTiles = 16;
-	int counterBlue = 0;
-	int counterRed = 0;
-	bool gameOver = false;
-	bool win = false;
-	float gameTimer = 0f;
-	float gameTimeLimit = 6f;
+	public ColorPairingTile[] tiles;
 
-	Color[] tileColors = new Color[2]{new Color(0.91f,0.29f,0.29f,1),new Color(0.07f,0.71f,0.83f,1)};
-	GameObject[] tileObjects = new GameObject[16];
-	int tileCounter = 0;
-
-	void Start(){
-		GenerateTiles();
-		StartCoroutine(Countdown());
-		StartCoroutine(CountPlayTime());
-	}
-
-	void OnEnable(){
-		ColorPairingTile.OnTileClicked += HandleOnTileClicked;
-	}
-
-	void OnDisable(){
-		ColorPairingTile.OnTileClicked -= HandleOnTileClicked;
-	}
-
-	void HandleOnTileClicked ()
+	public override void InitGame (int gameTime, int round)
 	{
-		bool result = AllTilesMatched();
-			if(result){
-				win = true;
-				GameOver();
-			}
-	}
-
-	void GenerateTiles ()
-	{
-		for (int i = 0; i < areaSize; i++) {
-			for (int j = 0; j < areaSize; j++) {
-				GameObject tileObj = Instantiate (tilePrefab, tileParent, false);
-				tileObj.transform.localPosition = new Vector3 ((tileStartPos.x + j * 150f), (tileStartPos.y - i * 150f), 0);
-
-				tileObjects[tileCounter] = tileObj;
-				tileCounter++;
-				RandomColor(tileObj);
-			}
-			counterBlue=0;
-			counterRed=0;
+		List<int> slots = new List<int> ();
+		for (int i = 0; i < tiles.Length; i++) {
+			slots.Add (i);
 		}
+		for (int i = 0; i < tiles.Length/2; i++) {
+			int randomSlot = Random.Range (0,slots.Count);
+			tiles[slots[randomSlot]].InitTile(0);
+			slots.RemoveAt (randomSlot);
+		}
+		while (slots.Count > 0) {
+			int randomSlot = Random.Range (0,slots.Count);
+			tiles[slots[randomSlot]].InitTile(1);
+			slots.RemoveAt (randomSlot);
+		}
+
+
+		base.InitGame (gameTime, round);
 	}
 
-	void RandomColor(GameObject obj){
-		if(counterBlue < 2 && counterRed < 2){
-			if(Random.value <= 0.5f){
-				obj.GetComponent<ColorPairingTile>().InitTile(true);
-				counterBlue++;
-			} else{
-				obj.GetComponent<ColorPairingTile>().InitTile(false);
-				counterRed++;
-			}
-		} else{
-			if(counterBlue == 2){
-				obj.GetComponent<ColorPairingTile>().InitTile(false);
-				counterRed++;
-			} else{
-				obj.GetComponent<ColorPairingTile>().InitTile(true);
-				counterBlue++;
+	void CheckTileAll() {
+		bool sameColor = true;
+		for (int i = 1; i < tiles.Length; i++) {
+			if (tiles [0].tileImage.color != tiles [i].tileImage.color) {
+				sameColor = false;
+				break;
 			}
 		}
-	}
 
-	bool AllTilesMatched(){
-		int blue = 0;
-		int red = 0;
-		for(int i=0;i<tileObjects.Length;i++){
-			if(tileObjects[i].GetComponent<Image>().color == tileColors[0]){
-				blue++;
-			} 
-			else if(tileObjects[i].GetComponent<Image>().color == tileColors[1]){
-				red++;
-			}
-		}
-		if(blue == totalTiles || red == totalTiles){
-			return true;
-		} else{
-			return false;
-		}
-	}
-
-	void ResetGame ()
-	{
-		counterBlue = 0;
-		counterRed = 0;
-		tileCounter = 0;
-
-		for (int i = 0; i < areaSize; i++) {
-			for (int j = 0; j < areaSize; j++) {
-				RandomColor (tileObjects [tileCounter]);
-				tileCounter++;
-			}
-			counterBlue=0;
-			counterRed=0;
-		}
-		overlay.SetActive(false);
-		StartCoroutine(Countdown());
-		StartCoroutine(CountPlayTime());
-	}
-
-	void GameOver(){
-		overlay.SetActive(true);
-		if (win) {
-			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.CONGRATULATIONS");
-		} else {
-			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.TIMES_UP");
-			gameTimer = 6f;
+		if (sameColor) {
+			EndGame (true);
 		}
 
-		StopAllCoroutines();
-
-        gameManager.EndGame (gameTimer);
 	}
-
-	IEnumerator WaitForReset(){
-		yield return new WaitForSeconds(2);
-		ResetGame();
-	}
-
-	IEnumerator Countdown(){
-		countdownText.text = "06";
-		for(int i=5;i>=0;i--){
-			yield return new WaitForSeconds(1);
-			countdownText.text = "0"+i.ToString();
-		}
-//		SoundManager.Instance.PlaySFX(SFXList.TimeUp);
-		overlay.SetActive(true);
-		win = false;
-		GameOver();
-	}
-
-	IEnumerator CountPlayTime(){
-		while(gameTimer < gameTimeLimit){
-			gameTimer += Time.deltaTime;
-			yield return null;
+	new protected void OnEnable() {
+		base.OnEnable ();
+		for (int i = 0; i < tiles.Length; i++) {
+			tiles [i].OnFinishFlip += CheckTileAll;
 		}
 	}
+	new protected void OnDisable() {
+		base.OnDisable ();
+		for (int i = 0; i < tiles.Length; i++) {
+			tiles [i].OnFinishFlip -= CheckTileAll;
+		}
+	}
+
 }

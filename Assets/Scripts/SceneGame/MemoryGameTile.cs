@@ -4,30 +4,50 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class MemoryGameTile : MonoBehaviour {
-	[SerializeField]
-	int picValue;
-	[SerializeField]
-	int tileIdx;
 
-	public delegate void MemoryTileClicked(int picValue,int tileIdx);
-	public static event MemoryTileClicked OnMemoryTileClicked;
+	public delegate void MemoryGameEvent(MemoryGameTile tile);
+	public event MemoryGameEvent OnFinishFlip;
 
-	Sprite tilePic;
-	Sprite closedTile;
+	public Image tileImage;
+	public Animator tileAnim;
+	Sprite tileAnswer;
+	Sprite tileBack;
+	bool tileAnimate;
 
-	public void InitTile(int value,int idx,Sprite pic){
-		closedTile = GetComponent<Image> ().sprite;
-		picValue = value;
-		tileIdx = idx;
-		tilePic = pic;
+	public void InitTile(Sprite pic){
+		tileBack = tileImage.sprite;
+		tileAnswer = pic;
+		tileAnimate = false;
+	}
+	public void ClickTile() {
+		if (!tileAnimate) {
+			SoundManager.Instance.PlaySFX(SFXList.Button01);
+			FlipTile ();
+		}
 	}
 
-	public void OnClick(){
-		GetComponent<Image>().sprite = tilePic;
-		OnMemoryTileClicked(picValue,tileIdx);
+	public void FlipTile() {
+		tileAnim.SetTrigger ("Flip");
+		tileAnimate = true;
 	}
 
-	public void Reset() {
-		GetComponent<Image> ().sprite = closedTile;
+	void ChangeImage() {
+		if (tileImage.sprite == tileBack) {
+			tileImage.sprite = tileAnswer;
+		} else {
+			tileImage.sprite = tileBack;
+		}
 	}
+
+	void EndTileFlip() {
+		tileAnim.ResetTrigger ("Flip");
+		if (tileImage.sprite != tileBack) {
+			if (OnFinishFlip != null)
+				OnFinishFlip (this);
+		} else {
+			tileAnimate = false;
+		}
+	}
+
+
 }

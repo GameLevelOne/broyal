@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
 
-public class TwoChests : PagesIntroOutro {
-	public SceneGameManager gameManager;
+public class TwoChests : BaseGame {
 	public ConnectingPanel connectingPanel;
 
 	public Animator chestBrownButton;
@@ -13,7 +12,6 @@ public class TwoChests : PagesIntroOutro {
 	public Animator resultPanel;
 	public Image correctChest;
 	public Image wrongChest;
-	public Text timerText;
 
 	public Sprite[] correctChestSprite; 
 	public Sprite[] wrongChestSprite; 
@@ -22,7 +20,7 @@ public class TwoChests : PagesIntroOutro {
 	int auctionId;
 	int round;
 
-	void InitGame() {
+	public override void InitGame(int gameTime, int round) {
 		chestBrownButton.SetInteger ("ChestState",0);
 		chestRedButton.SetInteger ("ChestState",0);
 		resultPanel.SetInteger ("ChestResult",0);
@@ -30,12 +28,9 @@ public class TwoChests : PagesIntroOutro {
 		curChoice = -1;
 		auctionId = PlayerPrefs.GetInt("GameAuctionId", 0);
 		round = PlayerPrefs.GetInt("GameRound", 0);
-	}
 
-	void OnEnable(){
-		InitGame ();
-		StartCoroutine(StartCountdown());
-	}
+		base.InitGame(gameTime,round);
+	}		
 
 	public void OnClickChest (int chest)
 	{
@@ -50,15 +45,6 @@ public class TwoChests : PagesIntroOutro {
 
 	}
 		
-	IEnumerator StartCountdown ()
-	{
-		for (int i = 6; i >= 0; i--) {
-			yield return new WaitForSeconds(1);
-			timerText.text = "0"+i.ToString();
-		}
-		CheckResult();
-	}
-
 	void CheckResult() {
 		if (curChoice < 0) {
 			resultPanel.gameObject.SetActive (true);
@@ -69,7 +55,8 @@ public class TwoChests : PagesIntroOutro {
 			DBManager.API.SubmitBidRoyaleResult(auctionId,round,curChoice,
 				(response) =>
 				{
-					Debug.Log ("Exit Rumble");
+					connectingPanel.Connecting (false);
+					Debug.Log ("Exit Royale");
 					JSONNode jsonData = JSON.Parse(response);
 					int timeToPopulateServerData = jsonData["timeToPopulateServerData"];
 					bool win = (jsonData["correctAnswer"].AsInt == curChoice) ? true : false;
@@ -80,10 +67,8 @@ public class TwoChests : PagesIntroOutro {
 				},
 				(error) =>
 				{
-//					notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey ("Game.ERROR"));
-//					notifPopUp.OnFinishOutro += LoadToHomeFromNotif;
-					Activate(false);
-					gameManager.loadingPanel.gameObject.SetActive(true);
+					connectingPanel.Connecting (false);
+					gameManager.PopUpBackToHome();
 				}
 			);
 		}
@@ -92,5 +77,10 @@ public class TwoChests : PagesIntroOutro {
 	IEnumerator DelayEnd(float secs, bool win,int timeToPopulateServerData=0) {
 		yield return new WaitForSeconds (secs);
 		gameManager.EndRoyale (win, timeToPopulateServerData, curChoice);
+	}
+
+
+	protected override void EndGame(bool finish) {
+		CheckResult ();
 	}
 }

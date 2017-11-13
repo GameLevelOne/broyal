@@ -3,156 +3,53 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TypeTheCode : PagesIntroOutro {
-	public SceneGameManager gameManager;
-	public PanelTrainingScores panelScore;
-	public Keyboard keyboard;
-	public Text countdownText;
-	public Text problemText;
-	public Transform parentAnswer;
-	public GameObject answerObj;
-	public GameObject overlay;
-	public Text overlayLabel;
+public class TypeTheCode : BaseGame {
+	public Text problemLabel;
 
-	Text[] answerObjArray = new Text[8];
-	char[] stringAnswer = new char[8];
-	char[] stringProblem = new char[8];
+	public Text[] answerLabel;
+	string answer;
+	string problem;
 
-	int totalChar = 8;
-	int totalInput = 0;
-
-	bool win = false;
-
-	float gameTimer = 0f;
-	float gameTimeLimit = 6f;
-
-	void OnEnable(){
-		Keyboard.OnInputChar += HandleOnInputChar;
-	}
-
-	void OnDisable(){
-		Keyboard.OnInputChar -= HandleOnInputChar;
-	}
-
-	void HandleOnInputChar ()
+	public override void InitGame (int gameTime, int round)
 	{
-		//backspace = 0;
-		if (totalInput<totalChar)
-			stringAnswer[totalInput] = keyboard.currInput;
-
-		if(keyboard.currInput != '0'){
-			if (totalInput < totalChar) {
-				answerObjArray [totalInput].text = keyboard.currInput.ToString ();
-				totalInput++;
-			}
-		} else{
-			if(totalInput<=0){
-				totalInput=0;
-			} else{
-				totalInput--;
-				answerObjArray [totalInput].text = string.Empty;
-			}
-		}
-
-		CheckAnswer();
-//		if(totalInput == totalChar){
-//			overlay.SetActive(true);
-//		} else{
-//			overlay.SetActive(false);
-//		}
-	}
-
-	void Start(){
-		GenerateProblem();
-		GenerateAnswerBox();
-		StartCoroutine(GameTimer());
-		StartCoroutine(CountPlayTime());
-	}
-
-	void GenerateProblem(){
-		string temp = "";
-		for(int i=0;i<totalChar;i++){
+		problem = "";
+		answer = "";
+		for(int i=0;i<answerLabel.Length;i++){
 			char c = (char)('A'+Random.Range(0,26));
-			stringProblem[i]=c;
-			temp+=c;
+			problem+=c;
 		}
-		problemText.text = temp;
+		problemLabel.text = problem;
+
+		base.InitGame (gameTime, round);
 	}
 
-	void GenerateAnswerBox(){
-		for(int i=0;i<totalChar;i++){
-			GameObject obj = Instantiate(answerObj,parentAnswer,false);
-			obj.transform.localPosition = new Vector3(-250+i*70,0,0);
-			answerObjArray[i]=obj.GetComponent<Text>();
-		}
-	}
+	public void ClickKeyboard(string c) {
+		int curIdx = answer.Length;
+		if (c == "BACK") {
+			SoundManager.Instance.PlaySFX(SFXList.Button02);
+			if (curIdx > 0) {
+				answerLabel [curIdx-1].text = "";
+				answer = answer.Substring (0, curIdx - 1);
+			}
+		} else {
+			SoundManager.Instance.PlaySFX(SFXList.Button01);
+			if (curIdx < answerLabel.Length) {
 
-	void CheckAnswer ()
-	{
-		int totalTrue = 0;
-		for (int i = 0; i < totalChar; i++) {
-//			Debug.Log (stringProblem [i] + " vs "+ stringAnswer [i]);
-			if (stringProblem [i] == stringAnswer [i]) {
-				totalTrue++;
-				answerObjArray [i].color = Color.white;
-			} else {
-				answerObjArray [i].color = Color.red;
+				if (problem [curIdx] == c[0]) {
+					answerLabel [curIdx].color = Color.white;
+				} else {
+					answerLabel [curIdx].color = Color.red;
+				}
+
+				answerLabel [curIdx].text = c;
+				answer += c;
+
+				//Check Answer
+				if (problem == answer) {
+					EndGame (true);
+				}
 			}
 		}
-		if(totalTrue == totalChar){
-			win = true;
-			GameOver();
-		}
-
 	}
-
-	void GameOver(){
-		overlay.SetActive(true);
-		if (win) {
-			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.CONGRATULATIONS");
-		} else {
-			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.TIMES_UP");
-			gameTimer = 6f;
-		}
-		StopAllCoroutines();
-		gameManager.EndGame (gameTimer);
-	}
-
-	void ResetAnswer(){
-		for(int i=0;i<totalChar;i++){
-			stringAnswer[i]=' ';
-			answerObjArray[i].text = "";
-			answerObjArray[i].color = Color.white;
-		}
-		GenerateProblem ();
-		overlay.SetActive(false);
-		totalInput=0;
-		countdownText.text = "06";
-		StopAllCoroutines ();
-		StartCoroutine(GameTimer());
-	}
-
-	IEnumerator WaitForReset(){
-		yield return new WaitForSeconds(2);
-		ResetAnswer();
-	}
-
-	IEnumerator GameTimer(){
-		countdownText.text = "06";
-		for(int i=5;i>=0;i--){
-			yield return new WaitForSeconds(1);
-			countdownText.text = "0"+i.ToString();
-		}
-//		SoundManager.Instance.PlaySFX(SFXList.TimeUp);
-		win = false;
-		GameOver();
-	}
-
-	IEnumerator CountPlayTime(){
-		while(gameTimer < gameTimeLimit){
-			gameTimer += Time.deltaTime;
-			yield return null;
-		}
-	}
-
+		
 }
