@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class InputPetNamePopUp : BasePage {
-	public PetData petData;
 	public ConnectingPanel connectingPanel;
 	public HeaderAreaManager header;
 	public Text petNameLabel;
@@ -16,14 +15,10 @@ public class InputPetNamePopUp : BasePage {
 		continueButton.interactable = false;
 	}
 
-	public void InitData (PetData _petData) {
-		petData = _petData;
-	}
-
 	public void ContinueClicked() {
         SoundManager.Instance.PlaySFX(SFXList.Button01);
         connectingPanel.Connecting(true);
-		DBManager.API.ChangePetName (petData.id,petNameLabel.text,
+		DBManager.API.ChangePetName (petNameLabel.text,
 			(response) => {
 				connectingPanel.Connecting (false);
 				Activate(false);

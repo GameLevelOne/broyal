@@ -50,6 +50,7 @@ public class DBManagerSettings : ScriptableObject {
 	public string changePetName;
 	public string startTrainingTime;
 	public string checkTrainingTime;
+	public string equipPet;
 	[Space(10)]
 	public string getWinnerList;
 	public string petListing;

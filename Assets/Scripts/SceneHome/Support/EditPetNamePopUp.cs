@@ -1,0 +1,59 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class EditPetNamePopUp : BasePage {
+	public NotificationPopUp notifPopUp;
+	public ConnectingPanel connectingPanel;
+	public HeaderAreaManager header;
+	public Text priceLabel;
+	public Text petNameLabel;
+	public Button saveButton;
+
+	protected override void Init ()
+	{
+		base.Init ();
+		saveButton.interactable = false;
+	}
+
+	public void InitPrice(int price) {
+		priceLabel.text = price.ToString ("N0") + " ?";
+	}
+		
+	public void SaveClicked() {
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+		connectingPanel.Connecting (true);
+		DBManager.API.ChangePetName (petNameLabel.text,
+			(response) => {
+				connectingPanel.Connecting (false);
+				Activate (false);
+				header.GetPetProfile ();
+			}, 
+			(error) => {
+				connectingPanel.Connecting (false);
+				notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("General.SERVER_ERROR"));
+				notifPopUp.OnFinishOutro += AfterError;
+			}
+		);
+	}
+
+	void AfterError() {
+		notifPopUp.OnFinishOutro-=AfterError;
+		Activate (false);
+	}
+
+	public void CheckName() {
+		if (petNameLabel.text != "") {
+			saveButton.interactable = true;
+		} else {
+			saveButton.interactable = false;
+		}
+	}
+
+	public void CancelClick()
+	{
+		SoundManager.Instance.PlaySFX(SFXList.Button02);
+		Activate(false);
+	}
+}

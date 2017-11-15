@@ -49,6 +49,5 @@ public class PetDescriptionPopUp : BasePage {
 	void FinishOutro() {
 		OnFinishOutro -= FinishOutro;
 		petNamePopUp.Activate (true);
-		petNamePopUp.InitData (petData);
 	}
 }

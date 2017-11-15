@@ -118,6 +118,11 @@ public class HeaderAreaManager : MonoBehaviour {
 
 	public void ProfileClicked(int profileType) {
         SoundManager.Instance.PlaySFX(SFXList.Button01);
+		ProfilesManager futurePage = (ProfilesManager)PagesManager.instance.GetPagesByName("PROFILES");
+		futurePage.initProfileType = profileType;;
+		futurePage.prevPage = PagesManager.instance.GetCurrentPage ();
+		PagesManager.instance.CurrentPageOutro (futurePage);
+			
     }
 
 	public void SettingsClicked() {
@@ -177,6 +182,7 @@ public class HeaderAreaManager : MonoBehaviour {
 	{
 		petImage.LoadImageFromUrl (petData.imageUrl);
 		petName.text = petData.name;
+		petRank.text = LocalizationService.Instance.GetTextByKey ("Header.PET_RANK") + petData.rank;
 		petExp.text = "EXP. " + petData.exp.ToString ("N0") + " / " + petData.nextRankExp.ToString ("N0");
 	}
 }

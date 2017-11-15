@@ -125,13 +125,23 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
-	public void ChangePetName(int petId, string newName,
+	public void EquipPet(int petId, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.equipPet;
+		string jsondata = "{\n"+
+			"\"petId\":\""+petId+"\"\n"+
+			"}";
+		DebugMsg ("EQUIP PET Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void ChangePetName(string newName,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.changePetName;
 		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
-			"\"petId\":\""+petId+"\",\n"+
 			"\"petName\":\""+newName+"\"\n"+
 			"}";
 
@@ -279,18 +289,21 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
 	}
 
-	public void UpdateUserProfile(int gender, string phoneNumber, string email, string completeAddress, string province, string city,
+	public void UpdateUserProfile(int gender, string phoneNumber, string email, string completeName, string province, string provinceId, string city, string cityId, string streetAddress,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.updateUserProfileAPI;
 		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
 			"\"gender\":"+gender+",\n"+
-			"\"phoneNumber\":\""+phoneNumber+"\",\n"+
-			"\"email\":\""+email+"\",\n"+
-			"\"completeAddress\":\""+completeAddress+"\",\n"+
+//			"\"phoneNumber\":\""+phoneNumber+"\",\n"+
+//			"\"email\":\""+email+"\",\n"+
+			"\"completeName\":\""+completeName+"\",\n"+
 			"\"province\":\""+province+"\",\n"+
 			"\"city\":\""+city+"\"\n"+
+			"\"provinceId\":\""+provinceId+"\",\n"+
+			"\"cityId\":\""+cityId+"\"\n"+
+			"\"streetAddress\":\""+streetAddress+"\"\n"+
 			"}";
 
 		DebugMsg ("UPDATE USER PROFILE Request","\nurl = "+url+"\ndata = "+jsondata);
