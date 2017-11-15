@@ -114,13 +114,19 @@ public class SceneGameManager : MonoBehaviour {
 
     public void ExitGame()
     {
-		notifPopUp.Activate (false);
+		if (notifPopUp.isActiveAndEnabled) 
+			notifPopUp.Activate (false);
+		
 		if (gameMode == GameMode.TRAINING) {
 			scorePanel.Activate (false);
 			scorePanel.OnFinishOutro += LoadToHome;        
 		} else {
-			scoreBoard.Activate (false);
-			scoreBoard.OnFinishOutro += LoadToHome;        
+			if (scoreBoard.isActiveAndEnabled) {
+				scoreBoard.Activate (false);
+				scoreBoard.OnFinishOutro += LoadToHome;        
+			} else {
+				gamePanel [nextGame].Activate (false);
+			}
 		}
     }
 

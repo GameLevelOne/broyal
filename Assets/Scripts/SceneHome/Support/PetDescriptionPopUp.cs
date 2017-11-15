@@ -7,7 +7,7 @@ using SimpleJSON;
 public class PetDescriptionPopUp : BasePage {
 	public PetData petData;
 	public ConnectingPanel connectingPanel;
-	public EditPetNamePopUp petNamePopUp;
+	public InputPetNamePopUp petNamePopUp;
 	public ImageLoader petImage;
 	public RectTransform starsHLG;
 	public Text priceLabel;

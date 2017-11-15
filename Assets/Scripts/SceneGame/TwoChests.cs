@@ -34,6 +34,7 @@ public class TwoChests : BaseGame {
 
 	public void OnClickChest (int chest)
 	{
+		SoundManager.Instance.PlaySFX(SFXList.Button01);
 		if (chest==0) {
 			chestBrownButton.SetInteger ("ChestState",1);
 			chestRedButton.SetInteger ("ChestState",-1);

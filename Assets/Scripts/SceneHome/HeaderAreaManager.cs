@@ -65,39 +65,29 @@ public class HeaderAreaManager : MonoBehaviour {
 			(response)=>{
 				JSONNode jsonData = JSON.Parse(response);
 				string msg = jsonData["message"];
-				if(!string.IsNullOrEmpty(msg)){
-					petData = null;
-					headerWithPet.SetActive (false);
-					headerNoPet.SetActive (true);
-					headerPetLoading.SetActive (false);
-				} else{
-					petData = new PetData();
+				petData = new PetData();
 
-					petData.InitHeader(jsonData["petName"],
-						jsonData["petModelImage"],
-						jsonData["petRank"],
-						jsonData["petExp"].AsInt,
-						jsonData["petNextRankExp"].AsInt
-					);
-					headerWithPet.SetActive (true);
-					headerNoPet.SetActive (false);
-					headerPetLoading.SetActive (false);
-					UpdatePetData();
-					petTrainButton.interactable = false;
-					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
-					GetTrainingTime();
-				}
-
+				petData.InitHeader(jsonData["equippedPet"]["petName"],
+					jsonData["equippedPet"]["petModelImage"],
+					jsonData["equippedPet"]["petRank"],
+					jsonData["equippedPet"]["petExp"].AsInt,
+					jsonData["equippedPet"]["petNextRankExp"].AsInt
+				);
+				headerWithPet.SetActive (true);
+				headerNoPet.SetActive (false);
+				headerPetLoading.SetActive (false);
+				UpdatePetData();
+				petTrainButton.interactable = false;
+				petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
+				GetTrainingTime();
 			},
 			(error)=>{
-				PetProfileError();
-			}
+				petData = null;
+				headerWithPet.SetActive (false);
+				headerNoPet.SetActive (true);
+				headerPetLoading.SetActive (false);			}
 		);
 	}		
-
-	void PetProfileError() {
-		GetPetProfile ();
-	}
 
 	void GetTrainingTime() {
 		DBManager.API.CheckTrainingTime (
