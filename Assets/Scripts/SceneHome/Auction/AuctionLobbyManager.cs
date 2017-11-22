@@ -14,7 +14,9 @@ public enum AuctionMode
 
 public class AuctionLobbyManager : BasePage {
 	public ConnectingPanel connectingPanel;
+	public NotificationPopUp notifPopUp;
 	public AuctionCarrouselPopUp carrouselPopUp;
+	public ClaimOTPPopUp claimOtpPopUp;
 	public AuctionRoomManager auctionRoomManager;
 	public HeaderAreaManager header;
 
@@ -81,6 +83,7 @@ public class AuctionLobbyManager : BasePage {
 						jsonData["pastAuctions"][i]["claimable"].AsBool
 					);
 					data.actionButton.onClick.RemoveAllListeners();
+					data.actionButton.onClick.AddListener(()=>{ClickClaim(jsonData["currentAuction"]["auctionId"].AsInt);});
 					totalData++;
 				}
 
@@ -215,9 +218,23 @@ public class AuctionLobbyManager : BasePage {
 		}
 	}
 
-	public void ClickClaim(){
-//		panelClaimConfirmation.SetActive(true);
+	public void ClickClaim(int dataAuctionId){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
+		int timeLeft = 0;
+		connectingPanel.Connecting (true);
+		DBManager.API.GetClaimAuction (dataAuctionId,
+			(response) => {
+				connectingPanel.Connecting (false);
+				JSONNode jsonData = JSON.Parse(response);
+				timeLeft = jsonData["otpRemainingTime"].AsInt;
+				claimOtpPopUp.InitTime (dataAuctionId,timeLeft);
+				claimOtpPopUp.Activate(true);
+			}, 
+			(error) => {
+				connectingPanel.Connecting (false);
+				notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+			}
+		);
     }
 
 	public void ClickImageDetail(int index){
