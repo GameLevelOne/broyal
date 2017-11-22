@@ -79,7 +79,7 @@ public class AuctionRoomData : MonoBehaviour {
 			dateWinLabel.text = dateWin;
 			openingBidLabel.text = productName;
 			nextIncrementLabel.text = LocalizationService.Instance.GetTextByKey("AuctionLobby.WON_PRICE") + ": " + winnerPrice.ToString ("IDR #,0;IDR -#,0;-");
-			maxPriceLabel.text = LocalizationService.Instance.GetTextByKey("AuctionLobby.WINNER_OF") + ": " + participants.ToString ("N0") + 
+			maxPriceLabel.text = LocalizationService.Instance.GetTextByKey("AuctionLobby.WINNER_OF") + ": " + participants.ToString ("N0") + " " +
 				LocalizationService.Instance.GetTextByKey("AuctionLobby.PARTICIPANTS");
 			starsPanel.gameObject.SetActive (false);
 			if (claimable) {

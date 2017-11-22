@@ -129,11 +129,12 @@ public class DBManager : MonoBehaviour {
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.equipPet;
+		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
 			"\"petId\":\""+petId+"\"\n"+
 			"}";
 		DebugMsg ("EQUIP PET Request","\nurl = "+url);
-		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
 	public void ChangePetName(string newName,
@@ -402,6 +403,39 @@ public class DBManager : MonoBehaviour {
 		DebugMsg ("GET LANDING AUCTION DATA Request","\nurl = "+url);
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
+
+//===========================Claim==============================================================
+
+	public void GetClaimAuction(int auctionId, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getClaimAuction + auctionId;
+		DebugMsg ("GET CLAIM AUCITON Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void GetPaymentDetails(int auctionId, 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getPaymentDetails + auctionId;
+		DebugMsg ("GET PAYMENT DETAILS Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void SubmitClaimedOtp(int auctionId, string verificationOtp,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.userResetPasswordAPI;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"auctionId\":\""+auctionId+"\",\n"+
+			"\"verificationOtp\":\""+verificationOtp+"\"\n"+
+			"}";
+
+		DebugMsg ("SUBMIT CLAIMED OTP Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
+	}
+
 
 
 //===========================Utilities==============================================================

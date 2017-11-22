@@ -24,7 +24,7 @@ public class AuctionRoomManager : BasePage {
 	public string productWeight;
 	public string productDescription;
 	public int numberBidders;
-	public int timeToNextCycle;
+	public float timeToNextCycle;
 
 	public Animator roomAnimator;
 	public Text auctionIdRoomlabel;
@@ -87,7 +87,7 @@ public class AuctionRoomManager : BasePage {
 				productDescription = jsonData["description"];
 				numberBidders = jsonData["noOfLastCycleBidders"].AsInt;
 				int getTime = (jsonData["timeToNextCycle"].AsInt > 0) ? jsonData["timeToNextCycle"].AsInt : jsonData["timeToFirstAuctionCycle"].AsInt;
-				timeToNextCycle = getTime / 1000;
+				timeToNextCycle = getTime / 1000f;
 				bidButton.interactable = jsonData["bidEnable"].AsBool;
 				bannerImage.LoadImageFromUrl(jsonData["bannerImageURL"]);
 				bannerAction = jsonData["bannerImageRedirectionURL"];
@@ -130,19 +130,25 @@ public class AuctionRoomManager : BasePage {
 
 	IEnumerator IncrementCountdown()
 	{
+		countDownAnim.SetInteger ("State", -1);
 		while (timeToNextCycle > 0) {
-			timeToNextCycle--;
+			timeToNextCycle -= Time.deltaTime;
 
-			if (timeToNextCycle <= 5) {
-				countDownAnim.gameObject.SetActive (true);
-				countDownAnim.SetInteger ("State",0);
+			if (timeToNextCycle <= 5f) {
+				int timeState = Mathf.CeilToInt (timeToNextCycle);
+				Debug.Log ("" + timeState + "("+timeToNextCycle+")");
+				if (!countDownAnim.gameObject.activeSelf)
+					countDownAnim.gameObject.SetActive (true);
+				if (countDownAnim.GetInteger ("State") != timeState) {
+					countDownAnim.SetInteger ("State", timeState);
+				}
 				countDownLayer.SetActive (false);
 			} else if (timeToNextCycle > 5) {
 				countDownLayer.SetActive (true);
 				countDownAnim.gameObject.SetActive (false);
-				countDownLabel.text = Utilities.SecondsToMinutes (timeToNextCycle);
+				countDownLabel.text = Utilities.SecondsToMinutes ((int)timeToNextCycle);
 			}
-			yield return new WaitForSeconds (1f);
+			yield return null;
 		}
 		Debug.Log ("---------Countdown Ends-----------");
 		countDownAnim.SetInteger ("State",1);

@@ -14,7 +14,7 @@ public class PetOwned : MonoBehaviour {
 
 	public void InitData(PetData _petData, bool equipable) {
 		if (_petData != null) {
-			Debug.Log("Pet Name: "+_petData.name);
+//			Debug.Log("Pet Name: "+_petData.name);
 			gameObject.SetActive (true);
 			petData = _petData;
 			petPicture.LoadImageFromUrl (petData.imageUrl);

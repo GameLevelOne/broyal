@@ -40,7 +40,7 @@ public class SceneGameManager : MonoBehaviour {
 		gameMode = (GameMode) PlayerPrefs.GetInt ("GameMode",0);
 		rumbleGame = (RumbleGame) PlayerPrefs.GetInt ("RumbleGame",0);
 		nextGame = (gameMode == GameMode.BIDROYALE) ? 4 : (int) rumbleGame;
-		round = (gameMode == GameMode.TRAINING) ? 1 : 0;
+		round = (gameMode == GameMode.TRAINING) ? 0 : 1;
 		countdownTimer = PlayerPrefs.GetInt ("TimeToGame",0);
 		remainingPlayer = 0;
 		royaleScores = new List<RoyaleScoreData> ();

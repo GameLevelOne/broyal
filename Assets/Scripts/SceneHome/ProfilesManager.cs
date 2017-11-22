@@ -156,15 +156,16 @@ public class ProfilesManager : BasePage {
 					"",
 					jsonData["equippedPet"]["petDescription"],
 					jsonData["equippedPet"]["petRank"],
-					jsonData["equippedPet"]["petExp"].AsInt,
-					jsonData["equippedPet"]["petNextRankExp"].AsInt,
+					256,778,
+//					jsonData["equippedPet"]["petExp"].AsInt,
+//					jsonData["equippedPet"]["petNextRankExp"].AsInt,
 					jsonData["equippedPet"]["petSkill"]
 				);
 
 				petPicture.LoadImageFromUrl(petData.imageUrl);
 				petNameLabel.text = petData.name;
 				petRankLabel.text = LocalizationService.Instance.GetTextByKey ("Header.PET_RANK") + petData.rank;
-				petExpBar.fillAmount = (float) (petData.exp/petData.nextRankExp);
+				petExpBar.fillAmount = ((float)petData.exp/(float)petData.nextRankExp);
 				petExpLabel.text = petData.exp.ToString("N0") + " / " + petData.nextRankExp.ToString("N0");
 				petSkillLabel.text = petData.skillDescription;
 				petsOwnedLabel.text = LocalizationService.Instance.GetTextByKey ("Profile.PETS_OWNED") + " " + jsonData["allPetList"].Count + " / " + 5;
@@ -177,7 +178,7 @@ public class ProfilesManager : BasePage {
 							jsonData["allPetList"][i]["petRank"],
 							0,0
 						);
-						petOwned[i].InitData(po,jsonData["allPetList"][i]["equipped"]);
+						petOwned[i].InitData(po,jsonData["allPetList"][i]["equipped"].AsBool);
 					} else {
 						petOwned[i].InitData(null,false);
 					}

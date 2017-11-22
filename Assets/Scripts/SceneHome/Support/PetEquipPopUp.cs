@@ -13,12 +13,16 @@ public class PetEquipPopUp : BasePage {
 	public Text nameLabel;
 	public Text descriptionLabel;
 
-	// Use this for initialization
-	public void InitData (PetData _petData) {
-		petData = _petData;
+	protected override void Init ()
+	{
+		base.Init ();
 		petImage.LoadImageFromUrl (petData.imageUrl);
 		nameLabel.text = petData.name;
 		descriptionLabel.text = petData.description;
+	}
+
+	public void InitData (PetData _petData) {
+		petData = _petData;
 	}
 
 	public void EquipClick() {

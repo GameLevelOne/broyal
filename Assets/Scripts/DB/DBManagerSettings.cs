@@ -32,6 +32,10 @@ public class DBManagerSettings : ScriptableObject {
 	public string auctionBidding;
 	public string getEligibleToEnterGame;
 	[Space(10)]
+	public string getClaimAuction;
+	public string getPaymentDetails;
+	public string submitClaimedOtp;
+	[Space(10)]
 	public string getBidRumbleGame;
 	public string submitBidRumbleResult;
 	public string submitBidRoyaleResult;
