@@ -94,7 +94,7 @@ public class AuctionLobbyManager : BasePage {
 				}
 
 				int startPage = totalData;
-				if ( (jsonData["currentAuction"].IsNull) || (jsonData["currentAuction"]=="{}") ) {
+				if ( jsonData["currentAuction"].Count<=0) {
 					Debug.Log("NO Current");
 				} else {
 					data = rooms[totalData];
@@ -229,6 +229,7 @@ public class AuctionLobbyManager : BasePage {
 				timeLeft = jsonData["otpRemainingTime"].AsInt;
 				claimOtpPopUp.InitTime (dataAuctionId,timeLeft);
 				claimOtpPopUp.Activate(true);
+				claimOtpPopUp.OnFinishOutro += AfterOTP;
 			}, 
 			(error) => {
 				connectingPanel.Connecting (false);
@@ -236,6 +237,13 @@ public class AuctionLobbyManager : BasePage {
 			}
 		);
     }
+
+	void AfterOTP() {
+		claimOtpPopUp.OnFinishOutro -= AfterOTP;
+		if (claimOtpPopUp.successOTP) {
+			NextPage ("PAYMENT");
+		}
+	}
 
 	public void ClickImageDetail(int index){
         SoundManager.Instance.PlaySFX(SFXList.Button01);

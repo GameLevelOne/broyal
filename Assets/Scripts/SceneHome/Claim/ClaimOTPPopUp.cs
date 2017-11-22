@@ -52,6 +52,7 @@ public class ClaimOTPPopUp : BasePage {
 	}
 
 	public void ClickSendAgain() {
+		SoundManager.Instance.PlaySFX(SFXList.Button01);
 		connectingPanel.Connecting (true);
 		DBManager.API.GetClaimAuction (auctionId,
 			(response) => {
@@ -67,6 +68,7 @@ public class ClaimOTPPopUp : BasePage {
 	}
 
 	public void ClickEnter() {
+		SoundManager.Instance.PlaySFX(SFXList.Button01);
 		connectingPanel.Connecting (true);
 		DBManager.API.SubmitClaimedOtp (auctionId, inputOtp.text,
 			(response) => {
