@@ -136,11 +136,11 @@ public class AuctionRoomManager : BasePage {
 
 			if (timeToNextCycle <= 5f) {
 				int timeState = Mathf.CeilToInt (timeToNextCycle);
-				Debug.Log ("" + timeState + "("+timeToNextCycle+")");
 				if (!countDownAnim.gameObject.activeSelf)
 					countDownAnim.gameObject.SetActive (true);
 				if (countDownAnim.GetInteger ("State") != timeState) {
 					countDownAnim.SetInteger ("State", timeState);
+					Debug.Log ("Set Integer: " + timeState + "("+timeToNextCycle+")");
 				}
 				countDownLayer.SetActive (false);
 			} else if (timeToNextCycle > 5) {
@@ -202,6 +202,7 @@ public class AuctionRoomManager : BasePage {
 	{
 		Debug.Log ("---------Go To Game-----------");
 		PlayerPrefs.SetInt("GameMode",(int)auctionMode);
+		PlayerPrefs.SetInt("GameAuctionId",auctionId);
 		if (auctionMode == AuctionMode.BIDRUMBLE) {
 			DBManager.API.GetBidRumbleGame (auctionId,
 				(response) => {
@@ -209,7 +210,6 @@ public class AuctionRoomManager : BasePage {
 					int rumbleGame = jsonData ["gameTypeId"].AsInt - 1;
 					connectingPanel.Connecting (false);
 					PlayerPrefs.SetInt ("RumbleGame", rumbleGame);
-                    PlayerPrefs.SetInt("GameAuctionId",auctionId);
 					OnFinishOutro += LoadAfterOutro;
 					Activate (false);
 				},
