@@ -455,6 +455,30 @@ public class DBManager : MonoBehaviour {
 	}
 
 
+//===========================News=======================================================
+	public void GetNewsList( 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getNewsList;
+		DebugMsg ("GET NEWS LIST Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void ReadNews(int newsId,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.readNews;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"newsId\":"+newsId+"\n"+
+			"}";
+
+		DebugMsg ("READ NEWS Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+
+
 
 //===========================Utilities==============================================================
 
