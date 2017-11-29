@@ -381,10 +381,10 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
-	public void GetWinnerList(
+	public void GetWinnerList(int auctionType,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
-		string url = config.restURL + config.getWinnerList;
+		string url = config.restURL + config.getWinnerList+auctionType;
 		DebugMsg ("GET WINNER LIST Request","\nurl = "+url);
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}

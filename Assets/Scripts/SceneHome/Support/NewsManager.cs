@@ -42,6 +42,7 @@ public class NewsManager : BasePage {
 	}
 
 	public void OpenNews(int newsId, string url) {
+		SoundManager.Instance.PlaySFX(SFXList.Button01);
 		connectingPanel.Connecting (true);
 		DBManager.API.ReadNews (newsId,
 			(response) => {
