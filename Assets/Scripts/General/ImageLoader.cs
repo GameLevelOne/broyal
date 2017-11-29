@@ -35,36 +35,40 @@ public class ImageLoader : MonoBehaviour {
 
 	public void LoadImageFromUrl(string url)
 	{
-		if (loadedURL != url) {
-			SetLoading ();
-			string filePath = Application.dataPath;
-			filePath += "/ImageCache/" + Utilities.GetInt64HashCode (url);
+		if (url == null) {
+			SetError ();
+		} else {
+			if (loadedURL != url) {
+				SetLoading ();
+				string filePath = Application.dataPath;
+				filePath += "/ImageCache/" + Utilities.GetInt64HashCode (url);
 
-			bool useCached = File.Exists (filePath);
-			string wwwFilePath;
+				bool useCached = File.Exists (filePath);
+				string wwwFilePath;
 
-			if (useCached) {
-				DateTime written = File.GetLastWriteTimeUtc (filePath);
-				DateTime now = DateTime.UtcNow;
-				double totalHours = now.Subtract (written).TotalHours;
-				if (totalHours > 24 * 7) {
-					File.Delete (filePath);
-					useCached = false;
-				}
-			} 
+				if (useCached) {
+					DateTime written = File.GetLastWriteTimeUtc (filePath);
+					DateTime now = DateTime.UtcNow;
+					double totalHours = now.Subtract (written).TotalHours;
+					if (totalHours > 24 * 7) {
+						File.Delete (filePath);
+						useCached = false;
+					}
+				} 
 
-			if (useCached) {
-				wwwFilePath = "file://" + filePath;
-			} else {
-				wwwFilePath = url;
-			}       
+				if (useCached) {
+					wwwFilePath = "file://" + filePath;
+				} else {
+					wwwFilePath = url;
+				}       
                 
 //			Debug.Log ("Image LoadFrom: " + wwwFilePath);
-			StartCoroutine (LoadFromWWW (wwwFilePath, useCached));
-			loadedURL = url;
-		} else {
-			loadAnim.SetInteger ("AnimState",(int)ImageLoaderState.LOADED);
-			loadImage.sprite = currentSprite;
+				StartCoroutine (LoadFromWWW (wwwFilePath, useCached));
+				loadedURL = url;
+			} else {
+				loadAnim.SetInteger ("AnimState", (int)ImageLoaderState.LOADED);
+				loadImage.sprite = currentSprite;
+			}
 		}
 	}                     
                           

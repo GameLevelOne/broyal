@@ -25,6 +25,7 @@ public class DBManager : MonoBehaviour {
 
 	public DBManagerSettings config;
 	public string username = null;
+	public DebugConsole debugConsole;
 	string tokenType = null;
 	string accessToken = null;
 
@@ -131,9 +132,9 @@ public class DBManager : MonoBehaviour {
 		string url = config.restURL + config.equipPet;
 		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
-			"\"petId\":\""+petId+"\"\n"+
+			"\"petId\":"+petId+"\n"+
 			"}";
-		DebugMsg ("EQUIP PET Request","\nurl = "+url);
+		DebugMsg ("EQUIP PET Request","\nurl = "+url+"\ndata = "+jsondata);
 		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
@@ -380,10 +381,10 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
-	public void GetWinnerList(
+	public void GetWinnerList(int auctionType,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
-		string url = config.restURL + config.getWinnerList;
+		string url = config.restURL + config.getWinnerList+auctionType;
 		DebugMsg ("GET WINNER LIST Request","\nurl = "+url);
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
@@ -436,6 +437,47 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
 	}
 
+//===========================RajaOngkir=============================================================
+	public void GetProvinceList( 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.rajaOngkirRestURL + config.getProvinceList;
+		DebugMsg ("GET PROVINCE LIST Request","\nurl = "+url);
+		PostRequest(url,null,CreateRajaOngkirHeader(),onComplete, onError);
+	}
+
+	public void GetCityList(string provinceId,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.rajaOngkirRestURL + config.getCityList + provinceId;
+		DebugMsg ("GET CITY LIST Request","\nurl = "+url);
+		PostRequest(url,null,CreateRajaOngkirHeader(),onComplete, onError);
+	}
+
+
+//===========================News=======================================================
+	public void GetNewsList( 
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.getNewsList;
+		DebugMsg ("GET NEWS LIST Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+	public void ReadNews(int newsId,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.readNews;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"newsId\":"+newsId+"\n"+
+			"}";
+
+		DebugMsg ("READ NEWS Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
+
 
 
 //===========================Utilities==============================================================
@@ -446,21 +488,30 @@ public class DBManager : MonoBehaviour {
 				onError("{\"errors\":\"NOT AUTHORIZED\"}");
 			return null;
 		} else {
+			int debugIndex = -1;
+			if (debugConsole != null) {
+				string serverUrl = url.Substring (0, config.restURL.Length);
+				string apiUrl = url.Substring (config.restURL.Length);
+				debugIndex = debugConsole.SetRequest ("REST URL: " + serverUrl + "\n" +  apiUrl);
+			}
 			WWW www = new WWW (url, data, postHeader);
-			StartCoroutine (WaitForRequest (www, onComplete, onError));
+			StartCoroutine (WaitForRequest (www, onComplete, onError,debugIndex));
 			return www;
 		}
 	}
 
-	IEnumerator WaitForRequest(WWW www, System.Action<string> onComplete, System.Action<string> onError) {
+	IEnumerator WaitForRequest(WWW www, System.Action<string> onComplete, System.Action<string> onError,int debugIndex) {
 		yield return www;
 		if (www.error == null) {
 			DebugMsg ("","RESULT: \n"+www.text);
-//			Debug.Log ("ResponseHeaders: "+www.responseHeaders["content-type"]);
+			if (debugConsole!=null)
+				debugConsole.SetResult (www.text,debugIndex);
 			if (onComplete!=null)
 				onComplete(www.text);
 		} else {
 			DebugError ("ERROR: "+www.error, www.text);
+			if (debugConsole!=null)
+				debugConsole.SetError ("ERROR: "+www.error+"\n"+www.text,debugIndex);
 			if (onError != null) {
 				onError (www.error+"|"+www.text);
 			}
@@ -470,8 +521,9 @@ public class DBManager : MonoBehaviour {
 	void DebugMsg(string msg = "", string cmsg = "")
 	{
 		if (config.debugMode) {
-			if (msg!="")
-				Debug.Log (config.messagePrefix+msg);
+			if (msg != "") {
+				Debug.Log (config.messagePrefix + msg);
+			}
 			if ((config.comprehensiveDebug) && (cmsg!=""))
 				Debug.Log (config.messagePrefix+cmsg);
 		}
@@ -480,9 +532,9 @@ public class DBManager : MonoBehaviour {
 	void DebugError(string msg = "", string cmsg = "")
 	{
 		if (msg!="")
-			Debug.LogError (config.messagePrefix+msg);
+			Debug.LogWarning (config.messagePrefix+msg);
 		if ((config.debugMode) && (config.comprehensiveDebug) && (cmsg!="")) 
-			Debug.LogError (config.messagePrefix+cmsg);
+			Debug.LogWarning (config.messagePrefix+cmsg);
 	}
 
 	Dictionary<string,string> CreateHeader() {
@@ -509,6 +561,11 @@ public class DBManager : MonoBehaviour {
 			header.Add ("Authorization", tokenType +" "+ accessToken);
 			return header;
 		}
+	}
+	Dictionary<string,string> CreateRajaOngkirHeader() {
+		Dictionary<string,string> header = new Dictionary<string, string> ();
+		header.Add ("key", config.rajaOngkirKey);
+		return header;
 	}
 
 //==================================================================================================

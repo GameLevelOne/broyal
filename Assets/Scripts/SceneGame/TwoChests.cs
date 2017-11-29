@@ -20,14 +20,14 @@ public class TwoChests : BaseGame {
 	int auctionId;
 	int round;
 
-	public override void InitGame(int gameTime, int round) {
+	public override void InitGame(int gameTime, int _round) {
 		chestBrownButton.SetInteger ("ChestState",0);
 		chestRedButton.SetInteger ("ChestState",0);
 		resultPanel.SetInteger ("ChestResult",0);
 		resultPanel.gameObject.SetActive (false);
 		curChoice = -1;
 		auctionId = PlayerPrefs.GetInt("GameAuctionId", 0);
-		round = PlayerPrefs.GetInt("GameRound", 0);
+		round = _round;
 
 		base.InitGame(gameTime,round);
 	}		
@@ -69,7 +69,7 @@ public class TwoChests : BaseGame {
 				(error) =>
 				{
 					connectingPanel.Connecting (false);
-					gameManager.PopUpBackToHome();
+					gameManager.PopUpBackToHome(error);
 				}
 			);
 		}

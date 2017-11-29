@@ -125,18 +125,12 @@ public class SignUpManager : AppInitPages {
 			(error)=>{
 				connectingPanel.Connecting(false);
 				Debug.Log("Register Failed");
-				JSONNode jsonData = JSON.Parse(error);
-				string erroruser = jsonData["errors"]["username"];
-				string erroremail = jsonData["errors"]["email"];
-
-				if (erroruser=="This username is already taken.") {
-					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("SignUp.ERROR_AGREE_TNC"));
+				JSONNode jsonData = JSON.Parse (error);
+				if (jsonData!=null) {
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
 				} else {
-					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("SignUp.ERROR_TRY_AGAIN"));
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
 				}
-
-				Debug.Log("Error user :"+erroruser);
-				Debug.Log("Error email :"+erroremail);
 			}
 		);	
 	}
@@ -161,7 +155,12 @@ public class SignUpManager : AppInitPages {
 			},
 			(error)=>{
 				connectingPanel.Connecting (false);
-				notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignIn.WRONG"));
+				JSONNode jsonData = JSON.Parse (error);
+				if (jsonData!=null) {
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+				} else {
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				}
 				CloseAndGoToNextPage (panelSignIn);
 			}
 		);

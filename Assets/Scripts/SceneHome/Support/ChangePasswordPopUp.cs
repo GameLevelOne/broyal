@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using SimpleJSON;
 
 public class ChangePasswordPopUp : BasePage {
 	public NotificationPopUp notifPopUp;
 	public ConnectingPanel connectingPanel;
-	public Text currentPasswordLabel;
-	public Text newPasswordLabel;
-	public Text confirmPasswordLabel;
+	public InputField currentPasswordLabel;
+	public InputField newPasswordLabel;
+	public InputField confirmPasswordLabel;
 	public Button saveButton;
 
 	protected override void Init ()
@@ -30,7 +31,12 @@ public class ChangePasswordPopUp : BasePage {
 				}, 
 				(error) => {
 					connectingPanel.Connecting (false);
-					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("General.SERVER_ERROR"));
+					JSONNode jsonData = JSON.Parse (error);
+					if (jsonData!=null) {
+						notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+					} else {
+						notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+					}
 					notifPopUp.OnFinishOutro += AfterError;
 				}
 			);

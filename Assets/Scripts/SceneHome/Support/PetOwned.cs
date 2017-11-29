@@ -12,7 +12,7 @@ public class PetOwned : MonoBehaviour {
 
 	PetData petData;
 
-	public void InitData(PetData _petData, bool equipable) {
+	public void InitData(PetData _petData) {
 		if (_petData != null) {
 //			Debug.Log("Pet Name: "+_petData.name);
 			gameObject.SetActive (true);
@@ -20,7 +20,7 @@ public class PetOwned : MonoBehaviour {
 			petPicture.LoadImageFromUrl (petData.imageUrl);
 			petName.text = petData.name;
 			petRank.text = LocalizationService.Instance.GetTextByKey ("Header.PET_RANK") + petData.rank;
-			equipButton.gameObject.SetActive(equipable);
+			equipButton.gameObject.SetActive(!petData.equipped);
 		} else {
 			gameObject.SetActive (false);
 		}

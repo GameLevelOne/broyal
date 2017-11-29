@@ -14,6 +14,8 @@ public class DBManagerSettings : ScriptableObject {
 	public string restURL;
 	public string royalBidKey;
 	public string royalBidSecret;
+	public string rajaOngkirKey;
+	public string rajaOngkirRestURL;
 	[Space(10)]
 
 	[Header("API STRING")]
@@ -60,6 +62,11 @@ public class DBManagerSettings : ScriptableObject {
 	public string petListing;
 	public string purchasePet;
 	public string getShopList;
+	public string getNewsList;
+	public string readNews;
+	[Space(10)]
+	public string getProvinceList;
+	public string getCityList;
 
 
 

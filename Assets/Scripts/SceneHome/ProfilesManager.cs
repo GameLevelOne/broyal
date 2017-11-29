@@ -56,7 +56,13 @@ public class ProfilesManager : BasePage {
 	public Text editFullNameField;
 	public Dropdown provinceDrop;
 	public Dropdown cityDrop;
+	public GameObject provinceLoading;
+	public GameObject cityLoading;
 	public Text editAddressField;
+	string currentProvince;
+	string currentCity;
+	List<string> provinceId;
+	List<string> cityId;
 
 	protected override void Init ()
 	{
@@ -83,6 +89,10 @@ public class ProfilesManager : BasePage {
 		userProfilePanel.SetActive (true);
 		petProfilePanel.SetActive (false);
 		editProfilePanel.SetActive (false);
+		for (int i=0;i<4;i++) {
+			highScoreLabel[i].text = "-";
+			scoreDateLabel[i].text = "-";
+		}
 		if (!userLoaded) {
 			connectingPanel.Connecting (true);
 			DBManager.API.GetUserProfile (
@@ -93,10 +103,11 @@ public class ProfilesManager : BasePage {
 					userNameLabel.text = jsonData["username"];
 					auctionParticipatedLabel.text = jsonData["noOfAuctionPartitipated"];
 					auctionWonLabel.text = jsonData["noOfAuctionWon"];
-//					for (int i=0;i<jsonData["playedGames"].Count;i++) {
-//						highScoreLabel[i].text = jsonData["highScore"];
-//						scoreDateLabel[i].text = Utilities.StringLongToDateTime(jsonData["scoreDate"]);
-//					}
+					for (int i=0;i<jsonData["playedGames"].Count;i++) {
+						int rumbleGame = jsonData ["playedGames"][i]["bidRumbleGameType"].AsInt - 1;
+						highScoreLabel[rumbleGame].text = ((float)jsonData["score"].AsInt / 1000000000f).ToString("0.0000");
+						scoreDateLabel[rumbleGame].text = Utilities.StringLongToDateTime(jsonData["dateCreated"]).ToString("MMM dd, yy");
+					}
 
 					editUserPicture.LoadImageFromUrl(jsonData["profilePicture"]);
 					if (jsonData["gender"]=="Male")
@@ -108,6 +119,8 @@ public class ProfilesManager : BasePage {
 					editPhoneField.text = jsonData["phoneNumber"];
 					editFullNameField.text = jsonData["completeName"];
 					editAddressField.text = jsonData["streetAddress"];
+					currentProvince = jsonData["province"];
+					currentCity = jsonData["city"];
 					userLoaded = true;
 				}, 
 				(error) => {
@@ -120,6 +133,8 @@ public class ProfilesManager : BasePage {
 
 	public void ShowPetProfile() {
 		SoundManager.Instance.PlaySFX(SFXList.Button01);
+		userProfilePanel.SetActive (false);
+		petProfilePanel.SetActive (true);
 		if (!petLoaded) {
 			LoadPetData ();
 		}
@@ -131,7 +146,71 @@ public class ProfilesManager : BasePage {
 		userProfilePanel.SetActive (false);
 		petProfilePanel.SetActive (false);
 		editProfilePanel.SetActive (true);
+
+		provinceDrop.gameObject.SetActive (false);
+		provinceLoading.SetActive (true);
+		cityDrop.gameObject.SetActive (false);
+		cityLoading.SetActive (true);
+		DBManager.API.GetProvinceList (
+			(response) => {
+				JSONNode jsonData = JSON.Parse(response);
+				provinceId = new List<string>();
+				provinceDrop.ClearOptions();
+				List<string> provinceList = new List<string>();
+				int curVal = 0;
+				for (int i=0;i<jsonData["rajaongkir"]["results"].Count;i++) {
+					provinceId.Add(jsonData["rajaongkir"]["results"][i]["province_id"]);
+					provinceList.Add(jsonData["rajaongkir"]["results"][i]["province"]);
+					if (jsonData["rajaongkir"]["results"][i]["province"]==currentProvince) {
+						curVal = i;
+					}
+				}
+				provinceDrop.AddOptions(provinceList);
+				provinceDrop.gameObject.SetActive (true);
+				provinceDrop.value = curVal;
+				StartCoroutine(RefreshDropValue());
+				provinceLoading.SetActive (false);
+				LoadCityList();
+			},
+			(error) => {
+			}
+		);
 	}
+
+	IEnumerator RefreshDropValue() {
+		yield return null;
+		provinceDrop.RefreshShownValue();
+		cityDrop.RefreshShownValue();
+	}
+
+	public void LoadCityList() {
+		cityDrop.gameObject.SetActive (false);
+		cityLoading.SetActive (true);
+		DBManager.API.GetCityList (provinceId[provinceDrop.value],
+			(response) => {
+				JSONNode jsonData = JSON.Parse(response);
+				cityId = new List<string>();
+				cityDrop.ClearOptions();
+				List<string> cityList = new List<string>();
+				int curVal = 0;
+				for (int i=0;i<jsonData["rajaongkir"]["results"].Count;i++) {
+					cityId.Add(jsonData["rajaongkir"]["results"][i]["city_id"]);
+					cityList.Add(jsonData["rajaongkir"]["results"][i]["city_name"]);
+					if (jsonData["rajaongkir"]["results"][i]["city_name"]==currentCity) {
+						curVal = i;
+					}
+				}
+				cityDrop.AddOptions(cityList);
+				cityDrop.gameObject.SetActive (true);
+				cityDrop.value = curVal;
+				StartCoroutine(RefreshDropValue());
+				cityLoading.SetActive (false);
+			},
+			(error) => {
+			}
+		);
+	}
+
 
 	public void CloseClick() {
 		SoundManager.Instance.PlaySFX(SFXList.Button02);
@@ -156,9 +235,8 @@ public class ProfilesManager : BasePage {
 					"",
 					jsonData["equippedPet"]["petDescription"],
 					jsonData["equippedPet"]["petRank"],
-					256,778,
-//					jsonData["equippedPet"]["petExp"].AsInt,
-//					jsonData["equippedPet"]["petNextRankExp"].AsInt,
+					jsonData["equippedPet"]["petExp"].AsInt,
+					jsonData["equippedPet"]["petNextRankExp"].AsInt,
 					jsonData["equippedPet"]["petSkill"]
 				);
 
@@ -172,15 +250,18 @@ public class ProfilesManager : BasePage {
 				for (int i=0;i<5;i++) {
 					if (i<jsonData["allPetList"].Count) {
 						PetData po = new PetData();
-						po.InitHeader(
+						po.InitMiniProfile(
 							jsonData["allPetList"][i]["petName"],
+							jsonData["allPetList"][i]["petId"],
 							jsonData["allPetList"][i]["petModelImage"],
+							jsonData["allPetList"][i]["petName"],
+							jsonData["allPetList"][i]["petDescription"],
 							jsonData["allPetList"][i]["petRank"],
-							0,0
+							jsonData["allPetList"][i]["equipped"]=="Equipped"
 						);
-						petOwned[i].InitData(po,jsonData["allPetList"][i]["equipped"].AsBool);
+						petOwned[i].InitData(po);
 					} else {
-						petOwned[i].InitData(null,false);
+						petOwned[i].InitData(null);
 					}
 				}
 				petLoaded = true;
@@ -189,7 +270,12 @@ public class ProfilesManager : BasePage {
 			}, 
 			(error) => {
 				connectingPanel.Connecting (false);
-				notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("General.SERVER_ERROR"));
+				JSONNode jsonData = JSON.Parse (error);
+				if ( (jsonData!=null) && (jsonData["errors"]=="HAVE_NO_PET")) {
+					ShowUserProfile();
+				} else {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				}
 			}
 		);
 	}
@@ -220,7 +306,7 @@ public class ProfilesManager : BasePage {
 	public void SaveEditClick() {
 		SoundManager.Instance.PlaySFX(SFXList.Button01);
 		if ((editEmailField.text=="") || (editPhoneField.text=="") || (editFullNameField.text=="") || (editAddressField.text=="")
-			|| (provinceDrop.captionText.text=="") || (cityDrop.captionText.text=="")) {
+			|| (provinceDrop.captionText.text=="") || (cityDrop.captionText.text=="") || (provinceLoading.activeSelf) || (cityLoading.activeSelf)) {
 			notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("SignUp.FILL_ALL"));
 		} else {
 			connectingPanel.Connecting (true);
@@ -229,9 +315,9 @@ public class ProfilesManager : BasePage {
 				editEmailField.text,
 				editFullNameField.text,
 				provinceDrop.captionText.text,
-				"123",
+				provinceId[provinceDrop.value],
 				cityDrop.captionText.text,
-				"456",
+				cityId[cityDrop.value],
 				editAddressField.text,
 				(response) => {
 					connectingPanel.Connecting (false);
@@ -249,196 +335,4 @@ public class ProfilesManager : BasePage {
 	public void CancelEditClick() {
 		LoadUserProfile (true);
 	}
-
-
-//
-//	public void OnClickUserProfile (){
-//		panelUserProfile.SetActive(true);
-//		panelPetProfile.SetActive(false);
-//	}
-//
-//	public void OnClickPetProfile(){
-//		panelUserProfile.SetActive(false);
-//		panelPetProfile.SetActive(true);
-//	}
-//
-//	public void OnClickBack(){
-////		navigationBar.CloseCurrentActivePanel();
-////		navigationBar.BackToHome();
-//		panelLandingPage.SetActive(true);
-//		this.gameObject.SetActive(false);
-//	}
-//
-//	public void OnClickEditProfile(){
-//		ChangeEditProfileDisplay();
-//		panelEditProfile.SetActive(true);
-//	}
-//
-//	public void OnClickCancelEditProfile(){
-//		panelEditProfile.SetActive(false);
-//	}
-//
-//	public void OnClickEditUsername(){
-//		panelEditUsername.SetActive(true);
-//	}
-//
-//	public void OnClickCancelEditUsername(){
-//		panelEditUsername.SetActive(false);
-//	}
-//
-//	public void OnClickEditPassword(){
-//		panelEditPassword.SetActive(true);
-//	}
-//
-//	public void OnClickCancelEditPassword(){
-//		panelEditPassword.SetActive(false);
-//	}
-//
-//	public void OnClickEditPetName(){
-//		panelEditPetName.SetActive(true);
-//	}
-//
-//	public void OnClickCancelEditPetName(){
-//		panelEditPetName.SetActive(false);
-//	}
-//
-//	public void OnClickChangeGender (Image obj)
-//	{
-//		if (obj.sprite == genderIcons [0]) {
-//			obj.sprite = genderIcons [1];
-//			gender = 1;
-//		} else {
-//			obj.sprite = genderIcons[0];
-//			gender = 0;
-//		}
-//		Debug.Log("currentGender:"+gender);
-//	}
-//
-//	public void OnClickSubmitEditProfile(){
-//		DoEditUserProfile();
-//	}
-//
-//	public void OnClickSubmitChangeUsername (){
-//		DoChangeUsername();
-//	}
-//
-//	public void OnClickSubmitChangePassword(){
-//		DoChangePassword();
-//	}
-//
-//	public void GetUsername (InputField obj){
-//		username = obj.text;
-//	}
-//
-//	public void GetCurrentPassword (InputField obj){
-//		currPassword = obj.text;
-//	}
-//
-//	public void GetNewPassword1 (InputField obj){
-//		newPassword1 = obj.text;
-//	}
-//
-//	public void GetNewPassword2(InputField obj){
-//		newPassword2 = obj.text;
-//	}
-//
-//	public void GetInputEmail(InputField obj){
-//		email = obj.text;
-//	}
-//
-//	public void GetInputPhone (InputField obj){
-//		phoneNum = obj.text;
-//	}
-//
-//	public void GetFullName (InputField obj){
-//		fullName = obj.text;
-//	}
-//
-//	public void GetAddress (InputField obj){
-//		address = obj.text;
-//	}
-//
-//	public void GetProvince (Dropdown obj)
-//	{
-//		if (obj.value == -1) {
-//			province = null;
-//		} else {
-//			province = obj.options [obj.value].text;
-//		}
-//	}
-//
-//	public void GetCity (Dropdown obj)
-//	{
-//		if (obj.value == -1) {
-//			city = null;
-//		} else {
-//			city = obj.options [obj.value].text;
-//		}
-//	}
-//
-//	public void GetPetName (InputField obj){
-//		petName = obj.text;
-//	}
-//
-//	void DoEditUserProfile ()
-//	{
-//		if (string.IsNullOrEmpty (email) || string.IsNullOrEmpty (phoneNum) || string.IsNullOrEmpty (address) ||
-//		   string.IsNullOrEmpty (province) || string.IsNullOrEmpty (city)) {
-//		   	Debug.Log("please fill all fields");
-//		} else{
-//			DBManager.API.UpdateUserProfile(gender,phoneNum,email,address,province,city,
-//			(response)=>{
-//				Debug.Log("update user success");	
-//				panelEditProfile.SetActive(false);
-//			},
-//			(error)=>{	
-//				Debug.Log("update user fail");
-//			}
-//			);
-//		}
-//	}
-//
-//	void DoChangeUsername ()
-//	{
-//		if (string.IsNullOrEmpty (username)) {
-//			Debug.Log ("please fill the field");
-//		} else {
-//			DBManager.API.UpdateUserName(username,
-//			(response)=>{
-//				Debug.Log("username changed successfully");
-//				panelEditUsername.SetActive(false);
-//				DBManager.API.username = username;
-//				ChangeEditProfileDisplay();
-//			},
-//			(error)=>{
-//				JSONNode jsonData = JSON.Parse(error);
-//				Debug.Log("Can only change username once");
-//			}
-//			);
-//		}
-//	}
-//
-//	void DoChangePassword ()
-//	{
-//		if (string.IsNullOrEmpty (currPassword) || string.IsNullOrEmpty (newPassword1) || string.IsNullOrEmpty (newPassword2)) {
-//			Debug.Log ("please fill all fields");
-//		} else {
-//			DBManager.API.UserChangePassword(currPassword,newPassword1,newPassword2,
-//			(response)=>{
-//				Debug.Log("password changed successfully");
-//				panelEditPassword.SetActive(false);
-//			},
-//			(error)=>{
-//				JSONNode jsonData = JSON.Parse(error);
-//				Debug.Log(jsonData["message"]);
-//			}
-//			);
-//		}
-//	}
-//
-//	void ChangeEditProfileDisplay(){
-////		fieldUsername.text = PlayerData.Instance.Username;
-////		fieldEmail.text = PlayerData.Instance.Email;
-////		fieldPhone.text = PlayerData.Instance.PhoneNum;
-//	}
 }

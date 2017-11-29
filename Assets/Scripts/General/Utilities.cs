@@ -59,8 +59,14 @@ namespace BidRoyale.Core
 			long l = (long)Convert.ToInt64 (s);
 			DateTime start = new DateTime(1970, 1, 1, 0, 0, 0);
 			DateTime resultdate= start.AddMilliseconds(l);
+			try {
+				resultdate = TimeZoneInfo.ConvertTime (resultdate, TimeZoneInfo.Local);
+			} catch (TimeZoneNotFoundException e) {
+				resultdate = resultdate.AddHours (7);
+			}
 			return resultdate;
 		}
+
 	}
 
 }

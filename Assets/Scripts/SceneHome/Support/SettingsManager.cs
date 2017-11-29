@@ -5,27 +5,29 @@ using UnityEngine.UI;
 using SunCubeStudio.Localization;
 
 public class SettingsManager : BasePage {
-	public GameObject panelLandingPage;
-	public GameObject buttonNotifOn;
-	public GameObject buttonNotifOff;
-	public GameObject buttonSoundOn;
-	public GameObject buttonSoundOff;
-	public GameObject buttonLangEN;
-	public GameObject buttonLangID;
-	public GameObject buttonSubscribe;
-	public GameObject buttonUnsubscribe;
+	public TextManager textPanel;
+	public Image buttonNotifOn;
+	public Image buttonNotifOff;
+	public Image buttonSoundOn;
+	public Image buttonSoundOff;
+	public Image buttonLangEN;
+	public Image buttonLangID;
+	public Image buttonSubscribe;
+	public Image buttonUnsubscribe;
+	public Image buttonDebugOn;
+	public Image buttonDebugOff;
 	public BasePage prevPage;
 
 	protected override void Init (){
 		base.Init ();
-		OnClickNotif(true);
-		OnClickSound(true);
+		OnClickNotif(PlayerPrefs.GetInt ("Notifications",0)==1);
+		OnClickSound(PlayerPrefs.GetFloat ("SoundVolume",1f)==1f);
 		OnClickLanguage(LocalizationService.Instance.Localization == "English");
-		OnClickSubscribe(true);
+		OnClickSubscribe(PlayerPrefs.GetInt ("Subscribe",0)==1);
+		ClickDebug(PlayerPrefs.GetInt ("ShowDebugConsole",0)==1);
 	}
 
 	public void OnClickClose (){
-//		panelLandingPage.SetActive(true);
         SoundManager.Instance.PlaySFX(SFXList.Button02);
         PagesManager.instance.CurrentPageOutro(prevPage);
 	}
@@ -33,14 +35,15 @@ public class SettingsManager : BasePage {
 	public void OnClickNotif (bool optionOn)
 	{
         SoundManager.Instance.PlaySFX(SFXList.Button01);
-        buttonNotifOn.GetComponent<Image>().enabled = optionOn;
-		buttonNotifOff.GetComponent<Image> ().enabled = !optionOn;
+        buttonNotifOn.enabled = optionOn;
+		buttonNotifOff.enabled = !optionOn;
+		PlayerPrefs.SetInt ("Notifications",(optionOn ? 1 : 0));
 	}
 
 	public void OnClickSound (bool optionOn){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
-        buttonSoundOn.GetComponent<Image>().enabled = optionOn;
-		buttonSoundOff.GetComponent<Image> ().enabled = !optionOn;
+        buttonSoundOn.enabled = optionOn;
+		buttonSoundOff.enabled = !optionOn;
 
 		SoundManager.Instance.SetVolume (optionOn ? 1f : 0f);
 		PlayerPrefs.SetFloat ("SoundVolume",(optionOn ? 1f : 0f));
@@ -48,8 +51,8 @@ public class SettingsManager : BasePage {
 
 	public void OnClickLanguage (bool optionEN){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
-        buttonLangEN.GetComponent<Image>().enabled = optionEN;
-		buttonLangID.GetComponent<Image> ().enabled = !optionEN;
+        buttonLangEN.enabled = optionEN;
+		buttonLangID.enabled = !optionEN;
 		if (optionEN) {
 			LocalizationService.Instance.Localization = "English";
 		} else {
@@ -59,28 +62,28 @@ public class SettingsManager : BasePage {
 
 	public void OnClickSubscribe (bool optionSubscribe){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
-        buttonSubscribe.GetComponent<Image>().enabled = optionSubscribe;
-		buttonUnsubscribe.GetComponent<Image> ().enabled = !optionSubscribe;
+        buttonSubscribe.enabled = optionSubscribe;
+		buttonUnsubscribe.enabled = !optionSubscribe;
+		PlayerPrefs.SetInt ("Subscribe",(optionSubscribe ? 1 : 0));
 	}
 
-	public void OnClickPrivacyPolicy(){
-        SoundManager.Instance.PlaySFX(SFXList.Button01);
-
+	public void ClickDebug(bool optionOn) {
+		SoundManager.Instance.PlaySFX(SFXList.Button01);
+		buttonDebugOn.enabled = optionOn;
+		buttonDebugOff.enabled = !optionOn;
+		PlayerPrefs.SetInt ("ShowDebugConsole",(optionOn ? 1 : 0));
+		DBManager.API.debugConsole.Hide ();
 	}
 
-	public void OnClickTandC(){
+	public void ClickTextPages(int type){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
-
+		textPanel.showType = type;
+		NextPage ("TEXTVIEW");
 	}
 
-	public void OnClickAboutUs (){
+
+	public void ClickTutorial(){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
-
-	}
-
-	public void OnClickTutorial(){
-        SoundManager.Instance.PlaySFX(SFXList.Button01);
-
 	}
 
 	public void OnClickLogout(){

@@ -8,6 +8,7 @@ using BidRoyale.Core;
 public class AuctionRoomManager : BasePage {
 	public Fader fader;
 	public ConnectingPanel connectingPanel;
+	public NotificationPopUp notificationPopUp;
 	public LoadingProgress loadingPanel;
 
 	public AuctionMode auctionMode;
@@ -118,35 +119,38 @@ public class AuctionRoomManager : BasePage {
 					Debug.Log ("---------Single bidder-----------");
 					NextPage("LOBBY");
 				} else {
-					if (timeToNextCycle>0)
+					if (timeToNextCycle>0) {
+						StopAllCoroutines();
 						StartCoroutine(IncrementCountdown());
+					}
 				}
 					
 			},
 			(error) => {
 				connectingPanel.Connecting (false);
+				notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				NextPage("LOBBY");
 			});
 	}
 
 	IEnumerator IncrementCountdown()
 	{
-		countDownAnim.SetInteger ("State", -1);
+		countDownAnim.SetInteger ("State", 0);
 		while (timeToNextCycle > 0) {
 			timeToNextCycle -= Time.deltaTime;
 
-			if (timeToNextCycle <= 5f) {
-				int timeState = Mathf.CeilToInt (timeToNextCycle);
-				Debug.Log ("" + timeState + "("+timeToNextCycle+")");
+			int timeState = Mathf.CeilToInt (timeToNextCycle);
+			if (timeState < 6) {
 				if (!countDownAnim.gameObject.activeSelf)
 					countDownAnim.gameObject.SetActive (true);
 				if (countDownAnim.GetInteger ("State") != timeState) {
 					countDownAnim.SetInteger ("State", timeState);
 				}
 				countDownLayer.SetActive (false);
-			} else if (timeToNextCycle > 5) {
+			} else {
 				countDownLayer.SetActive (true);
 				countDownAnim.gameObject.SetActive (false);
-				countDownLabel.text = Utilities.SecondsToMinutes ((int)timeToNextCycle);
+				countDownLabel.text = Utilities.SecondsToMinutes (Mathf.CeilToInt (timeToNextCycle));
 			}
 			yield return null;
 		}
@@ -156,6 +160,12 @@ public class AuctionRoomManager : BasePage {
 			Debug.Log ("---------Max Price-----------");
 			CheckEligible ();
 		} else {
+			Init ();
+		}
+	}
+
+	void OnApplicationPause(bool isPaused) {
+		if ( (timeToNextCycle > 0) && (!isPaused) ){
 			Init ();
 		}
 	}
@@ -171,6 +181,7 @@ public class AuctionRoomManager : BasePage {
 			},
 			(error)=>{
 				connectingPanel.Connecting (false);
+				notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
 			}
 		);
 	}
@@ -194,6 +205,12 @@ public class AuctionRoomManager : BasePage {
 			(error)=>{
 				connectingPanel.Connecting (false);
 				NextPage("LOBBY");
+				JSONNode jsonData = JSON.Parse (error);
+				if (jsonData!=null) {
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+				} else {
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				}
 			}
 		);
 	}
@@ -202,6 +219,7 @@ public class AuctionRoomManager : BasePage {
 	{
 		Debug.Log ("---------Go To Game-----------");
 		PlayerPrefs.SetInt("GameMode",(int)auctionMode);
+		PlayerPrefs.SetInt("GameAuctionId",auctionId);
 		if (auctionMode == AuctionMode.BIDRUMBLE) {
 			DBManager.API.GetBidRumbleGame (auctionId,
 				(response) => {
@@ -209,7 +227,6 @@ public class AuctionRoomManager : BasePage {
 					int rumbleGame = jsonData ["gameTypeId"].AsInt - 1;
 					connectingPanel.Connecting (false);
 					PlayerPrefs.SetInt ("RumbleGame", rumbleGame);
-                    PlayerPrefs.SetInt("GameAuctionId",auctionId);
 					OnFinishOutro += LoadAfterOutro;
 					Activate (false);
 				},
@@ -218,6 +235,7 @@ public class AuctionRoomManager : BasePage {
 				}
 			);
 		} else {
+			connectingPanel.Connecting (false);
 			OnFinishOutro += LoadAfterOutro;
 			Activate (false);
 		}

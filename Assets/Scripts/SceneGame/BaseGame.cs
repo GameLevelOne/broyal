@@ -20,7 +20,7 @@ public class BaseGame : PagesIntroOutro {
 		score = gameTime;
 		timeLabel.text = timeToEndGame.ToString ("00");
 		if (round == 0) {
-			roundLabel.text = LocalizationService.Instance.GetTextByKey ("Game.ROUND") + " " + round;
+			roundLabel.text = "-";
 		} else {
 			roundLabel.text = LocalizationService.Instance.GetTextByKey ("Game.ROUND") + " " + round;
 		}

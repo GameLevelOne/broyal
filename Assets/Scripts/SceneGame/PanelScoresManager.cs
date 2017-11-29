@@ -76,7 +76,7 @@ public class PanelScoresManager : PagesIntroOutro {
 
 	new protected void OnEnable() {
 		base.OnEnable ();
-		if (gameMode == GameMode.BIDRUMBLE) {
+		if (gameMode != GameMode.TRAINING) {
 			StartCoroutine (WaitingForServer ());
 		}
 	}
@@ -124,6 +124,7 @@ public class PanelScoresManager : PagesIntroOutro {
                     data.round = round;
                     data.answer = choice;
                     data.passed = passNumber;
+					data.correct = (status=="PASS");
                     gameManager.AddRoyaleScore(data);
 				}
 				if ((winner)  || (status!="PASS")) {
@@ -142,6 +143,7 @@ public class PanelScoresManager : PagesIntroOutro {
 			},
 			(error) =>
 			{
+				gameManager.PopUpBackToHome(error);
 			}
 		);
 	}

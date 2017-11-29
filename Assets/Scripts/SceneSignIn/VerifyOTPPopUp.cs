@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using SimpleJSON;
 
 public class VerifyOTPPopUp : PagesIntroOutro {
-
 	public ConnectingPanel connectingPanel;
 	public Text otpText;
 	public InputField inputOTP;
@@ -32,7 +31,11 @@ public class VerifyOTPPopUp : PagesIntroOutro {
 				connectingPanel.Connecting (false);
 				SetOTPText(false);
 				JSONNode jsonData = JSON.Parse (error);
-				string errorotp = jsonData ["errors"] ["verificationOTP"];
+				if ((jsonData!=null) && (jsonData["errors"]=="ACCOUNT_ALREADY_VERIFIED") ) {
+					otpText.text = LocalizationService.Instance.GetTextByKey ("Verify.FAILED_OTP");
+					otpSuccess = true;
+					Activate (false);
+				}
 			}
 		);
 	}
@@ -59,9 +62,12 @@ public class VerifyOTPPopUp : PagesIntroOutro {
 			(error) => {
 				connectingPanel.Connecting (false);
 				SetOTPText(false);
-				otpText.text = LocalizationService.Instance.GetTextByKey ("Verify.FAILED_OTP");
-				otpSuccess = true;
-				Activate (false);
+				JSONNode jsonData = JSON.Parse (error);
+				if ((jsonData!=null) && (jsonData["errors"]=="USER_ALREADY_ACTIVE") ) {
+					otpText.text = LocalizationService.Instance.GetTextByKey ("Verify.FAILED_OTP");
+					otpSuccess = true;
+					Activate (false);
+				}
 			}
 		);
 	}
