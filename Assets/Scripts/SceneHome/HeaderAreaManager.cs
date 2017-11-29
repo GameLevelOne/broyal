@@ -6,6 +6,8 @@ using SimpleJSON;
 using BidRoyale.Core;
 
 public class HeaderAreaManager : MonoBehaviour {
+	public ConnectingPanel connectingPanel;
+	public NotificationPopUp notificationPopUp;
 	public GameObject headerPetLoading;
 	public GameObject headerWithPet;
 	public GameObject headerNoPet;
@@ -97,11 +99,11 @@ public class HeaderAreaManager : MonoBehaviour {
 				CheckTrainCountDown();
 			}, 
 			(error) => {
-				string errorNum = error.Split('|')[0].Trim();
-				if (errorNum=="400") {
+				JSONNode jsonData = JSON.Parse (error);
+				if ((jsonData!=null) && (jsonData["errors"]=="TRAINING_FINISH") ) {
 					petTrainButton.interactable = true;
 					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
-				}
+				} 
 			}
 		);
 	}
@@ -134,24 +136,42 @@ public class HeaderAreaManager : MonoBehaviour {
 
 	public void TrainClicked() {
         SoundManager.Instance.PlaySFX(SFXList.Button01);
-        petTrainButton.interactable = false;
+		connectingPanel.Connecting (true);
 		if (petTrainLabel.text == LocalizationService.Instance.GetTextByKey ("Header.TRAIN")) {
 			DBManager.API.StartTrainingTime (
 				(response) => {
+					petTrainButton.interactable = false;
+					connectingPanel.Connecting (false);
 					JSONNode jsonData = JSON.Parse(response);
 					trainCountDown = jsonData["remainingSeconds"];
 					CheckTrainCountDown();
 				}, 
 				(error) => {
+					connectingPanel.Connecting (false);
+					JSONNode jsonData = JSON.Parse (error);
+					if (jsonData!=null) {
+						notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+					} else {
+						notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+					}
 				}
 			);
 
 		} else {
+			connectingPanel.Connecting (true);
 			DBManager.API.ClaimPetTrainExp (
 				(response) => {
+					connectingPanel.Connecting (false);
 					GetPetProfile();
 				}, 
 				(error) => {
+					connectingPanel.Connecting (false);
+					JSONNode jsonData = JSON.Parse (error);
+					if (jsonData!=null) {
+						notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+					} else {
+						notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+					}
 				}
 			);
 		}

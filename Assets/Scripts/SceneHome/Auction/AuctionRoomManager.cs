@@ -8,6 +8,7 @@ using BidRoyale.Core;
 public class AuctionRoomManager : BasePage {
 	public Fader fader;
 	public ConnectingPanel connectingPanel;
+	public NotificationPopUp notificationPopUp;
 	public LoadingProgress loadingPanel;
 
 	public AuctionMode auctionMode;
@@ -125,6 +126,8 @@ public class AuctionRoomManager : BasePage {
 			},
 			(error) => {
 				connectingPanel.Connecting (false);
+				notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				NextPage("LOBBY");
 			});
 	}
 
@@ -171,6 +174,7 @@ public class AuctionRoomManager : BasePage {
 			},
 			(error)=>{
 				connectingPanel.Connecting (false);
+				notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
 			}
 		);
 	}
@@ -194,6 +198,12 @@ public class AuctionRoomManager : BasePage {
 			(error)=>{
 				connectingPanel.Connecting (false);
 				NextPage("LOBBY");
+				JSONNode jsonData = JSON.Parse (error);
+				if (jsonData!=null) {
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+				} else {
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				}
 			}
 		);
 	}

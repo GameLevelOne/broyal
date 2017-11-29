@@ -142,6 +142,7 @@ public class PanelScoresManager : PagesIntroOutro {
 			},
 			(error) =>
 			{
+				gameManager.PopUpBackToHome(error);
 			}
 		);
 	}

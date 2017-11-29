@@ -70,7 +70,7 @@ public class ForgotPasswordManager : AppInitPages {
 				},
 				(error)=>{
 					connectingPanel.Connecting (false);
-					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Verify.FAILED_OTP"));
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
 				}
 			);
 		} else{

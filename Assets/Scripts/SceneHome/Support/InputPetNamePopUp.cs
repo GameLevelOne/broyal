@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using SimpleJSON;
 
 public class InputPetNamePopUp : BasePage {
 	public ConnectingPanel connectingPanel;
+	public NotificationPopUp notifPopUp;
 	public HeaderAreaManager header;
 	public Text petNameLabel;
 	public Button continueButton;
@@ -25,13 +27,15 @@ public class InputPetNamePopUp : BasePage {
 				header.GetPetProfile();
 			}, 
 			(error) => {
-				ContinueError();
+				connectingPanel.Connecting (false);
+				JSONNode jsonData = JSON.Parse (error);
+				if (jsonData!=null) {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+				} else {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				}
 			}
 		);
-	}
-
-	void ContinueError() {
-		ContinueClicked ();
 	}
 
 	public void CheckName() {

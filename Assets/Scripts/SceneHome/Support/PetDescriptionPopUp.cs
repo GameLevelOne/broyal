@@ -7,6 +7,7 @@ using SimpleJSON;
 public class PetDescriptionPopUp : BasePage {
 	public PetData petData;
 	public ConnectingPanel connectingPanel;
+	public NotificationPopUp notifPopUp;
 	public InputPetNamePopUp petNamePopUp;
 	public ImageLoader petImage;
 	public RectTransform starsHLG;
@@ -36,6 +37,12 @@ public class PetDescriptionPopUp : BasePage {
 			}, 
 			(error) => {
 				connectingPanel.Connecting (false);
+				JSONNode jsonData = JSON.Parse (error);
+				if (jsonData!=null) {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+				} else {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				}
 			}
 		);
 	}

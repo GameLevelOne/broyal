@@ -85,7 +85,7 @@ public class SceneGameManager : MonoBehaviour {
                 },
                 (error) =>
                 {
-					PopUpBackToHome();
+					PopUpBackToHome(error);
                 }
             );
         }
@@ -130,8 +130,13 @@ public class SceneGameManager : MonoBehaviour {
 		}
     }
 
-	public void PopUpBackToHome() {
-		notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey ("Game.ERROR"));
+	public void PopUpBackToHome(string error) {
+		JSONNode jsonData = JSON.Parse (error);
+		if (jsonData!=null) {
+			notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+		} else {
+			notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+		}
 		notifPopUp.OnFinishOutro += LoadToHomeFromNotif;
 	}
 

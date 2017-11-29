@@ -69,7 +69,7 @@ public class TwoChests : BaseGame {
 				(error) =>
 				{
 					connectingPanel.Connecting (false);
-					gameManager.PopUpBackToHome();
+					gameManager.PopUpBackToHome(error);
 				}
 			);
 		}

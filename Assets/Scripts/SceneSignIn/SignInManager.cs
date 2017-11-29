@@ -12,6 +12,7 @@ public class SignInManager : AppInitPages {
 	public ForgotPasswordManager panelForgotPassword;
 	public SignUpManager panelSignUp;
 	public NotificationPopUp notificationPopUp;
+	public VerifyOTPPopUp verifyOTPPopUp;
 
 	public InputField userNameInput;
 	public InputField passwordInput;
@@ -90,11 +91,31 @@ public class SignInManager : AppInitPages {
 				}
 			},
 			(error)=>{
-//				Debug.Log ("------Do Login Fail");
 				connectingPanel.Connecting (false);
-				notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("SignIn.WRONG"));
+				JSONNode jsonData = JSON.Parse (error);
+				if (jsonData!=null) {
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+					if (jsonData["errors"]=="USER_NOT_VERIFIED") {
+						notificationPopUp.OnFinishOutro += AfterNotVerified;
+					}
+				} else {
+					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				}
 			}
 		);
+	}
+
+	void AfterNotVerified() {
+		notificationPopUp.OnFinishOutro -= AfterNotVerified;
+		verifyOTPPopUp.OnFinishOutro += OnVerifyClosed;
+		verifyOTPPopUp.ShowPopUp(signInUsername);
+	}
+
+	void OnVerifyClosed() {
+		verifyOTPPopUp.OnFinishOutro -= OnVerifyClosed;
+		if (verifyOTPPopUp.otpSuccess) {
+			DoLogin (false);
+		}
 	}
 
 	void FadeOutToLoading() {

@@ -9,6 +9,7 @@ public class ShopManager : BasePage {
 	public ConnectingPanel connectingPanel;
 	public HeaderAreaManager header;
 	public PetDescriptionPopUp petDescription;
+	public NotificationPopUp notificationPopUp;
 	public GameObject starsLoading;
 	public GameObject petsLoading;
 	public GameObject starsScroll;
@@ -51,6 +52,7 @@ public class ShopManager : BasePage {
 				}
 			},
 			(error) => {
+				notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
 			}
 		);
 	}		
@@ -82,6 +84,7 @@ public class ShopManager : BasePage {
 				}
 			},
 			(error) => {
+				notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
 			}
 		);
 	}
