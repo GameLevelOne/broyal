@@ -250,15 +250,18 @@ public class ProfilesManager : BasePage {
 				for (int i=0;i<5;i++) {
 					if (i<jsonData["allPetList"].Count) {
 						PetData po = new PetData();
-						po.InitHeader(
+						po.InitMiniProfile(
 							jsonData["allPetList"][i]["petName"],
+							jsonData["allPetList"][i]["petId"],
 							jsonData["allPetList"][i]["petModelImage"],
+							jsonData["allPetList"][i]["petName"],
+							jsonData["allPetList"][i]["petDescription"],
 							jsonData["allPetList"][i]["petRank"],
-							0,0
+							jsonData["allPetList"][i]["equipped"]=="Equipped"
 						);
-						petOwned[i].InitData(po,jsonData["allPetList"][i]["equipped"].AsBool);
+						petOwned[i].InitData(po);
 					} else {
-						petOwned[i].InitData(null,false);
+						petOwned[i].InitData(null);
 					}
 				}
 				petLoaded = true;

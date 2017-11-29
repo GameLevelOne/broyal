@@ -7,9 +7,9 @@ using SimpleJSON;
 public class ChangePasswordPopUp : BasePage {
 	public NotificationPopUp notifPopUp;
 	public ConnectingPanel connectingPanel;
-	public Text currentPasswordLabel;
-	public Text newPasswordLabel;
-	public Text confirmPasswordLabel;
+	public InputField currentPasswordLabel;
+	public InputField newPasswordLabel;
+	public InputField confirmPasswordLabel;
 	public Button saveButton;
 
 	protected override void Init ()

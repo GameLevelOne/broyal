@@ -69,12 +69,12 @@ public class DebugConsole : MonoBehaviour {
 	}
 
 	public void Show() {
-		showLayer.SetActive (true);
+		showLayer.SetActive (PlayerPrefs.GetInt ("ShowDebugConsole",0)==1);
 		hideLayer.SetActive (false);
 	}
 	public void Hide() {
 		showLayer.SetActive (false);
-		hideLayer.SetActive (true);
+		hideLayer.SetActive (PlayerPrefs.GetInt ("ShowDebugConsole",0)==1);
 	}
 	public void Prev() {
 		if (curIndex > 0) {

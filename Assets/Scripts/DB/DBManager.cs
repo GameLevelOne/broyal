@@ -132,9 +132,9 @@ public class DBManager : MonoBehaviour {
 		string url = config.restURL + config.equipPet;
 		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
-			"\"petId\":\""+petId+"\"\n"+
+			"\"petId\":"+petId+"\n"+
 			"}";
-		DebugMsg ("EQUIP PET Request","\nurl = "+url);
+		DebugMsg ("EQUIP PET Request","\nurl = "+url+"\ndata = "+jsondata);
 		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 

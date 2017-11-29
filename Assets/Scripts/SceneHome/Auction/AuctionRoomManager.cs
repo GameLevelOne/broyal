@@ -119,8 +119,10 @@ public class AuctionRoomManager : BasePage {
 					Debug.Log ("---------Single bidder-----------");
 					NextPage("LOBBY");
 				} else {
-					if (timeToNextCycle>0)
+					if (timeToNextCycle>0) {
+						StopAllCoroutines();
 						StartCoroutine(IncrementCountdown());
+					}
 				}
 					
 			},
@@ -133,23 +135,22 @@ public class AuctionRoomManager : BasePage {
 
 	IEnumerator IncrementCountdown()
 	{
-		countDownAnim.SetInteger ("State", -1);
+		countDownAnim.SetInteger ("State", 0);
 		while (timeToNextCycle > 0) {
 			timeToNextCycle -= Time.deltaTime;
 
-			if (timeToNextCycle <= 5f) {
-				int timeState = Mathf.CeilToInt (timeToNextCycle);
+			int timeState = Mathf.CeilToInt (timeToNextCycle);
+			if (timeState < 6) {
 				if (!countDownAnim.gameObject.activeSelf)
 					countDownAnim.gameObject.SetActive (true);
 				if (countDownAnim.GetInteger ("State") != timeState) {
 					countDownAnim.SetInteger ("State", timeState);
-					Debug.Log ("Set Integer: " + timeState + "("+timeToNextCycle+")");
 				}
 				countDownLayer.SetActive (false);
-			} else if (timeToNextCycle > 5) {
+			} else {
 				countDownLayer.SetActive (true);
 				countDownAnim.gameObject.SetActive (false);
-				countDownLabel.text = Utilities.SecondsToMinutes ((int)timeToNextCycle);
+				countDownLabel.text = Utilities.SecondsToMinutes (Mathf.CeilToInt (timeToNextCycle));
 			}
 			yield return null;
 		}
@@ -159,6 +160,12 @@ public class AuctionRoomManager : BasePage {
 			Debug.Log ("---------Max Price-----------");
 			CheckEligible ();
 		} else {
+			Init ();
+		}
+	}
+
+	void OnApplicationPause(bool isPaused) {
+		if ( (timeToNextCycle > 0) && (!isPaused) ){
 			Init ();
 		}
 	}
@@ -228,6 +235,7 @@ public class AuctionRoomManager : BasePage {
 				}
 			);
 		} else {
+			connectingPanel.Connecting (false);
 			OnFinishOutro += LoadAfterOutro;
 			Activate (false);
 		}

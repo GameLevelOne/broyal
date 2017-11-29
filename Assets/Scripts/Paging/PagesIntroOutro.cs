@@ -40,12 +40,13 @@ public class PagesIntroOutro : MonoBehaviour {
 
 	protected void OnEnable()
 	{
-//		Debug.Log ("OnEnable");
+//		Debug.Log ("Page: "+name+" enabled");
 		anim.SetTrigger ("Intro");
 	}
 
 	protected void OnDisable()
 	{
+//		Debug.Log ("Page: "+name+" disabled");
 		anim.ResetTrigger ("Intro");
 		anim.ResetTrigger ("Outro");
 	}

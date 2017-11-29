@@ -14,6 +14,8 @@ public class SettingsManager : BasePage {
 	public Image buttonLangID;
 	public Image buttonSubscribe;
 	public Image buttonUnsubscribe;
+	public Image buttonDebugOn;
+	public Image buttonDebugOff;
 	public BasePage prevPage;
 
 	protected override void Init (){
@@ -22,6 +24,7 @@ public class SettingsManager : BasePage {
 		OnClickSound(PlayerPrefs.GetFloat ("SoundVolume",1f)==1f);
 		OnClickLanguage(LocalizationService.Instance.Localization == "English");
 		OnClickSubscribe(PlayerPrefs.GetInt ("Subscribe",0)==1);
+		ClickDebug(PlayerPrefs.GetInt ("ShowDebugConsole",0)==1);
 	}
 
 	public void OnClickClose (){
@@ -62,6 +65,14 @@ public class SettingsManager : BasePage {
         buttonSubscribe.enabled = optionSubscribe;
 		buttonUnsubscribe.enabled = !optionSubscribe;
 		PlayerPrefs.SetInt ("Subscribe",(optionSubscribe ? 1 : 0));
+	}
+
+	public void ClickDebug(bool optionOn) {
+		SoundManager.Instance.PlaySFX(SFXList.Button01);
+		buttonDebugOn.enabled = optionOn;
+		buttonDebugOff.enabled = !optionOn;
+		PlayerPrefs.SetInt ("ShowDebugConsole",(optionOn ? 1 : 0));
+		DBManager.API.debugConsole.Hide ();
 	}
 
 	public void ClickTextPages(int type){
