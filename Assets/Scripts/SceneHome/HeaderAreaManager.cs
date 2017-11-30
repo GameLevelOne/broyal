@@ -99,6 +99,7 @@ public class HeaderAreaManager : MonoBehaviour {
 				CheckTrainCountDown();
 			}, 
 			(error) => {
+//				Debug.Log("-------Error get:"+ error.Split('|')[0].Trim() +"muahahahah");
 				JSONNode jsonData = JSON.Parse (error);
 				if ((jsonData!=null) && (jsonData["errors"]=="TRAINING_FINISH") ) {
 					petTrainButton.interactable = true;
