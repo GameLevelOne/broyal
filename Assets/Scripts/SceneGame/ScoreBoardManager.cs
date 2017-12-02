@@ -39,7 +39,8 @@ public class ScoreBoardManager : PagesIntroOutro {
 	}
 
 	public void NextClick() {
-		gameManager.ExitGame ();
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        gameManager.ExitGame();
 	}
 
 }

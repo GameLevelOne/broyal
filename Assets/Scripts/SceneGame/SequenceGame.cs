@@ -44,8 +44,9 @@ public class SequenceGame : BaseGame {
 		Image tileBG = tile.GetComponent<Image> ();
 		Text tileLabel = tile.transform.GetChild (0).GetComponent<Text> ();
 
-		if (System.Convert.ToInt32 (tileLabel.text) == sequence [0]) {
-			SoundManager.Instance.PlaySFX(SFXList.Button01);
+        if ((tileLabel.text!="") && (System.Convert.ToInt32(tileLabel.text) == sequence[0]))
+        {
+			SoundManager.Instance.PlaySFX(SFXList.Correct);
 
 			tileBG.color = tileColors [0];
 			sequence.RemoveAt (0);
@@ -55,7 +56,7 @@ public class SequenceGame : BaseGame {
 			}
 
 		} else {
-			SoundManager.Instance.PlaySFX(SFXList.Button02);
+			SoundManager.Instance.PlaySFX(SFXList.Incorrect);
 		}
 	}
 

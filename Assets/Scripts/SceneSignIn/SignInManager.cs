@@ -78,7 +78,8 @@ public class SignInManager : AppInitPages {
 
 	void DoLogin(bool fadeIn){
 		connectingPanel.Connecting (true);
-//		Debug.Log ("------Do Login");
+        PlayerPrefs.SetInt("GameMode", 0);
+        //Debug.Log ("------Do Login");
 		DBManager.API.UserLogin(signInUsername,signInPassword,
 			(response)=>{
 				connectingPanel.Connecting (false);

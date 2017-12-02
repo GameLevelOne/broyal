@@ -16,6 +16,10 @@ public class ChangePasswordPopUp : BasePage {
 	{
 		base.Init ();
 		saveButton.interactable = false;
+        currentPasswordLabel.text = "";
+        newPasswordLabel.text = "";
+        confirmPasswordLabel.text = "";
+
 	}
 
 	public void SaveClicked() {
@@ -27,7 +31,8 @@ public class ChangePasswordPopUp : BasePage {
 			DBManager.API.UserChangePassword (currentPasswordLabel.text, newPasswordLabel.text, confirmPasswordLabel.text,
 				(response) => {
 					connectingPanel.Connecting (false);
-					Activate (false);
+                    notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey("ForgotPassword.CHANGE_SUCCESS"));
+					notifPopUp.OnFinishOutro += AfterPopUp;
 				}, 
 				(error) => {
 					connectingPanel.Connecting (false);
@@ -37,14 +42,14 @@ public class ChangePasswordPopUp : BasePage {
 					} else {
 						notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
 					}
-					notifPopUp.OnFinishOutro += AfterError;
+					notifPopUp.OnFinishOutro += AfterPopUp;
 				}
 			);
 		}
 	}
 
-	void AfterError() {
-		notifPopUp.OnFinishOutro-=AfterError;
+	void AfterPopUp() {
+        notifPopUp.OnFinishOutro -= AfterPopUp;
 		Activate (false);
 	}
 

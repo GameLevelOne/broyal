@@ -53,6 +53,7 @@ public class SceneGameManager : MonoBehaviour {
 	}
 
 	void InitGame(){
+        SoundManager.Instance.PlaySFX(SFXList.GameStart,true);
 		panelGameReady.ReadyGame (gameMode, round, countdownTimer, remainingPlayer);
 		panelGameReady.OnFinishOutro += LoadNextGame;
 	}

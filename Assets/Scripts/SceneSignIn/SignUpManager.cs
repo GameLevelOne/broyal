@@ -146,6 +146,7 @@ public class SignUpManager : AppInitPages {
 
 	void DoLogin(){
 		connectingPanel.Connecting (true);
+        PlayerPrefs.SetInt("GameMode", 0);
 		DBManager.API.UserLogin(signUpUsername,signUpPassword,
 			(response)=>{
 				connectingPanel.Connecting (false);

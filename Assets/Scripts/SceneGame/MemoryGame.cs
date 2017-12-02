@@ -46,12 +46,13 @@ public class MemoryGame : BaseGame {
 		openTile++;
 		if (openTile > 1) {
 			if (pair [0].tileImage.sprite == pair [1].tileImage.sprite) {
-				correctPair++;
+                SoundManager.Instance.PlaySFX(SFXList.CardMatch);
 				if (correctPair >= tiles.Length / 2) {
 					EndGame (true);
 				}
 			} else {
-				StartCoroutine(DelayFlipTile (0.5f));
+                SoundManager.Instance.PlaySFX(SFXList.Incorrect);
+                StartCoroutine(DelayFlipTile(0.5f));
 			}
 			openTile = 0;
 		}

@@ -7,7 +7,7 @@ using SimpleJSON;
 public class ChangeUserNamePopUp : BasePage {
 	public NotificationPopUp notifPopUp;
 	public ConnectingPanel connectingPanel;
-	public Text userNameLabel;
+	public InputField userNameLabel;
 	public Text profileUserName;
 	public Button saveButton;
 
@@ -15,6 +15,7 @@ public class ChangeUserNamePopUp : BasePage {
 	{
 		base.Init ();
 		saveButton.interactable = false;
+        userNameLabel.text = "";
 	}
 
 	public void SaveClicked() {

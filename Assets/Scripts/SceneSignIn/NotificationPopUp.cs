@@ -11,5 +11,9 @@ public class NotificationPopUp : PagesIntroOutro {
 		notificationText.text = textToShow;
 		Activate (true);
 	}
-
+    public void ClosePopUp()
+    {
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        Activate(false);
+    }
 }

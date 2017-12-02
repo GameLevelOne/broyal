@@ -21,14 +21,11 @@ public class LandingPageManager : BasePage {
 				panelCompleteProfile.SetActive (true);
 			}
 		}
-		fader.FadeIn ();
-		fader.OnFadeInFinished += OnFadeInFinished;
-	}
-
-	void OnFadeInFinished()
-	{
-		fader.OnFadeInFinished -= OnFadeInFinished;
-//		Init ();
+        GameMode gameMode = (GameMode)PlayerPrefs.GetInt("GameMode", 0);
+        if (gameMode != GameMode.TRAINING)
+        {
+            fader.FadeIn();
+        }
 	}
 
 	protected override void Init ()

@@ -8,7 +8,7 @@ public class ClaimOTPPopUp : BasePage {
 	public ConnectingPanel connectingPanel;
 	public NotificationPopUp notifPopUp;
 
-	public Text inputOtp;
+	public InputField inputOtp;
 	public Text min1;
 	public Text min2;
 	public Text sec1;
@@ -22,6 +22,7 @@ public class ClaimOTPPopUp : BasePage {
 	{
 		enterButton.interactable = false;
 		successOTP = false;
+        inputOtp.text = "";
 		base.Init ();
 	}
 

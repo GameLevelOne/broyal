@@ -64,6 +64,14 @@ public class TwoChests : BaseGame {
 
 					resultPanel.gameObject.SetActive (true);
 					resultPanel.SetInteger ("ChestResult",win ? 1 : 2);
+                    if (win)
+                    {
+                        SoundManager.Instance.PlaySFX(SFXList.ChestOpen);
+                    }
+                    else
+                    {
+                        SoundManager.Instance.PlaySFX(SFXList.ChestWrong);
+                    }
 					StartCoroutine (DelayEnd (2f, win, timeToPopulateServerData));
 				},
 				(error) =>
