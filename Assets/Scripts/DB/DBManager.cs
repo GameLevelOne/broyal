@@ -86,6 +86,14 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
+    public void GetVideoAds(
+        System.Action<string> onComplete, System.Action<string> onError = null)
+    {
+        string url = config.restURL + config.getVideoAds;
+        DebugMsg("GET VIDEO ADS Request", "\nurl = " + url);
+        PostRequest(url, null, CreateHeaderWithAuthorization(), onComplete, onError);
+    }
+
 //===========================Pet API=======================================================
 	public void PetListing( 
 		System.Action<string> onComplete , System.Action<string> onError = null)

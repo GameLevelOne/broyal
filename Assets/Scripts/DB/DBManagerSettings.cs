@@ -42,6 +42,7 @@ public class DBManagerSettings : ScriptableObject {
 	public string submitBidRumbleResult;
 	public string submitBidRoyaleResult;
 	public string getPassingUserResult;
+    public string getVideoAds;
 	[Space(10)]
 	public string getUserStarsAPI;
 	public string createTopUp;

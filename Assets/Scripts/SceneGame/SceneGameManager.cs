@@ -23,6 +23,7 @@ public class SceneGameManager : MonoBehaviour {
 	public BaseGame[] gamePanel;
 	public PanelScoresManager scorePanel;
 	public ScoreBoardManager scoreBoard;
+    public VideoAdsManager videoPanel;
 
 	public int gameTime;
 	public List<RoyaleScoreData> royaleScores;
@@ -119,11 +120,16 @@ public class SceneGameManager : MonoBehaviour {
 		
 		if (gameMode == GameMode.TRAINING) {
 			scorePanel.Activate (false);
-			scorePanel.OnFinishOutro += LoadToHome;        
-		} else {
+            scorePanel.OnFinishOutro += LoadToHome;
+            //videoPanel.Activate(true);
+            //videoPanel.OnFinishOutro += LoadToHome;
+        }
+        else
+        {
 			if (scoreBoard.isActiveAndEnabled) {
 				scoreBoard.Activate (false);
-				scoreBoard.OnFinishOutro += LoadToHome;        
+                videoPanel.Activate(true);
+                videoPanel.OnFinishOutro += LoadToHome;        
 			} else {
 				gamePanel [nextGame].Activate (false);
 			}
@@ -149,10 +155,14 @@ public class SceneGameManager : MonoBehaviour {
     void LoadToHome()
     {
 		if (gameMode == GameMode.TRAINING) {
-			scorePanel.OnFinishOutro -= LoadToHome;        
-		} else {
-			scoreBoard.OnFinishOutro -= LoadToHome;        
+            scorePanel.OnFinishOutro -= LoadToHome;
+            //videoPanel.OnFinishOutro -= LoadToHome;
+        }
+        else
+        {
+            videoPanel.OnFinishOutro -= LoadToHome;        
 		}
         loadingPanel.gameObject.SetActive(true);
     }
+
 }
