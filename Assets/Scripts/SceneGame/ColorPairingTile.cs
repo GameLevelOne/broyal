@@ -18,7 +18,7 @@ public class ColorPairingTile : MonoBehaviour {
 	}
 	public void ClickTile() {
 		if (!tileAnimate) {
-			SoundManager.Instance.PlaySFX(SFXList.Button01);
+			SoundManager.Instance.PlaySFX(SFXList.CardOpen);
 			FlipTile ();
 		}
 	}

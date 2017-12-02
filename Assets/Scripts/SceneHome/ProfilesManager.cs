@@ -27,6 +27,7 @@ public class ProfilesManager : BasePage {
 	[Space(10)]
 	[Header("USER PROFILE AREA")]
 	public ImageLoader userPicture;
+	public GameObject cameraIcon;
 	public Text userNameLabel;
 	public Text auctionParticipatedLabel;
 	public Text auctionWonLabel;
@@ -95,6 +96,8 @@ public class ProfilesManager : BasePage {
 		}
 		if (!userLoaded) {
 			connectingPanel.Connecting (true);
+			cameraIcon.SetActive(true);
+			editUserPicture.gameObject.SetActive(false);
 			DBManager.API.GetUserProfile (
 				(response) => {
 					connectingPanel.Connecting (false);
@@ -108,8 +111,12 @@ public class ProfilesManager : BasePage {
 						highScoreLabel[rumbleGame].text = ((float)jsonData["score"].AsInt / 1000000000f).ToString("0.0000");
 						scoreDateLabel[rumbleGame].text = Utilities.StringLongToDateTime(jsonData["dateCreated"]).ToString("MMM dd, yy");
 					}
+					if (jsonData["profilePicture"]!=null) {
+						cameraIcon.SetActive(false);
+						editUserPicture.gameObject.SetActive(true);
+						editUserPicture.LoadImageFromUrl(jsonData["profilePicture"]);
+					}
 
-					editUserPicture.LoadImageFromUrl(jsonData["profilePicture"]);
 					if (jsonData["gender"]=="Male")
 						genderButton.sprite = genderIcons[0];
 					else 
@@ -255,7 +262,7 @@ public class ProfilesManager : BasePage {
 							jsonData["allPetList"][i]["petId"],
 							jsonData["allPetList"][i]["petModelImage"],
 							jsonData["allPetList"][i]["petName"],
-							jsonData["allPetList"][i]["petDescription"],
+							jsonData["allPetList"][i]["description"],
 							jsonData["allPetList"][i]["petRank"],
 							jsonData["allPetList"][i]["equipped"]=="Equipped"
 						);
@@ -334,5 +341,9 @@ public class ProfilesManager : BasePage {
 
 	public void CancelEditClick() {
 		LoadUserProfile (true);
+	}
+
+	public void UploadPicture() {
+		SoundManager.Instance.PlaySFX(SFXList.Button01);
 	}
 }

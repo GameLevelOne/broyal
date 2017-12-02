@@ -57,6 +57,7 @@ public class BaseGame : PagesIntroOutro {
 			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.CONGRATULATIONS");
 		} else {
 			overlayLabel.text = LocalizationService.Instance.GetTextByKey ("Game.TIMES_UP");
+            SoundManager.Instance.PlaySFX(SFXList.TimeUp);
 		}
 
 		gameManager.EndGame (score);	

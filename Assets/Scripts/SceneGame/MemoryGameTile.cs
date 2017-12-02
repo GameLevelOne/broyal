@@ -21,15 +21,22 @@ public class MemoryGameTile : MonoBehaviour {
 	}
 	public void ClickTile() {
 		if (!tileAnimate) {
-			SoundManager.Instance.PlaySFX(SFXList.Button01);
-			FlipTile ();
+            FlipTile();
 		}
 	}
 
 	public void FlipTile() {
 		tileAnim.SetTrigger ("Flip");
 		tileAnimate = true;
-	}
+        if (tileImage.sprite == tileBack)
+        {
+            SoundManager.Instance.PlaySFX(SFXList.CardClose);
+        }
+        else
+        {
+            SoundManager.Instance.PlaySFX(SFXList.CardOpen);
+        }
+    }
 
 	void ChangeImage() {
 		if (tileImage.sprite == tileBack) {

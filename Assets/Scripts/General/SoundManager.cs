@@ -56,9 +56,23 @@ public class SoundManager : MonoBehaviour {
         }
 	}
 
-	public void PlaySFX (SFXList sfx){
-		audioSource.PlayOneShot(SFX[(int)sfx]);
+	public void PlaySFX (SFXList sfx, bool forcedSFX = false){
+        if (forcedSFX)
+            audioSource.Stop();
+        audioSource.PlayOneShot(SFX[(int)sfx]);
+
+        if (forcedSFX)
+            StartCoroutine(WaitForForcedSFX());
 	}
+
+    IEnumerator WaitForForcedSFX()
+    {
+        while(audioSource.isPlaying) {
+            yield return null;
+        }
+
+        audioSource.Play();
+    }
 
 	public void StopPlay(){
 		audioSource.Stop();

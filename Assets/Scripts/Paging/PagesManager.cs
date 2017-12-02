@@ -31,6 +31,14 @@ public class PagesManager : MonoBehaviour {
 	void Start()
 	{
 		currentPage = GetPagesByName ("LANDING");
+        GameMode gameMode = (GameMode) PlayerPrefs.GetInt ("GameMode",0);
+        if (gameMode == GameMode.TRAINING)
+        {
+            currentPage.gameObject.SetActive(false);
+            currentPage = GetPagesByName("TRAIN");
+            currentPage.Activate(true);
+            navigationBar.CheckHighlightBox(currentPage);
+        }
 	}
 
 	public void NextPageIntro()

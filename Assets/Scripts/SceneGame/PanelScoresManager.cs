@@ -165,7 +165,9 @@ public class PanelScoresManager : PagesIntroOutro {
 	}
 
 	public void NextClicked() {
-		if (gameMode == GameMode.TRAINING) {
+        SoundManager.Instance.PlaySFX(SFXList.Button01);
+        if (gameMode == GameMode.TRAINING)
+        {
 			gameManager.ExitGame ();
 		} else {
 			Debug.Log ("Close result and show scoreboard");

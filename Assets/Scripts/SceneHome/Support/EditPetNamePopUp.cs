@@ -9,13 +9,14 @@ public class EditPetNamePopUp : BasePage {
 	public ConnectingPanel connectingPanel;
 	public HeaderAreaManager header;
 	public Text priceLabel;
-	public Text petNameLabel;
+	public InputField petNameLabel;
 	public Button saveButton;
 
 	protected override void Init ()
 	{
 		base.Init ();
 		saveButton.interactable = false;
+        petNameLabel.text = "";
 	}
 
 	public void InitPrice(int price) {

@@ -8,13 +8,14 @@ public class InputPetNamePopUp : BasePage {
 	public ConnectingPanel connectingPanel;
 	public NotificationPopUp notifPopUp;
 	public HeaderAreaManager header;
-	public Text petNameLabel;
+	public InputField petNameLabel;
 	public Button continueButton;
 
 	protected override void Init ()
 	{
 		base.Init ();
 		continueButton.interactable = false;
+        petNameLabel.text = "";
 	}
 
 	public void ContinueClicked() {

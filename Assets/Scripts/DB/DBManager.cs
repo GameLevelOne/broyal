@@ -28,6 +28,7 @@ public class DBManager : MonoBehaviour {
 	public DebugConsole debugConsole;
 	string tokenType = null;
 	string accessToken = null;
+	NotificationPopUp notifPopUp = null;
 
 //===========================Game=======================================================
 	public void GetEligibleToEnterGame(int auctionId, 
@@ -84,6 +85,14 @@ public class DBManager : MonoBehaviour {
 		DebugMsg ("GET PASSING USER RESULT Request","\nurl = "+url);
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
+
+    public void GetVideoAds(
+        System.Action<string> onComplete, System.Action<string> onError = null)
+    {
+        string url = config.restURL + config.getVideoAds;
+        DebugMsg("GET VIDEO ADS Request", "\nurl = " + url);
+        PostRequest(url, null, CreateHeaderWithAuthorization(), onComplete, onError);
+    }
 
 //===========================Pet API=======================================================
 	public void PetListing( 
@@ -402,6 +411,7 @@ public class DBManager : MonoBehaviour {
 	{
 		string url = config.restURL + config.getLandingAuctionData;
 		DebugMsg ("GET LANDING AUCTION DATA Request","\nurl = "+url);
+//		accessToken = "";
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
@@ -484,8 +494,9 @@ public class DBManager : MonoBehaviour {
 
 	WWW PostRequest(string url, byte[] data, Dictionary<string,string> postHeader, System.Action<string> onComplete, System.Action<string> onError) {
 		if (postHeader == null) {
-			if (onError!=null)
-				onError("{\"errors\":\"NOT AUTHORIZED\"}");
+			ShowUnauthorizedError ();
+//			if (onError!=null)
+//				onError("{\"errors\":\"UNAUTHORIZED\"}");
 			return null;
 		} else {
 			int debugIndex = -1;
@@ -512,8 +523,12 @@ public class DBManager : MonoBehaviour {
 			DebugError ("ERROR: "+www.error, www.text);
 			if (debugConsole!=null)
 				debugConsole.SetError ("ERROR: "+www.error+"\n"+www.text,debugIndex);
-			if (onError != null) {
-				onError (www.error+"|"+www.text);
+
+			if (www.error.Trim () != "401") {
+				if (onError != null)
+					onError (www.error + "|" + www.text);
+			} else {
+				ShowUnauthorizedError ();
 			}
 		}
 	}
@@ -555,7 +570,7 @@ public class DBManager : MonoBehaviour {
 	Dictionary<string,string> CreateHeaderWithAuthorization() {
 		Dictionary<string,string> header = CreateHeaderWithKey();
 		if ((accessToken == null) || (accessToken == "")) {
-			DebugError ("NOT AUTHORIZED!");
+			DebugError ("UNAUTHORIZED!");
 			return null;
 		} else {
 			header.Add ("Authorization", tokenType +" "+ accessToken);
@@ -566,6 +581,21 @@ public class DBManager : MonoBehaviour {
 		Dictionary<string,string> header = new Dictionary<string, string> ();
 		header.Add ("key", config.rajaOngkirKey);
 		return header;
+	}
+
+	void ShowUnauthorizedError() {
+		GameObject g = GameObject.FindWithTag ("NotifPopUp");
+		if (g!=null) {
+			notifPopUp = g.transform.GetChild(g.transform.childCount-1).GetComponent<NotificationPopUp>();
+			notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error.UNAUTHORIZED"));
+			notifPopUp.OnFinishOutro += RestartApp;
+		}
+	}
+
+	void RestartApp() {
+		notifPopUp.OnFinishOutro -= RestartApp;
+		PlayerPrefs.DeleteKey ("LastUserLogin");
+		Application.LoadLevel ("SceneSignIn");
 	}
 
 //==================================================================================================

@@ -220,7 +220,9 @@ public class AuctionRoomManager : BasePage {
 		Debug.Log ("---------Go To Game-----------");
 		PlayerPrefs.SetInt("GameMode",(int)auctionMode);
 		PlayerPrefs.SetInt("GameAuctionId",auctionId);
-		if (auctionMode == AuctionMode.BIDRUMBLE) {
+        SoundManager.Instance.PlaySFX(SFXList.SuddenDeath, true);
+        if (auctionMode == AuctionMode.BIDRUMBLE)
+        {
 			DBManager.API.GetBidRumbleGame (auctionId,
 				(response) => {
 					JSONNode jsonData = JSON.Parse (response);
