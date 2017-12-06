@@ -51,6 +51,7 @@ public class AuctionRoomManager : BasePage {
 	void Start()
 	{
 		scrollSnapDetail.OnChangePage += OnChangePage;
+        bidButton.interactable = true;
 	}
 
 	protected override void Init ()
@@ -89,7 +90,7 @@ public class AuctionRoomManager : BasePage {
 				numberBidders = jsonData["noOfLastCycleBidders"].AsInt;
 				int getTime = (jsonData["timeToNextCycle"].AsInt > 0) ? jsonData["timeToNextCycle"].AsInt : jsonData["timeToFirstAuctionCycle"].AsInt;
 				timeToNextCycle = getTime / 1000f;
-				bidButton.interactable = jsonData["bidEnable"].AsBool;
+				bidButton.gameObject.SetActive(jsonData["bidEnable"].AsBool);
 				bannerImage.LoadImageFromUrl(jsonData["bannerImageURL"]);
 				bannerAction = jsonData["bannerImageRedirectionURL"];
 
@@ -176,7 +177,7 @@ public class AuctionRoomManager : BasePage {
 		DBManager.API.AuctionBidding (auctionId,
 			(response)=>{
 				JSONNode jsonData = JSON.Parse(response);
-				bidButton.interactable = false;
+				bidButton.gameObject.SetActive(false);
 				connectingPanel.Connecting (false);
 			},
 			(error)=>{

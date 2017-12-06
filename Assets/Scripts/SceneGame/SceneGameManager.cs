@@ -106,6 +106,7 @@ public class SceneGameManager : MonoBehaviour {
 	}
     public void AddRoyaleScore(RoyaleScoreData data)
     {
+        Debug.Log("Adding Score Data Round: "+data.round+ ", Answer: "+data.answer+", Correct: "+data.correct+", Passed: "+data.passed);
         royaleScores.Add(data);
     }
     public RoyaleScoreData[] GetRoyaleScores()

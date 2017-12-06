@@ -42,7 +42,7 @@ namespace BidRoyale.Core
 		public static void ClearChildren(Transform parent) {
 			int childCount = parent.childCount;
 			for (int i = 0; i < childCount; i++) {
-				GameObject.Destroy(parent.GetChild (0).gameObject);
+				GameObject.Destroy(parent.GetChild (i).gameObject);
 			}
 		}
 

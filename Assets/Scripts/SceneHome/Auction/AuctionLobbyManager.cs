@@ -83,7 +83,8 @@ public class AuctionLobbyManager : BasePage {
 						jsonData["pastAuctions"][i]["claimable"].AsBool
 					);
 					data.actionButton.onClick.RemoveAllListeners();
-					data.actionButton.onClick.AddListener(()=>{ClickClaim(jsonData["currentAuction"]["auctionId"].AsInt);});
+                    int claimAuctionId = jsonData["currentAuction"]["auctionId"].AsInt;
+                    data.actionButton.onClick.AddListener(() => { ClickClaim(claimAuctionId); });
 					totalData++;
 				}
 

@@ -138,6 +138,7 @@ public class PanelScoresManager : PagesIntroOutro {
                         scoreBoard.InitScoreBoard(gameManager.GetRoyaleScores());
                     }
 				} else {
+                    StopAllCoroutines();
 					StartCoroutine(DelayNextRound(1f));
 				}
 			},

@@ -18,6 +18,7 @@ public class PanelGameReady : PagesIntroOutro {
 	public float countdown;
 
 	public void ReadyGame(GameMode gameMode, int round, int countDownTimer, int remainingPlayer=0) {
+        Debug.Log("Ready "+gameMode.ToString()+" Round: "+round);
 		if (gameMode == GameMode.BIDROYALE) {
 			titleLabel.text = LocalizationService.Instance.GetTextByKey ("Game.BID_ROYALE");
 		} else if (gameMode == GameMode.BIDRUMBLE) {
@@ -68,16 +69,19 @@ public class PanelGameReady : PagesIntroOutro {
 
 	new protected void OnEnable() {
 		base.OnEnable();
+        StopAllCoroutines();
 		StartCoroutine (StartCountdown ());
 	}
 
 	IEnumerator StartCountdown ()
 	{
+        Debug.Log("TimeToNextGameRound: "+totalCountdown);
 		while (countdown < totalCountdown) {
 			yield return null;
 			countdown += Time.deltaTime;
 			ReadySetGo ();
 		}
+        yield return null;
 		Activate (false);
 	}
 

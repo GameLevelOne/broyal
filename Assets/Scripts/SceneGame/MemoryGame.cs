@@ -47,6 +47,7 @@ public class MemoryGame : BaseGame {
 		if (openTile > 1) {
 			if (pair [0].tileImage.sprite == pair [1].tileImage.sprite) {
                 SoundManager.Instance.PlaySFX(SFXList.CardMatch);
+                correctPair++;
 				if (correctPair >= tiles.Length / 2) {
 					EndGame (true);
 				}

@@ -32,6 +32,7 @@ public class BaseGame : PagesIntroOutro {
 	new protected void OnEnable() {
 		base.OnEnable ();
 		Debug.Log ("Game - "+name+" Started!!!");
+        StopAllCoroutines();
 		StartCoroutine (TimerCountdown ());
 	}
 

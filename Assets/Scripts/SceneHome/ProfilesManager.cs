@@ -362,27 +362,28 @@ public class ProfilesManager : BasePage {
 	void OnImageSelect(string imgPath, ImageAndVideoPicker.ImageOrientation imgOrientation)
 	{
 		Debug.Log ("Image Location : "+imgPath);
-		connectingPanel.Connecting (true);
-		DBManager.API.UpdateProfilePicture (imgPath,
-			(response) => {
-				connectingPanel.Connecting (false);
-				editUserPicture.gameObject.SetActive(true);
-				editUserIcon.SetActive(false);
-				editUserPicture.LoadImageFromUrl (imgPath);
-			}, 
-			(error) => {
-				connectingPanel.Connecting (false);
-				notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("General.SERVER_ERROR"));
-			}
-		);
+        //connectingPanel.Connecting (true);
+        connectingPanel.Connecting(false);
+        editUserPicture.gameObject.SetActive(true);
+        editUserIcon.SetActive(false);
+        editUserPicture.LoadImageFromUrl(imgPath);
+        //DBManager.API.UpdateProfilePicture(imgPath,
+        //    (response) => {
+        //        connectingPanel.Connecting(false);
+        //    }, 
+        //    (error) => {
+        //        connectingPanel.Connecting (false);
+        //        editUserIcon.SetActive(true);
+        //        editUserPicture.gameObject.SetActive(false);
+        //        notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("General.SERVER_ERROR"));
+        //    }
+        //);
 	}
 
-	new protected void OnEnable() {
-		base.OnEnable ();
+	void Start() {
 		PickerEventListener.onImageSelect += OnImageSelect;
 	}
-	new protected void OnDisable() {
-		base.OnDisable ();
+	void OnDestroy() {
 		PickerEventListener.onImageSelect -= OnImageSelect;
 	}
 }
