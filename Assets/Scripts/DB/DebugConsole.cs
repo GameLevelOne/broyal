@@ -36,15 +36,21 @@ public class DebugConsole : MonoBehaviour {
 		UpdateText ();
 	}
 
-	public void SetResult(string msg, int idx) {
+	public void SetResult(string msg, int idx = -1) {
 		if (idx > -1) {
 			response [idx] = msg;
 			UpdateText ();
+		} else {
+			response [response.Count-1] = msg;
+			UpdateText ();
 		}
 	}
-	public void SetError(string msg, int idx) {
+	public void SetError(string msg, int idx = -1) {
 		if (idx > -1) {
 			response [idx] = msg;
+			UpdateText ();
+		} else {
+			response [response.Count-1] = msg;
 			UpdateText ();
 		}
 	}

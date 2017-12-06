@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 using SimpleJSON;
+using System.IO;
 
 public class DBManager : MonoBehaviour {
 //===========================Singleton Coding=======================================================
@@ -364,7 +365,17 @@ public class DBManager : MonoBehaviour {
 		DebugMsg ("USER CHANGE PASSWORD Request","\nurl = "+url+"\ndata = "+jsondata);
 		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
 	}
-		
+
+
+	public void UpdateProfilePicture(string imgPath,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.updateProfilePicture;
+		byte[] data = File.ReadAllBytes (imgPath);
+
+		DebugMsg ("USER LOGIN Request","\nurl = "+url+"\ndata = "+data.ToString());
+		PostRequest(url,data,CreateHeaderNoJSON(),onComplete, onError);
+	}
 //===========================Auction API=======================================================
 	public void AuctionBidding(int auctionId, 
 		System.Action<string> onComplete , System.Action<string> onError = null)
@@ -495,8 +506,6 @@ public class DBManager : MonoBehaviour {
 	WWW PostRequest(string url, byte[] data, Dictionary<string,string> postHeader, System.Action<string> onComplete, System.Action<string> onError) {
 		if (postHeader == null) {
 			ShowUnauthorizedError ();
-//			if (onError!=null)
-//				onError("{\"errors\":\"UNAUTHORIZED\"}");
 			return null;
 		} else {
 			int debugIndex = -1;
@@ -505,7 +514,15 @@ public class DBManager : MonoBehaviour {
 				string apiUrl = url.Substring (config.restURL.Length);
 				debugIndex = debugConsole.SetRequest ("REST URL: " + serverUrl + "\n" +  apiUrl);
 			}
-			WWW www = new WWW (url, data, postHeader);
+			WWW www;
+//			if (!postHeader.ContainsKey ("Content-Type")) {
+//				WWWForm formData = new WWWForm ();
+//				formData.AddBinaryData ("profilePictureImage", data);
+//				www = new WWW (url, formData, postHeader);
+//			} else {
+				www = new WWW (url, data, postHeader);
+//			}
+
 			StartCoroutine (WaitForRequest (www, onComplete, onError,debugIndex));
 			return www;
 		}
@@ -576,6 +593,11 @@ public class DBManager : MonoBehaviour {
 			header.Add ("Authorization", tokenType +" "+ accessToken);
 			return header;
 		}
+	}
+	Dictionary<string,string> CreateHeaderNoJSON() {
+		Dictionary<string,string> header = CreateHeaderWithAuthorization();
+		header.Remove ("Content-Type");
+		return header;
 	}
 	Dictionary<string,string> CreateRajaOngkirHeader() {
 		Dictionary<string,string> header = new Dictionary<string, string> ();

@@ -50,6 +50,7 @@ public class DBManagerSettings : ScriptableObject {
 	public string updateUserNameAPI;
 	public string updateUserProfileAPI;
 	public string getUserProfileAPI;
+	public string updateProfilePicture;
 	[Space(10)]
 	public string getUserPetProfile;
 	public string claimPetTrainExp;

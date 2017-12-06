@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using SimpleJSON;
 using BidRoyale.Core;
+using ImageAndVideoPicker;
 
 public class ProfilesManager : BasePage {
 	public ConnectingPanel connectingPanel;
@@ -50,16 +51,17 @@ public class ProfilesManager : BasePage {
 	[Header("EDIT PROFILE AREA")]
 	public Sprite[] genderIcons = new Sprite[2]; //0=male, 1=female
 	public ImageLoader editUserPicture;
+	public GameObject editUserIcon;
 	public Image genderButton;
 	public Text editUserNameLabel;
-	public Text editEmailField;
-	public Text editPhoneField;
-	public Text editFullNameField;
+	public InputField editEmailField;
+	public InputField editPhoneField;
+	public InputField editFullNameField;
 	public Dropdown provinceDrop;
 	public Dropdown cityDrop;
 	public GameObject provinceLoading;
 	public GameObject cityLoading;
-	public Text editAddressField;
+	public InputField editAddressField;
 	string currentProvince;
 	string currentCity;
 	List<string> provinceId;
@@ -108,13 +110,17 @@ public class ProfilesManager : BasePage {
 					auctionWonLabel.text = jsonData["noOfAuctionWon"];
 					for (int i=0;i<jsonData["playedGames"].Count;i++) {
 						int rumbleGame = jsonData ["playedGames"][i]["bidRumbleGameType"].AsInt - 1;
-						highScoreLabel[rumbleGame].text = ((float)jsonData["score"].AsInt / 1000000000f).ToString("0.0000");
-						scoreDateLabel[rumbleGame].text = Utilities.StringLongToDateTime(jsonData["dateCreated"]).ToString("MMM dd, yy");
+						highScoreLabel[rumbleGame].text = ((float)jsonData["playedGames"][i]["score"].AsInt / 1000000000f).ToString("0.0000");
+						scoreDateLabel[rumbleGame].text = jsonData["playedGames"][i]["dateCreated"];
 					}
 					if (jsonData["profilePicture"]!=null) {
 						cameraIcon.SetActive(false);
 						editUserPicture.gameObject.SetActive(true);
+						editUserIcon.SetActive(false);
 						editUserPicture.LoadImageFromUrl(jsonData["profilePicture"]);
+					} else {
+						editUserIcon.SetActive(true);
+						editUserPicture.gameObject.SetActive(false);
 					}
 
 					if (jsonData["gender"]=="Male")
@@ -258,7 +264,7 @@ public class ProfilesManager : BasePage {
 					if (i<jsonData["allPetList"].Count) {
 						PetData po = new PetData();
 						po.InitMiniProfile(
-							jsonData["allPetList"][i]["petName"],
+							jsonData["allPetList"][i]["petName"], 
 							jsonData["allPetList"][i]["petId"],
 							jsonData["allPetList"][i]["petModelImage"],
 							jsonData["allPetList"][i]["petName"],
@@ -345,5 +351,38 @@ public class ProfilesManager : BasePage {
 
 	public void UploadPicture() {
 		SoundManager.Instance.PlaySFX(SFXList.Button01);
+		#if UNITY_ANDROID
+		AndroidPicker.BrowseImage(false);
+		#elif UNITY_IPHONE
+		IOSPicker.BrowseImage(false); // true for pick and crop
+		#endif
+		PickerEventListener.onImageSelect += OnImageSelect;
+	}
+
+	void OnImageSelect(string imgPath, ImageAndVideoPicker.ImageOrientation imgOrientation)
+	{
+		Debug.Log ("Image Location : "+imgPath);
+		connectingPanel.Connecting (true);
+		DBManager.API.UpdateProfilePicture (imgPath,
+			(response) => {
+				connectingPanel.Connecting (false);
+				editUserPicture.gameObject.SetActive(true);
+				editUserIcon.SetActive(false);
+				editUserPicture.LoadImageFromUrl (imgPath);
+			}, 
+			(error) => {
+				connectingPanel.Connecting (false);
+				notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("General.SERVER_ERROR"));
+			}
+		);
+	}
+
+	new protected void OnEnable() {
+		base.OnEnable ();
+		PickerEventListener.onImageSelect += OnImageSelect;
+	}
+	new protected void OnDisable() {
+		base.OnDisable ();
+		PickerEventListener.onImageSelect -= OnImageSelect;
 	}
 }
