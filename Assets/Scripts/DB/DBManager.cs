@@ -165,8 +165,11 @@ public class DBManager : MonoBehaviour {
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.startTrainingTime;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{}";
+		
 		DebugMsg ("START TRAINING TIME Request","\nurl = "+url);
-		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
 	public void CheckTrainingTime( 

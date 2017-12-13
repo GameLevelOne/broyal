@@ -25,7 +25,7 @@ public class NewsManager : BasePage {
 				JSONNode jsonData = JSON.Parse (response);
 				for (int i=0;i<jsonData["news"].Count;i++) {
 					NewsItem ni = Instantiate(newsItemPrefab,newsParent).GetComponent<NewsItem>();
-					ni.InitNews(jsonData["news"][i]["imageUrl"],jsonData["news"][i]["description"],jsonData["news"][i]["dateCreated"]);
+					ni.InitNews(jsonData["news"][i]["newsImageUrl"],jsonData["news"][i]["description"],jsonData["news"][i]["dateCreated"]);
 					int newsId = jsonData["news"][i]["id"].AsInt;
 					string newsUrl = jsonData["news"][i]["url"];
 					ni.readButton.onClick.AddListener(()=>{OpenNews(newsId,newsUrl);});

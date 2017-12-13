@@ -119,7 +119,7 @@ public class PanelScoresManager : PagesIntroOutro {
 					waitingInfo.SetActive(false);
 					resultInfo.SetActive(true);
 				} else {
-                    passNumber = jsonData["scoreBoard"].Count;
+					passNumber = jsonData["scoreBoard"][round-1]["passed"].AsInt;
                     RoyaleScoreData data = new RoyaleScoreData();
                     data.round = round;
                     data.answer = choice;

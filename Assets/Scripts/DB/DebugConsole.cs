@@ -40,7 +40,7 @@ public class DebugConsole : MonoBehaviour {
 		if (idx > -1) {
 			response [idx] = msg;
 			UpdateText ();
-		} else {
+		} else if (response.Count>0) {
 			response [response.Count-1] = msg;
 			UpdateText ();
 		}
@@ -49,7 +49,7 @@ public class DebugConsole : MonoBehaviour {
 		if (idx > -1) {
 			response [idx] = msg;
 			UpdateText ();
-		} else {
+		} else if (response.Count>0)  {
 			response [response.Count-1] = msg;
 			UpdateText ();
 		}

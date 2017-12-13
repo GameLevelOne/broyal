@@ -154,6 +154,11 @@ Game.ERROR,ERROR CONNECTING SERVER
 Game.CONGRATULATIONS,CONGRATULATIONS!
 Game.TIMES_UP,TIME'S UP!
 Game.WAITING,WAITING FOR SERVER
+Game.MEMORY_GAME_DESC,Match the two same pets together. Try to remember where they are hiding.
+Game.COLOR_PAIRING_DESC,Change all the boxes into one color. Between blue or red it does not matter.
+Game.TYPE_THE_CODE_DESC,Type the displayed alphabets in sequence. Dont type wrong or you have to use your time to backspace the alphabets.
+Game.SEQUENCE_DESC,Try to count from lowest number to highest number. To increase the difficulty we will use negative value too.
+Game.BID_ROYALE_DESC,Lets test your luck! Choose one chest with treasure inside. The chance is 50-50.
 ShopPage.STARS,STARS
 ShopPage.PETS,PETS
 EditPet.CONGRATULATIONS,CONGRATULATIONS!\nYOU JUST PURCHASED A BARGAINER PET.\nYOU SHOULD NAME IT RIGHT AWAY.
@@ -164,6 +169,7 @@ Winner.GAME_TYPE,GAME TYPE :
 Winner.PARTICIPANTS,PARTICIPANTS : 
 Winner.ITEM,ITEM : 
 Winner.WIN_PRICE,WIN PRICE : 
+Train.DESCRIPTION,Train with Princess Justine to increase your winning chance in BidRumble Grand Tournament.\nChoose the match that you want to train.
 Settings.SETTINGS,SETTINGS
 Settings.NOTIFICATIONS,NOTIFICATIONS
 Settings.SOUND,SOUND

@@ -154,6 +154,11 @@ Game.ERROR,GAGAL MENGHUBUNGI SERVER
 Game.CONGRATULATIONS,SELAMAT!
 Game.TIMES_UP,WAKTU HABIS!
 Game.WAITING,MENUNGGU SERVER
+Game.MEMORY_GAME_DESC,Pasangkan dua peliharaan yang sama. Coba ingat-ingat dimana lokasi mereka bersembunyi.
+Game.COLOR_PAIRING_DESC,Rubah semua kotak menjadi satu warna yang sama. Antara biru atau merah tidak masalah.
+Game.TYPE_THE_CODE_DESC,Ketik sesuai urutan alfabet yang tertera. Jangan sampai salah atau kamu harus gunakan waktu untuk hapus mundur alfabetnya.
+Game.SEQUENCE_DESC,Coba berhitung dari angka terkecil ke angka terbesar. Agar tambah susah kita pakai angka negatif pula.
+Game.BID_ROYALE_DESC,Ayo uji keberuntunganmu! Pilih satu kotak yang ada harta di dalamnya. Kesempatannya 50-50.
 ShopPage.STARS,BINTANG
 ShopPage.PETS,PELIHARAAN
 EditPet.CONGRATULATIONS,SELAMAT!\nANDA BARU SAJA MEMBELI PELIHARAAN BARU.\nSEBAIKANYA ANDA SEGERA MEMBERINYA NAMA.
@@ -164,6 +169,7 @@ Winner.GAME_TYPE,TIPE PERMAINAN :
 Winner.PARTICIPANTS,PESERTA : 
 Winner.ITEM,BARANG : 
 Winner.WIN_PRICE,HARGA MENANG : 
+Train.DESCRIPTION,Latihan bersama dengan Putri Justine untuk meningkatkan kemungkinan kamu menang di pertandingan akbar BidRumble.\nPilih tipe pertandingan yang ingin kamu latih.
 Settings.SETTINGS,PENGATURAN
 Settings.NOTIFICATIONS,NOTIFIKASI
 Settings.SOUND,SUARA

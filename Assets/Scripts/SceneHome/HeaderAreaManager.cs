@@ -87,7 +87,8 @@ public class HeaderAreaManager : MonoBehaviour {
 				petData = null;
 				headerWithPet.SetActive (false);
 				headerNoPet.SetActive (true);
-				headerPetLoading.SetActive (false);			}
+				headerPetLoading.SetActive (false);			
+			}
 		);
 	}		
 

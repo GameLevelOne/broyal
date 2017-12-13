@@ -32,6 +32,20 @@ public class PanelGameReady : PagesIntroOutro {
 			roundLabel.text = LocalizationService.Instance.GetTextByKey ("Game.ENTERING");
 			playerInfo.SetActive (false);
 			gameDescription.gameObject.SetActive (true);
+
+			RumbleGame rumbleGame = (RumbleGame) PlayerPrefs.GetInt ("RumbleGame",0);
+			if (gameMode == GameMode.BIDROYALE) {
+				gameDescription.text = LocalizationService.Instance.GetTextByKey ("Game.BID_ROYALE_DESC");
+			} else if (rumbleGame == RumbleGame.MEMORYGAME) {
+				gameDescription.text = LocalizationService.Instance.GetTextByKey ("Game.MEMORY_GAME_DESC");
+			} else if (rumbleGame == RumbleGame.COLORPAIRING) {
+				gameDescription.text = LocalizationService.Instance.GetTextByKey ("Game.COLOR_PAIRING_DESC");
+			} else if (rumbleGame == RumbleGame.TYPETHECODE) {
+				gameDescription.text = LocalizationService.Instance.GetTextByKey ("Game.TYPE_THE_CODE_DESC");
+			} else if (rumbleGame == RumbleGame.SEQUENCE) {
+				gameDescription.text = LocalizationService.Instance.GetTextByKey ("Game.SEQUENCE_DESC");
+			}
+
 		} else {
 			roundLabel.text = LocalizationService.Instance.GetTextByKey ("Game.ROUND") + " " + round;
 			playerInfo.SetActive (true);

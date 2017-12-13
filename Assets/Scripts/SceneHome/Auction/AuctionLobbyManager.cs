@@ -83,7 +83,7 @@ public class AuctionLobbyManager : BasePage {
 						jsonData["pastAuctions"][i]["claimable"].AsBool
 					);
 					data.actionButton.onClick.RemoveAllListeners();
-                    int claimAuctionId = jsonData["currentAuction"]["auctionId"].AsInt;
+					int claimAuctionId = jsonData["pastAuctions"][i]["auctionId"].AsInt;
                     data.actionButton.onClick.AddListener(() => { ClickClaim(claimAuctionId); });
 					totalData++;
 				}
@@ -95,7 +95,7 @@ public class AuctionLobbyManager : BasePage {
 				}
 
 				int startPage = totalData;
-				if ( jsonData["currentAuction"].Count<=0) {
+				if (jsonData["currentAuction"]["auctionId"].AsInt==0) {
 					Debug.Log("NO Current");
 				} else {
 					data = rooms[totalData];
@@ -146,7 +146,9 @@ public class AuctionLobbyManager : BasePage {
 						false
 					);
 					data.actionButton.onClick.RemoveAllListeners();
-					data.actionButton.onClick.AddListener(()=>{ClickJoin(jsonData["futureAuctions"][i]["auctionId"].AsInt,(jsonData["futureAuctions"][i]["enterPrice"].AsInt > 0));});
+					int futureAuctionId = jsonData["futureAuctions"][i]["auctionId"].AsInt;
+					int futureEnterPrice = jsonData["futureAuctions"][i]["enterPrice"].AsInt;
+					data.actionButton.onClick.AddListener(()=>{ClickJoin(futureAuctionId,(futureEnterPrice > 0));});
 					totalData++;
 				}
 
