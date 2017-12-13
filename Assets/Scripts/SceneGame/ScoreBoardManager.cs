@@ -21,7 +21,8 @@ public class ScoreBoardManager : PagesIntroOutro {
 		for (int i = 0; i < scoreData.Length; i++) {
 			GameObject g = Instantiate (rumbleItem,rumbleContainer);
 			RumbleScoreItem rsi = g.GetComponent<RumbleScoreItem> ();
-			rsi.InitItem (scoreData [i]);
+            RumbleScoreData rData = scoreData[i];
+			rsi.InitItem (rData);
 		}
 	}
 
@@ -34,7 +35,8 @@ public class ScoreBoardManager : PagesIntroOutro {
 		for (int i = 0; i < scoreData.Length; i++) {
 			GameObject g = Instantiate (royaleItem,royaleContainer);
 			RoyaleScoreItem rsi = g.GetComponent<RoyaleScoreItem> ();
-			rsi.InitItem (scoreData [i]);
+            RoyaleScoreData rData = scoreData[i];
+			rsi.InitItem (rData);
 		}
 	}
 

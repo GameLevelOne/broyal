@@ -15,7 +15,7 @@ public class VideoStreamer : MonoBehaviour {
     VideoPlayer videoPlayer;
     AudioSource audioSource;
 
-    public void ReadyVideo(string url)
+    public void ReadyVideo(string url, float waitTime = 1f)
     {
         rawImage.enabled = false;
         gameObject.SetActive(true);
@@ -26,7 +26,7 @@ public class VideoStreamer : MonoBehaviour {
 
         Application.runInBackground = true;
         Debug.Log("Play Video url=" + url);
-        StartCoroutine(PlayVideo(url));
+        StartCoroutine(PlayVideo(url,waitTime));
     }
 
     IEnumerator PlayVideo(string url, float waitTime=1f)
@@ -61,11 +61,12 @@ public class VideoStreamer : MonoBehaviour {
         Debug.Log("Playing video...");
 
         while ((videoPlayer.isPlaying) && ((long)videoPlayer.frameCount > videoPlayer.frame))
+        //while (videoPlayer.isPlaying)
         {
             float timeLeft = (float)((long)videoPlayer.frameCount - videoPlayer.frame) / videoPlayer.frameRate;
             timeLabel.text = timeLeft.ToString("00");
             Debug.Log("Frame: " + videoPlayer.frame + "/" + videoPlayer.frameCount);
-            yield return new WaitForSeconds(waitTime);
+            yield return new WaitForSeconds(1f);
         }
         Debug.Log("Done Playing");
         if (OnVideoFinished != null)

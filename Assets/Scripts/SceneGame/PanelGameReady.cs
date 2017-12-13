@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class PanelGameReady : PagesIntroOutro {
 	public Text roundLabel;
+    public Image charaIcon;
+    public Sprite[] charaSprite;
 	public Text titleLabel;
 	public Text readyLabel;
 	public GameObject panelInfo;
@@ -21,11 +23,14 @@ public class PanelGameReady : PagesIntroOutro {
         Debug.Log("Ready "+gameMode.ToString()+" Round: "+round);
 		if (gameMode == GameMode.BIDROYALE) {
 			titleLabel.text = LocalizationService.Instance.GetTextByKey ("Game.BID_ROYALE");
+            charaIcon.sprite = charaSprite[0];
 		} else if (gameMode == GameMode.BIDRUMBLE) {
 			titleLabel.text = LocalizationService.Instance.GetTextByKey ("Game.BID_RUMBLE");
+            charaIcon.sprite = charaSprite[1];
 		} else {
 			titleLabel.text = LocalizationService.Instance.GetTextByKey ("Game.TRAINING");
-		}
+            charaIcon.sprite = charaSprite[1];
+        }
 
 		panelInfo.SetActive (true);
 		if (remainingPlayer == 0) {

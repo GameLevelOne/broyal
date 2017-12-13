@@ -18,7 +18,8 @@ public enum RumbleGame{
 
 public class SceneGameManager : MonoBehaviour {
 	public LoadingProgress loadingPanel;
-	public PanelGameReady panelGameReady;
+    public ConnectingPanel connectingPanel;
+    public PanelGameReady panelGameReady;
     public NotificationPopUp notifPopUp;
 	public BaseGame[] gamePanel;
 	public PanelScoresManager scorePanel;
@@ -54,7 +55,33 @@ public class SceneGameManager : MonoBehaviour {
 
 	void InitGame(){
         SoundManager.Instance.PlaySFX(SFXList.GameStart,true);
-		panelGameReady.ReadyGame (gameMode, round, countdownTimer, remainingPlayer);
+        Debug.Log("---------Check Eligible for time-----------");
+        connectingPanel.Connecting(true);
+        DBManager.API.GetEligibleToEnterGame(auctionId,
+            (response) =>
+            {
+                connectingPanel.Connecting(false);
+                JSONNode jsonData = JSON.Parse(response);
+                countdownTimer = jsonData["timeToFirstGameRound"].AsInt;
+                panelGameReady.ReadyGame(gameMode, round, countdownTimer, remainingPlayer);
+	            panelGameReady.OnFinishOutro += LoadNextGame;
+            },
+            (error) =>
+            {
+                connectingPanel.Connecting(false);
+                JSONNode jsonData = JSON.Parse(error);
+                if (jsonData != null)
+                {
+                    notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey("Error." + jsonData["errors"]));
+                }
+                else
+                {
+                    notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+                }
+                notifPopUp.OnFinishOutro += LoadToHomeFromNotif;
+            }
+        );
+        panelGameReady.ReadyGame(gameMode, round, countdownTimer, remainingPlayer);
 		panelGameReady.OnFinishOutro += LoadNextGame;
 	}
 
@@ -83,7 +110,8 @@ public class SceneGameManager : MonoBehaviour {
 					Debug.Log ("Exit Rumble");
                     JSONNode jsonData = JSON.Parse(response);
 					int timeToPopulateServerData = jsonData["timeToServerPopulateData"];
-					scorePanel.InitScore(gameMode,round,score,auctionId,timeToPopulateServerData);
+                    gamePanel[nextGame].Activate(false);
+                    scorePanel.InitScore(gameMode, round, score, auctionId, timeToPopulateServerData);
                 },
                 (error) =>
                 {
@@ -121,14 +149,14 @@ public class SceneGameManager : MonoBehaviour {
 			notifPopUp.Activate (false);
 		
 		if (gameMode == GameMode.TRAINING) {
-			scorePanel.Activate (false);
+            scorePanel.Activate(false);
             scorePanel.OnFinishOutro += LoadToHome;
             //videoPanel.Activate(true);
             //videoPanel.OnFinishOutro += LoadToHome;
         }
         else
         {
-			if (scoreBoard.isActiveAndEnabled) {
+			if (scoreBoard.gameObject.activeSelf) {
 				scoreBoard.Activate (false);
                 videoPanel.Activate(true);
                 videoPanel.OnFinishOutro += LoadToHome;        

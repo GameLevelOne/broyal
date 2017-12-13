@@ -8,6 +8,10 @@ public struct RoyaleScoreData {
 	public int answer;
 	public bool correct;
 	public int passed;
+    public string ToString()
+    {
+        return "Data[Round: " + round + ", Answer: " + answer + ", Correct: " + correct + ", Passed: " + passed + "]";
+    }
 }
 
 public class RoyaleScoreItem : MonoBehaviour {

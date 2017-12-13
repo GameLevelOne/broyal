@@ -50,7 +50,7 @@ public class TwoChests : BaseGame {
 		if (curChoice < 0) {
 			resultPanel.gameObject.SetActive (true);
 			resultPanel.SetInteger ("ChestResult",3);
-			StartCoroutine (DelayEnd (2f, false));
+			StartCoroutine (DelayEnd (2f, false, 0));
 		} else {
 			connectingPanel.Connecting (true);
 			DBManager.API.SubmitBidRoyaleResult(auctionId,round,curChoice,
@@ -59,7 +59,7 @@ public class TwoChests : BaseGame {
 					connectingPanel.Connecting (false);
 					Debug.Log ("Exit Royale");
 					JSONNode jsonData = JSON.Parse(response);
-					int timeToPopulateServerData = jsonData["timeToPopulateServerData"];
+					int timeToPopulateServerData = jsonData["timeToServerPopulateData"];
 					bool win = (jsonData["correctAnswer"].AsInt == curChoice) ? true : false;
 
 					resultPanel.gameObject.SetActive (true);
@@ -72,7 +72,7 @@ public class TwoChests : BaseGame {
                     {
                         SoundManager.Instance.PlaySFX(SFXList.ChestWrong);
                     }
-					StartCoroutine (DelayEnd (2f, win, timeToPopulateServerData));
+					StartCoroutine (DelayEnd (2f, win, timeToPopulateServerData-2000));
 				},
 				(error) =>
 				{
@@ -83,7 +83,7 @@ public class TwoChests : BaseGame {
 		}
 	}
 
-	IEnumerator DelayEnd(float secs, bool win,int timeToPopulateServerData=0) {
+	IEnumerator DelayEnd(float secs, bool win,int timeToPopulateServerData) {
 		yield return new WaitForSeconds (secs);
 		gameManager.EndRoyale (win, timeToPopulateServerData, curChoice);
 	}

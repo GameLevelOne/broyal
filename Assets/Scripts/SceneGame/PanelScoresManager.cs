@@ -19,7 +19,9 @@ public class PanelScoresManager : PagesIntroOutro {
 	public Text rankLabel;
 	public Text statusLabel;
 	public GameObject waitingInfo;
-	public Button buttonNext;
+    public Image charaIcon;
+    public Sprite[] charaSprite;
+    public Button buttonNext;
 	public Text buttonText;
 
 	int auctionId;
@@ -41,6 +43,7 @@ public class PanelScoresManager : PagesIntroOutro {
 		gameMode = _gameMode;
 		score = _score;
 		round = _round;
+        choice = _choice;
 		timeToPopulateServer = _timeToPopulateServer / 1000f;
 		buttonNext.interactable = false;
 		if (gameMode == GameMode.BIDRUMBLE) {
@@ -51,7 +54,6 @@ public class PanelScoresManager : PagesIntroOutro {
 			scoreLabel.text = score.ToString ("00.0000");
 			resultInfo.SetActive (false);
 			waitingInfo.SetActive (true);
-
 		} else {
 			detailedInfo.SetActive (false);
 			simpleInfo.SetActive (true);
@@ -69,6 +71,15 @@ public class PanelScoresManager : PagesIntroOutro {
 				buttonNext.interactable = true;
 			}
 		}
+
+        if (gameMode == GameMode.BIDROYALE)
+        {
+            charaIcon.sprite = charaSprite[0];
+        }
+        else
+        {
+            charaIcon.sprite = charaSprite[1];
+        }
 
 		ShowTimerOnButton ();
 		Activate (true);
@@ -104,9 +115,14 @@ public class PanelScoresManager : PagesIntroOutro {
                     for (int i = 0; i < jsonData["scoreBoard"].Count; i++)
                     {
 						rumbleScoreData[i] = new RumbleScoreData();
-						rumbleScoreData[i].rank = jsonData["scoreBoard"][i]["rank"].AsInt;
-						rumbleScoreData[i].username = jsonData["scoreBoard"][i]["username"];
-						rumbleScoreData[i].score = jsonData["scoreBoard"][i]["score"].AsInt / 1000000000f;
+                        int rRank = jsonData["scoreBoard"][i]["rank"].AsInt;
+						rumbleScoreData[i].rank = rRank;
+                        string rUser = jsonData["scoreBoard"][i]["username"];
+                        rumbleScoreData[i].username = rUser;
+                        float rScore = (float)(jsonData["scoreBoard"][i]["score"].AsDouble / 1000000000f);
+						rumbleScoreData[i].score = rScore;
+
+                        Debug.Log(rumbleScoreData[i].ToString());
 					}
 
 					rankLabel.text = rank.ToString("N0");
@@ -125,6 +141,7 @@ public class PanelScoresManager : PagesIntroOutro {
                     data.answer = choice;
                     data.passed = passNumber;
 					data.correct = (status=="PASS");
+                    Debug.Log(data.ToString());
                     gameManager.AddRoyaleScore(data);
 				}
 				if ((winner)  || (status!="PASS")) {

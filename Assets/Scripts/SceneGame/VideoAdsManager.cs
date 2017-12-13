@@ -7,6 +7,7 @@ public class VideoAdsManager : PagesIntroOutro {
     public GameObject loadingPanel;
     public VideoStreamer videoStreamer;
     public NotificationPopUp notifPopUp;
+    public float waitTime;
 
     new protected void OnEnable()
     {
@@ -17,7 +18,7 @@ public class VideoAdsManager : PagesIntroOutro {
             {
                 JSONNode jsonData = JSON.Parse(response);
                 string url = jsonData["videoURL"];
-                videoStreamer.ReadyVideo(url);
+                videoStreamer.ReadyVideo(url,waitTime);
                 videoStreamer.OnVideoReady += VideoReady;
                 videoStreamer.OnVideoFinished += VideoFinished;
             },

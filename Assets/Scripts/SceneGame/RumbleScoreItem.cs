@@ -7,6 +7,11 @@ public struct RumbleScoreData {
 	public int rank;
 	public string username;
 	public float score;
+
+    public string ToString()
+    {
+        return "Data[Rank: " + rank + ", User: " + username + ", Score: " + score + "]";
+    }
 }
 
 public class RumbleScoreItem : MonoBehaviour {

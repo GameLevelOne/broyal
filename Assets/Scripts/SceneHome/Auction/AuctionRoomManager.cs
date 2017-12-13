@@ -194,7 +194,7 @@ public class AuctionRoomManager : BasePage {
 			(response)=>{
 				JSONNode jsonData = JSON.Parse(response);
 				bool isEligible = jsonData["isEligible"].AsBool;
-				int timeToGame = (jsonData["timeToFirstGameRound"].AsInt-1000);
+				int timeToGame = (jsonData["timeToFirstGameRound"].AsInt-3000);
 				PlayerPrefs.SetInt("TimeToGame",timeToGame);
 				if (isEligible) {
 					GoToGame();
