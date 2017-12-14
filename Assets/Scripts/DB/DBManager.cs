@@ -450,7 +450,7 @@ public class DBManager : MonoBehaviour {
 	public void SubmitClaimedOtp(int auctionId, string verificationOtp,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
-		string url = config.restURL + config.userResetPasswordAPI;
+		string url = config.restURL + config.submitClaimedOtp;
 		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
 			"\"auctionId\":\""+auctionId+"\",\n"+
