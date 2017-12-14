@@ -311,14 +311,14 @@ public class DBManager : MonoBehaviour {
 		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
 			"\"gender\":"+gender+",\n"+
-//			"\"phoneNumber\":\""+phoneNumber+"\",\n"+
 //			"\"email\":\""+email+"\",\n"+
+			"\"phoneNumber\":\""+phoneNumber+"\",\n"+
+			"\"streetAddress\":\""+streetAddress+"\",\n"+
 			"\"completeName\":\""+completeName+"\",\n"+
 			"\"province\":\""+province+"\",\n"+
-			"\"city\":\""+city+"\"\n"+
-			"\"provinceId\":\""+provinceId+"\",\n"+
-			"\"cityId\":\""+cityId+"\"\n"+
-			"\"streetAddress\":\""+streetAddress+"\"\n"+
+			"\"city\":\""+city+"\",\n"+
+			"\"cityId\":\""+cityId+"\",\n"+
+			"\"provinceId\":\""+provinceId+"\"\n"+
 			"}";
 
 		DebugMsg ("UPDATE USER PROFILE Request","\nurl = "+url+"\ndata = "+jsondata);

@@ -23,22 +23,26 @@ public class ClaimOTPPopUp : BasePage {
 		enterButton.interactable = false;
 		successOTP = false;
         inputOtp.text = "";
+		StartCoroutine (StartCountDown ());
 		base.Init ();
 	}
 
 	public void InitTime(int _auctionId,int _time) {
-		timeLeft = _time / 1000f;
+		timeLeft = ((float)_time) / 1000f;
 		auctionId = _auctionId;
 	}
 
 	IEnumerator StartCountDown() {
+		Debug.Log ("OTP Time: "+timeLeft);
 		while (timeLeft > 0f) {
 			timeLeft -= Time.deltaTime;
 
-			min1.text = ((timeLeft / 60f) / 10f).ToString ("0");
-			min2.text = ((timeLeft / 60f) % 10f).ToString ("0");
-			sec1.text = ((timeLeft % 60f) / 10f).ToString ("0");
-			sec1.text = ((timeLeft % 60f) % 10f).ToString ("0");
+			min1.text = (Mathf.Floor(timeLeft / 60f) / 10f).ToString ("0");
+			min2.text = (Mathf.Floor(timeLeft / 60f) % 10f).ToString ("0");
+			sec1.text = Mathf.Floor((timeLeft % 60f) / 10f).ToString ("0");
+			sec2.text = Mathf.Floor((timeLeft % 60f) % 10f).ToString ("0");
+
+//			Debug.Log ("Time: "+timeLeft+", sec1: "+Mathf.Floor((timeLeft % 60f) / 10f)+", sec2: "+((timeLeft % 60f) % 10f));
 
 			yield return null;
 		}

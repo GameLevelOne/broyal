@@ -55,34 +55,32 @@ public class SceneGameManager : MonoBehaviour {
 
 	void InitGame(){
         SoundManager.Instance.PlaySFX(SFXList.GameStart,true);
-        Debug.Log("---------Check Eligible for time-----------");
-        connectingPanel.Connecting(true);
-        DBManager.API.GetEligibleToEnterGame(auctionId,
-            (response) =>
-            {
-                connectingPanel.Connecting(false);
-                JSONNode jsonData = JSON.Parse(response);
-                countdownTimer = jsonData["timeToFirstGameRound"].AsInt;
-                panelGameReady.ReadyGame(gameMode, round, countdownTimer, remainingPlayer);
-	            panelGameReady.OnFinishOutro += LoadNextGame;
-            },
-            (error) =>
-            {
-                connectingPanel.Connecting(false);
-                JSONNode jsonData = JSON.Parse(error);
-                if (jsonData != null)
-                {
-                    notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey("Error." + jsonData["errors"]));
-                }
-                else
-                {
-                    notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
-                }
-                notifPopUp.OnFinishOutro += LoadToHomeFromNotif;
-            }
-        );
-        panelGameReady.ReadyGame(gameMode, round, countdownTimer, remainingPlayer);
-		panelGameReady.OnFinishOutro += LoadNextGame;
+		if (gameMode != GameMode.TRAINING) {
+			Debug.Log ("---------Check Eligible for time-----------");
+			connectingPanel.Connecting (true);
+			DBManager.API.GetEligibleToEnterGame (auctionId,
+				(response) => {
+					connectingPanel.Connecting (false);
+					JSONNode jsonData = JSON.Parse (response);
+					countdownTimer = jsonData ["timeToFirstGameRound"].AsInt;
+					panelGameReady.ReadyGame (gameMode, round, countdownTimer, remainingPlayer);
+					panelGameReady.OnFinishOutro += LoadNextGame;
+				},
+				(error) => {
+					connectingPanel.Connecting (false);
+					JSONNode jsonData = JSON.Parse (error);
+					if (jsonData != null) {
+						notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("Error." + jsonData ["errors"]));
+					} else {
+						notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("General.SERVER_ERROR"));
+					}
+					notifPopUp.OnFinishOutro += LoadToHomeFromNotif;
+				}
+			);
+		} else {
+			panelGameReady.ReadyGame (gameMode, round, countdownTimer, remainingPlayer);
+			panelGameReady.OnFinishOutro += LoadNextGame;
+		}
 	}
 
 	public void NextRound(int _countdownTimer, int _remainingPlayer) {

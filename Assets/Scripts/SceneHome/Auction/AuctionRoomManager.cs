@@ -123,6 +123,9 @@ public class AuctionRoomManager : BasePage {
 					if (timeToNextCycle>0) {
 						StopAllCoroutines();
 						StartCoroutine(IncrementCountdown());
+					} else {
+						Debug.Log ("---------No TimeToNext-----------");
+						CheckEligible();
 					}
 				}
 					
@@ -157,7 +160,7 @@ public class AuctionRoomManager : BasePage {
 		}
 		Debug.Log ("---------Countdown Ends-----------");
 		countDownAnim.SetInteger ("State",1);
-		if (nextIncrement == 0) {
+		if (currentPrice >= maxPrice) {
 			Debug.Log ("---------Max Price-----------");
 			CheckEligible ();
 		} else {
