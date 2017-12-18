@@ -202,7 +202,8 @@ public class DBManager : MonoBehaviour {
 			"\"username\":\""+userName+"\",\n"+
 			"\"password\":\""+password+"\",\n"+
 			"\"mobile\":\""+mobile+"\",\n"+
-			"\"email\":\""+email+"\"\n"+
+			"\"email\":\""+email+"\",\n"+
+			"\"isFbLogin\":true\n"+
 			"}";
 
 		DebugMsg ("USER REGISTRATION Request","\nurl = "+url+"\ndata = "+jsondata);
@@ -453,12 +454,12 @@ public class DBManager : MonoBehaviour {
 		string url = config.restURL + config.submitClaimedOtp;
 		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
-			"\"auctionId\":\""+auctionId+"\",\n"+
+			"\"auctionId\":"+auctionId+",\n"+
 			"\"verificationOtp\":\""+verificationOtp+"\"\n"+
 			"}";
 
 		DebugMsg ("SUBMIT CLAIMED OTP Request","\nurl = "+url+"\ndata = "+jsondata);
-		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
 //===========================RajaOngkir=============================================================

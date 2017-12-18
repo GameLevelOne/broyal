@@ -16,6 +16,7 @@ public class SettingsManager : BasePage {
 	public Image buttonUnsubscribe;
 	public Image buttonDebugOn;
 	public Image buttonDebugOff;
+	public GameObject debugArea;
 	public BasePage prevPage;
 
 	protected override void Init (){
@@ -25,6 +26,7 @@ public class SettingsManager : BasePage {
 		OnClickLanguage(LocalizationService.Instance.Localization == "English");
 		OnClickSubscribe(PlayerPrefs.GetInt ("Subscribe",0)==1);
 		ClickDebug(PlayerPrefs.GetInt ("ShowDebugConsole",0)==1);
+		debugArea.SetActive (DBManager.API.config.debugMode);
 	}
 
 	public void OnClickClose (){

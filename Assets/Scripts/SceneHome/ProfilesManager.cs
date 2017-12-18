@@ -208,8 +208,8 @@ public class ProfilesManager : BasePage {
 				int curVal = 0;
 				for (int i=0;i<jsonData["rajaongkir"]["results"].Count;i++) {
 					cityId.Add(jsonData["rajaongkir"]["results"][i]["city_id"]);
-					cityList.Add(jsonData["rajaongkir"]["results"][i]["city_name"]);
-					if (jsonData["rajaongkir"]["results"][i]["city_name"]==currentCity) {
+					cityList.Add(jsonData["rajaongkir"]["results"][i]["type"] + " " + jsonData["rajaongkir"]["results"][i]["city_name"]);
+					if (cityList[i]==currentCity) {
 						curVal = i;
 					}
 				}
