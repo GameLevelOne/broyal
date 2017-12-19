@@ -254,7 +254,7 @@ public class AuctionLobbyManager : BasePage {
 		claimOtpPopUp.OnFinishOutro -= AfterOTP;
 		if (claimOtpPopUp.successOTP) {
 			PaymentFormManager pfm = PagesManager.instance.GetPagesByName ("PAYMENT") as PaymentFormManager;
-			pfm.InitData (claimAuctionId);
+			pfm.InitData (2,claimAuctionId);
 			NextPage ("PAYMENT");
 		}
 	}

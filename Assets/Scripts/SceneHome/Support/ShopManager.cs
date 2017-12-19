@@ -10,6 +10,7 @@ public class ShopManager : BasePage {
 	public HeaderAreaManager header;
 	public PetDescriptionPopUp petDescription;
 	public NotificationPopUp notificationPopUp;
+	public PaymentFormManager paymentForm;
 	public GameObject starsLoading;
 	public GameObject petsLoading;
 	public GameObject starsScroll;
@@ -42,13 +43,13 @@ public class ShopManager : BasePage {
 					g.transform.localScale = Vector3.one;
 					ShopItemStars sis = g.GetComponent<ShopItemStars>();
 //					Debug.Log("StarsData: "+jData["starShopList"][i]);
-					int starValue = jData["starShopList"][i]["starValue"].AsInt;
+					int starId = jData["starShopList"][i]["id"].AsInt;
 					sis.InitData(
 						jData["starShopList"][i]["currencyValue"].AsInt,
 						jData["starShopList"][i]["itemImage"],
-						starValue
+						jData["starShopList"][i]["starValue"].AsInt
 					);
-					sis.buyButton.onClick.AddListener(()=>{BuyStars(starValue);});
+					sis.buyButton.onClick.AddListener(()=>{BuyStars(starId);});
 				}
 			},
 			(error) => {
@@ -96,20 +97,10 @@ public class ShopManager : BasePage {
 		petDescription.InitData (petData);
 	}
 
-	//Cheat
-	public void BuyStars(int amount) {
+	public void BuyStars(int starsId) {
         SoundManager.Instance.PlaySFX(SFXList.Button01);
-        connectingPanel.Connecting(true);
-		DBManager.API.CreateTopUp (amount,
-			(response) => {
-				connectingPanel.Connecting (false);
-				JSONNode jData = JSON.Parse(response);
-				header.AnimateUserStars(jData["availableStars"]);
-			},
-			(error) => {
-				connectingPanel.Connecting (false);
-			}
-		);
+		paymentForm.InitData (1,starsId);
+		NextPage ("PAYMENT");
 	}
 
 }

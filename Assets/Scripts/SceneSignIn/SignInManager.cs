@@ -21,6 +21,8 @@ public class SignInManager : AppInitPages {
 	string signInUsername;
 	string signInPassword;
 
+	bool webViewReady = false;
+
 	void Start() {
 		SoundManager.Instance.SetVolume (PlayerPrefs.GetFloat("SoundVolume",1f));
 		fader.SetFaderActive (true);
@@ -133,29 +135,34 @@ public class SignInManager : AppInitPages {
 	}
 
 	public void LoadWebView() {
-		connectingPanel.Connecting (true); 
-		uniWebView.Load ();
-		uniWebView.OnLoadComplete += LoadComplete;
+//		if (webViewReady) {
+//			uniWebView.OnWebViewShouldClose += ShouldClose;
+//			uniWebView.Show(true);
+//		} else {
+//			connectingPanel.Connecting (true); 
+//			uniWebView.Load ();
+//			uniWebView.OnLoadComplete += LoadComplete;
+//		}
+//
 	}
 
 	void LoadComplete(UniWebView webView, bool success, string errorMessage) {
 		webView.OnLoadComplete -= LoadComplete;
 		connectingPanel.Connecting (false); 
-//		StartCoroutine (RunUniWebView(webView,success,errorMessage));
 		if (success) {
-			webView.Show();
+			webView.OnWebViewShouldClose += ShouldClose;
+			webView.Show(true);
+			webViewReady = true;
 		} else {
 			Debug.Log("Something wrong in webview loading: " + errorMessage);
 		}
 	}
 
-	IEnumerator RunUniWebView(UniWebView webView, bool success, string errorMessage) {
-		yield return null;
-		if (success) {
-			webView.Show();
-		} else {
-			Debug.Log("Something wrong in webview loading: " + errorMessage);
-		}
+	bool ShouldClose(UniWebView webView) {
+		webView.OnWebViewShouldClose -= ShouldClose;
+		webView.Hide (true);
+		return false;
 	}
+
 		
 }

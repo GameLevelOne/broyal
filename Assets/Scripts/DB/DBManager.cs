@@ -461,6 +461,18 @@ public class DBManager : MonoBehaviour {
 		DebugMsg ("SUBMIT CLAIMED OTP Request","\nurl = "+url+"\ndata = "+jsondata);
 		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
 	}
+	public void GeneratePreOrder(int purchaseType, int itemId, string paymentChannel,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.generatePreOrder;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n" + "\"purchaseType\":" + purchaseType + ",\n";
+		jsondata += (purchaseType == 1 ? ("\"starShopId\":" + itemId + ",\n") : ("\"auctionId\":" + itemId + ",\n"));
+		jsondata += "\"paymentChannel\":\""+paymentChannel+"\"\n"+"}";
+
+		DebugMsg ("GENERATE PRE ORDER Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+	}
 
 //===========================RajaOngkir=============================================================
 	public void GetProvinceList( 

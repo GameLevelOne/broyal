@@ -37,6 +37,7 @@ public class DBManagerSettings : ScriptableObject {
 	public string getClaimAuction;
 	public string getPaymentDetails;
 	public string submitClaimedOtp;
+	public string generatePreOrder;
 	[Space(10)]
 	public string getBidRumbleGame;
 	public string submitBidRumbleResult;

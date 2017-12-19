@@ -9,13 +9,14 @@ public class PaymentFormManager : BasePage {
 
 	public ConnectingPanel connectingPanel;
 	public NotificationPopUp notifPopUp;
+	public UniWebView uniWebView;
 
 	public Animator roomAnimator;
 	public GameObject methodLayer;
 	public GameObject shippingLayer;
 	public ToggleGroup methodGroup;
-
 	public Toggle[] payments;
+	public Text paymentButtonLabel;
 
 	public Text productNameLabel;
 	public Text itemPriceLabel;
@@ -29,42 +30,63 @@ public class PaymentFormManager : BasePage {
 	public Text cityLabel;
 	public Text phoneLabel;
 
-	int methodIdx = -1;
-	int auctionId;
+	string paymentId = "";
+	string webViewUrl = "";	
+	int itemId;
+	int purchaseType;
 
 	protected override void Init ()
 	{
 		base.Init ();
-		if (methodIdx == -1) {
+		if (purchaseType == 1) {
 			roomAnimator.Play ("PanelLeft");
 			roomAnimator.ResetTrigger ("GoLeft");
 			roomAnimator.ResetTrigger ("GoRight");
 			methodGroup.SetAllTogglesOff ();
+			paymentButtonLabel.text = LocalizationService.Instance.GetTextByKey ("PaymentForm.CHECKOUT");
 		} else {
-			roomAnimator.Play ("PanelRight");
-			roomAnimator.ResetTrigger ("GoLeft");
-			roomAnimator.ResetTrigger ("GoRight");
+			if (paymentId == "") {
+				roomAnimator.Play ("PanelLeft");
+				roomAnimator.ResetTrigger ("GoLeft");
+				roomAnimator.ResetTrigger ("GoRight");
+				methodGroup.SetAllTogglesOff ();
+			} else {
+				roomAnimator.Play ("PanelRight");
+				roomAnimator.ResetTrigger ("GoLeft");
+				roomAnimator.ResetTrigger ("GoRight");
+			}
+			LoadShippingData ();
+			paymentButtonLabel.text = LocalizationService.Instance.GetTextByKey ("Game.NEXT");
 		}
-		LoadShippingData ();
 	}
 
-	public void InitData(int _auctionId) {
-		auctionId = _auctionId;
+	public void InitData(int _purchaseType,int _itemId) {
+		purchaseType = _purchaseType;
+		itemId = _itemId;
 	}
 
 	public void ClickBack() {
 		SoundManager.Instance.PlaySFX(SFXList.Button02);
-		if (shippingLayer.activeSelf) {
+		if (shippingLayer.GetComponent<CanvasGroup>().alpha==1f) {
 			roomAnimator.SetTrigger ("GoLeft");
 		} else {
-			NextPage ("LOBBY");
+			Debug.Log ("Helooo");
+			if (purchaseType == 1) {
+				NextPage ("SHOP");
+			} else {
+				NextPage ("LOBBY");
+			}
 		}
 	}
 
 	public void ClickNext() {
-		SoundManager.Instance.PlaySFX(SFXList.Button01);
-		if (methodIdx != -1) {
-			roomAnimator.SetTrigger ("GoRight");
+		if (purchaseType == 1) {
+			ClickCheckout ();
+		} else {
+			SoundManager.Instance.PlaySFX(SFXList.Button01);
+			if (paymentId != "") {
+				roomAnimator.SetTrigger ("GoRight");
+			}
 		}
 	}
 	public void ClickEdit() {
@@ -77,7 +99,7 @@ public class PaymentFormManager : BasePage {
 
 	void LoadShippingData() {
 		connectingPanel.Connecting (true);
-		DBManager.API.GetPaymentDetails (auctionId,
+		DBManager.API.GetPaymentDetails (itemId,
 			(response) => {
 				connectingPanel.Connecting (false);
 				JSONNode jsonData = JSON.Parse(response);
@@ -106,17 +128,79 @@ public class PaymentFormManager : BasePage {
 		);
 	}
 
-	public void ChangePaymentSelection(bool chg) {
-		methodIdx = -1;
-		for (int i = 0; i < payments.Length; i++) {
-			if (payments [i].isOn) {
-				methodIdx = i;
-				break;
+	public void ChangePaymentSelection(string paymentCode) {
+		paymentId = paymentCode;
+	}
+
+	public void ClickCheckout() {
+		SoundManager.Instance.PlaySFX(SFXList.Button01);
+		connectingPanel.Connecting (true);
+		DBManager.API.GeneratePreOrder (purchaseType,itemId,paymentId,
+			(response) => {
+				connectingPanel.Connecting (false);
+				JSONNode jsonData = JSON.Parse(response);
+				webViewUrl = jsonData["redirectUrl"];
+
+				if (webViewUrl==uniWebView.url) {
+					uniWebView.OnWebViewShouldClose += ShouldClose;
+					uniWebView.Show(true);
+				} else {
+					connectingPanel.Connecting (true); 
+					uniWebView.url = webViewUrl;
+					uniWebView.Load ();
+					uniWebView.OnLoadComplete += LoadComplete;
+				}
+
+
+			}, 
+			(error) => {
+				connectingPanel.Connecting (false);
+				JSONNode jsonData = JSON.Parse (error);
+				if (jsonData!=null) {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+				} else {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				}
+			}
+		);
+	}
+
+	void LoadComplete(UniWebView webView, bool success, string errorMessage) {
+		webView.OnLoadComplete -= LoadComplete;
+		connectingPanel.Connecting (false); 
+		if (success) {
+			ShowHideWebView (true);
+		} else {
+			notifPopUp.ShowPopUp (errorMessage);
+		}
+	}
+
+	bool ShouldClose(UniWebView webView) {
+		ShowHideWebView (false);
+		return false;
+	}
+
+	void ReceivedCallback(UniWebView webView, UniWebViewMessage message) {
+		ShowHideWebView (false);
+		if (message.path == "success") {
+			if (purchaseType == 1) {
+				NextPage ("SHOP");
+			} else {
+				NextPage ("LOBBY");
 			}
 		}
 	}
 
-	public void ClickCheckout() {
-//		methodIdx = -1;
+	void ShowHideWebView(bool show) {
+		if (show) {
+			uniWebView.OnWebViewShouldClose += ShouldClose;
+			uniWebView.OnReceivedMessage += ReceivedCallback;
+			uniWebView.Show(true);
+		} else {
+			uniWebView.OnWebViewShouldClose -= ShouldClose;
+			uniWebView.OnReceivedMessage -= ReceivedCallback;
+			uniWebView.Hide(true);
+		}
 	}
+
 }
