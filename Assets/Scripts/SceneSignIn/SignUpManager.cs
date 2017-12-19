@@ -18,6 +18,7 @@ public class SignUpManager : AppInitPages {
 	public NotificationPopUp notificationPopUp;
 	public VerifyOTPPopUp verifyOTPPopUp;
 	public SignInManager panelSignIn;
+	public TextManager textManager;
 
 	public InputField usernameInput;
 	public InputField emailInput;
@@ -169,6 +170,13 @@ public class SignUpManager : AppInitPages {
 	void FadeOutToLoading() {
 		fader.OnFadeOutFinished-= FadeOutToLoading;
 		panelLoading.gameObject.SetActive(true);
+	}
+
+	public void ClickTermsConditions() {
+		SoundManager.Instance.PlaySFX(SFXList.Button01);
+		Activate (false);
+		textManager.showType = 2;
+		textManager.Activate (true);
 	}
 
 }

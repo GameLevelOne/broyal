@@ -12,18 +12,15 @@ public class PetOwned : MonoBehaviour {
 
 	PetData petData;
 
-	public void InitData(PetData _petData) {
-		if (_petData != null) {
-//			Debug.Log("Pet Name: "+_petData.name);
-			gameObject.SetActive (true);
-			petData = _petData;
-			petPicture.LoadImageFromUrl (petData.imageUrl);
-			petName.text = petData.name;
-			petRank.text = LocalizationService.Instance.GetTextByKey ("Header.PET_RANK") + petData.rank;
-			equipButton.gameObject.SetActive(!petData.equipped);
-		} else {
-			gameObject.SetActive (false);
-		}
+	public void InitData(PetData _petData, PetEquipPopUp _petEquipPopUp) {
+//		Debug.Log("Pet Name: "+_petData.name);
+		gameObject.SetActive (true);
+		petData = _petData;
+		petPicture.LoadImageFromUrl (petData.imageUrl);
+		petName.text = petData.name;
+		petRank.text = LocalizationService.Instance.GetTextByKey ("Header.PET_RANK") + petData.rank;
+		equipButton.gameObject.SetActive(!petData.equipped);
+		petEquipPopUp = _petEquipPopUp;
 	}
 
 	public void EquipClick() {

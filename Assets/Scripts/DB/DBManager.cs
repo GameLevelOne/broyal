@@ -611,6 +611,7 @@ public class DBManager : MonoBehaviour {
 
 	void ShowUnauthorizedError() {
 		GameObject g = GameObject.FindWithTag ("NotifPopUp");
+		Debug.Log ("Unauthorized error looo");
 		if (g!=null) {
 			notifPopUp = g.transform.GetChild(g.transform.childCount-1).GetComponent<NotificationPopUp>();
 			notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error.UNAUTHORIZED"));
@@ -618,8 +619,9 @@ public class DBManager : MonoBehaviour {
 		}
 	}
 
-	void RestartApp() {
-		notifPopUp.OnFinishOutro -= RestartApp;
+	public void RestartApp() {
+		if (notifPopUp!=null)
+			notifPopUp.OnFinishOutro -= RestartApp;
 		PlayerPrefs.DeleteKey ("LastUserLogin");
 		Application.LoadLevel ("SceneSignIn");
 	}

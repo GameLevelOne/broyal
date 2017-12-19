@@ -8,6 +8,7 @@ using SimpleJSON;
 public class SignInManager : AppInitPages {
 	public Fader fader;
 	public ConnectingPanel connectingPanel;
+	public UniWebView uniWebView;
 	public LoadingProgress panelLoading;
 	public ForgotPasswordManager panelForgotPassword;
 	public SignUpManager panelSignUp;
@@ -102,6 +103,9 @@ public class SignInManager : AppInitPages {
 				} else {
 					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
 				}
+
+				if (fadeIn) 
+					DBManager.API.RestartApp();
 			}
 		);
 	}
@@ -126,6 +130,32 @@ public class SignInManager : AppInitPages {
 	void FadeInToLoading() {
 		fader.OnFadeInFinished-= FadeInToLoading;
 		panelLoading.gameObject.SetActive(true);
+	}
+
+	public void LoadWebView() {
+		connectingPanel.Connecting (true); 
+		uniWebView.Load ();
+		uniWebView.OnLoadComplete += LoadComplete;
+	}
+
+	void LoadComplete(UniWebView webView, bool success, string errorMessage) {
+		webView.OnLoadComplete -= LoadComplete;
+		connectingPanel.Connecting (false); 
+//		StartCoroutine (RunUniWebView(webView,success,errorMessage));
+		if (success) {
+			webView.Show();
+		} else {
+			Debug.Log("Something wrong in webview loading: " + errorMessage);
+		}
+	}
+
+	IEnumerator RunUniWebView(UniWebView webView, bool success, string errorMessage) {
+		yield return null;
+		if (success) {
+			webView.Show();
+		} else {
+			Debug.Log("Something wrong in webview loading: " + errorMessage);
+		}
 	}
 		
 }

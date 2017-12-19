@@ -131,10 +131,13 @@ public class HeaderAreaManager : MonoBehaviour {
 			(error) => {
 //				Debug.Log("-------Error get:"+ error.Split('|')[0].Trim() +"muahahahah");
 				JSONNode jsonData = JSON.Parse (error);
-				if ((jsonData!=null) && (jsonData["errors"]=="TRAINING_FINISH") ) {
+				if ((jsonData!=null) && (jsonData["errors"]=="TRAINING_NOT_STARTED") ) {
 					petTrainButton.interactable = true;
 					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
-				} 
+				} else if ((jsonData!=null) && (jsonData["errors"]=="TRAINING_FINISHED") ) {
+					petTrainButton.interactable = true;
+					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.CLAIM");
+				}
 			}
 		);
 	}

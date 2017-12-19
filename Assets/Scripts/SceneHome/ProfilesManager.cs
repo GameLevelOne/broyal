@@ -44,7 +44,8 @@ public class ProfilesManager : BasePage {
 	public Text petExpLabel;
 	public Text petSkillLabel;
 	public Text petsOwnedLabel;
-	public PetOwned[] petOwned;
+	public GameObject petOwnedPrefab;
+	public Transform petOwnedParent;
 	PetData petData;
 
 	[Space(10)]
@@ -260,22 +261,21 @@ public class ProfilesManager : BasePage {
 				petExpLabel.text = petData.exp.ToString("N0") + " / " + petData.nextRankExp.ToString("N0");
 				petSkillLabel.text = petData.skillDescription;
 				petsOwnedLabel.text = LocalizationService.Instance.GetTextByKey ("Profile.PETS_OWNED") + " " + jsonData["allPetList"].Count + " / " + 5;
-				for (int i=0;i<5;i++) {
-					if (i<jsonData["allPetList"].Count) {
-						PetData po = new PetData();
-						po.InitMiniProfile(
-							jsonData["allPetList"][i]["petName"], 
-							jsonData["allPetList"][i]["petId"],
-							jsonData["allPetList"][i]["petModelImage"],
-							jsonData["allPetList"][i]["petName"],
-							jsonData["allPetList"][i]["description"],
-							jsonData["allPetList"][i]["petRank"],
-							jsonData["allPetList"][i]["equipped"]=="Equipped"
-						);
-						petOwned[i].InitData(po);
-					} else {
-						petOwned[i].InitData(null);
-					}
+				Utilities.ClearChildren(petOwnedParent);
+				for (int i=0;i<jsonData["allPetList"].Count;i++) {
+					PetData po = new PetData();
+					po.InitMiniProfile(
+						jsonData["allPetList"][i]["petName"], 
+						jsonData["allPetList"][i]["petId"],
+						jsonData["allPetList"][i]["petModelImage"],
+						jsonData["allPetList"][i]["petName"],
+						jsonData["allPetList"][i]["description"],
+						jsonData["allPetList"][i]["petRank"],
+						jsonData["allPetList"][i]["equipped"]=="Equipped"
+					);
+					GameObject g = Instantiate(petOwnedPrefab,petOwnedParent);
+					PetOwned petOwned = g.GetComponent<PetOwned>();
+					petOwned.InitData(po,petEquipPopUp);
 				}
 				petLoaded = true;
 				if (onComplete != null)

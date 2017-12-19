@@ -7,6 +7,7 @@ public class TextManager : BasePage {
 
 	public Text titleLabel;
 	public ScrollRect scrollView;
+	public SignUpManager signUpManager;
 
 	public int showType;
 	public string[] titles;
@@ -37,4 +38,9 @@ public class TextManager : BasePage {
 		NextPage ("SETTINGS");
 	}
 
+	public void CloseFromSignIn() {
+		SoundManager.Instance.PlaySFX(SFXList.Button02);
+		signUpManager.Activate (true);
+		Activate (false);
+	}
 }
