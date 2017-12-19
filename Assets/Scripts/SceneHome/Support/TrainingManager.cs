@@ -10,7 +10,7 @@ public class TrainingManager : BasePage {
 
 		PlayerPrefs.SetInt("RumbleGame",type);
 		PlayerPrefs.SetInt("GameMode",(int)GameMode.TRAINING);
-		PlayerPrefs.SetInt("TimeToGame",4000);
+		PlayerPrefs.SetInt("TimeToGame",6000);
 
 		Activate (false);
 		PagesManager.instance.headerNav.Activate (false);

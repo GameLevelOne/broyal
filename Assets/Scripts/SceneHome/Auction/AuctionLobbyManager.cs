@@ -34,6 +34,7 @@ public class AuctionLobbyManager : BasePage {
 	int minData;
 	int maxData;
 	int bufferData = 4;
+	int claimAuctionId;
 
 	void Start()
 	{
@@ -207,7 +208,7 @@ public class AuctionLobbyManager : BasePage {
 			DBManager.API.AuctionJoin (dataAuctionId,
 				(response)=>{
 					JSONNode jsonData = JSON.Parse(response);
-					header.GetUserStars();
+					header.AnimateUserStars(jsonData["availableStar"]);
 					connectingPanel.Connecting (false);
 					auctionRoomManager.auctionMode = auctionMode;
 					NextPage ("AUCTIONROOM");
@@ -234,6 +235,7 @@ public class AuctionLobbyManager : BasePage {
 				timeLeft = jsonData["otpRemainingTime"].AsInt;
 				claimOtpPopUp.InitTime (dataAuctionId,timeLeft);
 				claimOtpPopUp.Activate(true);
+				claimAuctionId = dataAuctionId;
 				claimOtpPopUp.OnFinishOutro += AfterOTP;
 			}, 
 			(error) => {
@@ -251,6 +253,8 @@ public class AuctionLobbyManager : BasePage {
 	void AfterOTP() {
 		claimOtpPopUp.OnFinishOutro -= AfterOTP;
 		if (claimOtpPopUp.successOTP) {
+			PaymentFormManager pfm = PagesManager.instance.GetPagesByName ("PAYMENT") as PaymentFormManager;
+			pfm.InitData (claimAuctionId);
 			NextPage ("PAYMENT");
 		}
 	}

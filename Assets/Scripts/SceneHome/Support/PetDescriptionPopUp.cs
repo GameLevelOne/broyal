@@ -9,6 +9,7 @@ public class PetDescriptionPopUp : BasePage {
 	public ConnectingPanel connectingPanel;
 	public NotificationPopUp notifPopUp;
 	public InputPetNamePopUp petNamePopUp;
+	public HeaderAreaManager header;
 	public ImageLoader petImage;
 	public RectTransform starsHLG;
 	public Text priceLabel;
@@ -31,6 +32,7 @@ public class PetDescriptionPopUp : BasePage {
 		DBManager.API.PurchasePet (petData.id,
 			(response) => {
 				JSONNode jsonData = JSON.Parse(response);
+				header.AnimateUserStars(header.userStars - petData.price);
 				connectingPanel.Connecting (false);
 				Activate(false);
 				OnFinishOutro += FinishOutro;

@@ -53,7 +53,7 @@ public class MemoryGame : BaseGame {
 				}
 			} else {
                 SoundManager.Instance.PlaySFX(SFXList.Incorrect);
-                StartCoroutine(DelayFlipTile(0.5f));
+                StartCoroutine(DelayFlipTile(0.2f));
 			}
 			openTile = 0;
 		}

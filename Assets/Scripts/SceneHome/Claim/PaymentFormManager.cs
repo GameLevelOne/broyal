@@ -15,6 +15,8 @@ public class PaymentFormManager : BasePage {
 	public GameObject shippingLayer;
 	public ToggleGroup methodGroup;
 
+	public Toggle[] payments;
+
 	public Text productNameLabel;
 	public Text itemPriceLabel;
 	public Text adminFeeLabel;
@@ -27,17 +29,23 @@ public class PaymentFormManager : BasePage {
 	public Text cityLabel;
 	public Text phoneLabel;
 
-	int methodIdx;
+	int methodIdx = -1;
 	int auctionId;
 
 	protected override void Init ()
 	{
 		base.Init ();
-		roomAnimator.Play ("PanelLeft");
-		roomAnimator.ResetTrigger ("GoLeft");
-		roomAnimator.ResetTrigger ("GoRight");
-		methodIdx = -1;
-		methodGroup.SetAllTogglesOff ();
+		if (methodIdx == -1) {
+			roomAnimator.Play ("PanelLeft");
+			roomAnimator.ResetTrigger ("GoLeft");
+			roomAnimator.ResetTrigger ("GoRight");
+			methodGroup.SetAllTogglesOff ();
+		} else {
+			roomAnimator.Play ("PanelRight");
+			roomAnimator.ResetTrigger ("GoLeft");
+			roomAnimator.ResetTrigger ("GoRight");
+		}
+		LoadShippingData ();
 	}
 
 	public void InitData(int _auctionId) {
@@ -59,11 +67,6 @@ public class PaymentFormManager : BasePage {
 			roomAnimator.SetTrigger ("GoRight");
 		}
 	}
-	public void ClickMethod() {
-		Toggle curSelected = methodGroup.ActiveToggles ().FirstOrDefault ();
-		methodIdx = curSelected.transform.GetSiblingIndex ();
-	}
-
 	public void ClickEdit() {
 		SoundManager.Instance.PlaySFX(SFXList.Button01);
 		ProfilesManager futurePage = (ProfilesManager)PagesManager.instance.GetPagesByName("PROFILES");
@@ -101,5 +104,19 @@ public class PaymentFormManager : BasePage {
 				}
 			}
 		);
+	}
+
+	public void ChangePaymentSelection(bool chg) {
+		methodIdx = -1;
+		for (int i = 0; i < payments.Length; i++) {
+			if (payments [i].isOn) {
+				methodIdx = i;
+				break;
+			}
+		}
+	}
+
+	public void ClickCheckout() {
+//		methodIdx = -1;
 	}
 }

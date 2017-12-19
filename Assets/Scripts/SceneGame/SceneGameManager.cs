@@ -27,6 +27,7 @@ public class SceneGameManager : MonoBehaviour {
     public VideoAdsManager videoPanel;
 
 	public int gameTime;
+	public int royaleGameTime;
 	public List<RoyaleScoreData> royaleScores;
 
 	GameMode gameMode;
@@ -93,7 +94,7 @@ public class SceneGameManager : MonoBehaviour {
 	void LoadNextGame() {
 		panelGameReady.OnFinishOutro -= LoadNextGame;
 		PlayerPrefs.SetInt ("GameRound",round);
-		gamePanel [nextGame].InitGame(gameTime,round);
+		gamePanel [nextGame].InitGame(nextGame==4 ? royaleGameTime : gameTime,round);
 	}
 
 	public void EndGame(float score) {

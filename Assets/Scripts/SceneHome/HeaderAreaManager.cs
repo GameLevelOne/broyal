@@ -15,7 +15,6 @@ public class HeaderAreaManager : MonoBehaviour {
 	public Text usernameLabel;
 	public Text userStarsLabel;
 	public RectTransform starsHLG;
-	public int userStars;
 	public ImageLoader petImage;
 	public Text petName;
 	public Text petRank;
@@ -23,8 +22,15 @@ public class HeaderAreaManager : MonoBehaviour {
 	public Button petTrainButton;
 	public Text petTrainLabel;
 	int trainCountDown;
+	int curStars;
 
 	public PetData petData;
+
+	public int userStars {
+		get {
+			return curStars;
+		}
+	}
 
 	void OnEnable(){
 		usernameLabel.text = DBManager.API.username;
@@ -33,10 +39,10 @@ public class HeaderAreaManager : MonoBehaviour {
 	}
 
 	public void SetStars(int amount) {
+		curStars = amount;
 		if (amount < 1) {
 			userStarsLabel.text = "-";
 		} else {
-			userStars = amount;
 			userStarsLabel.text = userStars.ToString ("N0");
 		}
 	}
@@ -53,6 +59,29 @@ public class HeaderAreaManager : MonoBehaviour {
 				UserStarsError();
 			}
 		);
+	}
+
+	public void AnimateUserStars(int nextStars) {
+		StopAllCoroutines ();
+		StartCoroutine (CountToNextStars(nextStars));
+	}
+
+	IEnumerator CountToNextStars(int nextStars) {
+		int deltaStars = (nextStars - curStars) / 20;
+		while ((curStars != nextStars) && (deltaStars != 0)) {
+			curStars += deltaStars;
+			if (deltaStars > 0) {
+				if (curStars > nextStars)
+					curStars = nextStars;
+			} else {
+				if (curStars < nextStars)
+					curStars = nextStars;
+			}
+			SetStars (curStars);
+			yield return new WaitForSeconds (0.05f);
+		}
+		yield return null;
+		curStars = nextStars;
 	}
 
 	void UserStarsError() {

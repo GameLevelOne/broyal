@@ -104,7 +104,7 @@ public class ShopManager : BasePage {
 			(response) => {
 				connectingPanel.Connecting (false);
 				JSONNode jData = JSON.Parse(response);
-				header.SetStars(jData["availableStars"]);
+				header.AnimateUserStars(jData["availableStars"]);
 			},
 			(error) => {
 				connectingPanel.Connecting (false);
