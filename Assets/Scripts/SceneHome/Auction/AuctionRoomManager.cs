@@ -116,7 +116,7 @@ public class AuctionRoomManager : BasePage {
 				if ((numberBidders<=0) && (timeToNextCycle<=0)) {
 					Debug.Log ("---------No previous bidder-----------");
 					CheckEligible();
-				} if (numberBidders==1) {
+				} else if (numberBidders==1) {
 					Debug.Log ("---------Single bidder-----------");
 					NextPage("LOBBY");
 				} else {

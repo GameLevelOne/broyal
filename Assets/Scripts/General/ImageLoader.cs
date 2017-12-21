@@ -33,7 +33,7 @@ public class ImageLoader : MonoBehaviour {
 		}
 	}
 
-	public void LoadImageFromUrl(string url)
+	public void LoadImageFromUrl(string url, bool lookForCache = true)
 	{
 		if (url == null) {
 			SetError ();
@@ -46,24 +46,29 @@ public class ImageLoader : MonoBehaviour {
 				bool useCached = File.Exists (filePath);
 				string wwwFilePath;
 
-				if (useCached) {
-					DateTime written = File.GetLastWriteTimeUtc (filePath);
-					DateTime now = DateTime.UtcNow;
-					double totalHours = now.Subtract (written).TotalHours;
-					if (totalHours > 24 * 7) {
-						File.Delete (filePath);
-						useCached = false;
-					}
-				} 
+				if (lookForCache) {
 
-				if (useCached) {
-					wwwFilePath = "file://" + filePath;
+					if (useCached) {
+						DateTime written = File.GetLastWriteTimeUtc (filePath);
+						DateTime now = DateTime.UtcNow;
+						double totalHours = now.Subtract (written).TotalHours;
+						if (totalHours > 24 * 7) {
+							File.Delete (filePath);
+							useCached = false;
+						}
+					} 
+
+					if (useCached) {
+						wwwFilePath = "file://" + filePath;
+					} else {
+						wwwFilePath = url;
+					}       
 				} else {
 					wwwFilePath = url;
-				}       
+				}
                 
 //			Debug.Log ("Image LoadFrom: " + wwwFilePath);
-				StartCoroutine (LoadFromWWW (wwwFilePath, useCached));
+				StartCoroutine (LoadFromWWW (wwwFilePath, useCached, lookForCache));
 				loadedURL = url;
 			} else {
 				loadAnim.SetInteger ("AnimState", (int)ImageLoaderState.LOADED);
@@ -83,7 +88,7 @@ public class ImageLoader : MonoBehaviour {
 		loadImage.sprite = loadingIcon;
 	}
 
-	IEnumerator LoadFromWWW(string url, bool useCached)
+	IEnumerator LoadFromWWW(string url, bool useCached, bool saveCache)
 	{
 //		Debug.Log ("Load URL: "+url);
 		yield return null;
@@ -94,11 +99,13 @@ public class ImageLoader : MonoBehaviour {
 			loadAnim.SetInteger ("AnimState",(int)ImageLoaderState.LOADED);
 			currentSprite = Sprite.Create (www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0, 0));
 			loadImage.sprite = currentSprite;
-			if (!useCached) {
-				string filePath = Application.dataPath;
-				filePath += "/ImageCache/" + Utilities.GetInt64HashCode (url);
-				File.WriteAllBytes (filePath, www.bytes);
-				Debug.Log ("Saving done to: "+filePath);
+			if (saveCache) {
+				if (!useCached) {
+					string filePath = Application.dataPath;
+					filePath += "/ImageCache/" + Utilities.GetInt64HashCode (url);
+					File.WriteAllBytes (filePath, www.bytes);
+					Debug.Log ("Saving done to: " + filePath);
+				}
 			}
 		} else {
 			SetError ();

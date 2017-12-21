@@ -27,6 +27,7 @@ public class DBManager : MonoBehaviour {
 	public DBManagerSettings config;
 	public string username = null;
 	public DebugConsole debugConsole;
+	public float timeOutThreshold;
 	string tokenType = null;
 	string accessToken = null;
 	NotificationPopUp notifPopUp = null;
@@ -545,24 +546,36 @@ public class DBManager : MonoBehaviour {
 	}
 
 	IEnumerator WaitForRequest(WWW www, System.Action<string> onComplete, System.Action<string> onError,int debugIndex) {
-		yield return www;
-		if (www.error == null) {
-			DebugMsg ("","RESULT: \n"+www.text);
-			if (debugConsole!=null)
-				debugConsole.SetResult (www.text,debugIndex);
-			if (onComplete!=null)
-				onComplete(www.text);
-		} else {
-			DebugError ("ERROR: "+www.error, www.text);
-			if (debugConsole!=null)
-				debugConsole.SetError ("ERROR: "+www.error+"\n"+www.text,debugIndex);
-
-			if (www.error.Trim () != "401") {
-				if (onError != null)
-					onError (www.error + "|" + www.text);
+		float timeOutCheck = timeOutThreshold;
+		while ((timeOutCheck > 0f) && (!www.isDone)) {
+			timeOutCheck -= Time.deltaTime;
+			yield return null;
+		}
+		if (timeOutCheck > 0f) {
+			if (www.error == null) {
+				DebugMsg ("", "RESULT: \n" + www.text);
+				if (debugConsole != null)
+					debugConsole.SetResult (www.text, debugIndex);
+				if (onComplete != null)
+					onComplete (www.text);
 			} else {
-				ShowUnauthorizedError ();
+				DebugError ("ERROR: " + www.error, www.text);
+				if (debugConsole != null)
+					debugConsole.SetError ("ERROR: " + www.error + "\n" + www.text, debugIndex);
+
+				if (www.error.Trim () != "401") {
+					if (onError != null)
+						onError (www.error + "|" + www.text);
+				} else {
+					ShowUnauthorizedError ();
+				}
 			}
+		} else {
+			DebugError ("ERROR: " + www.error, www.text);
+			if (debugConsole != null)
+				debugConsole.SetError ("ERROR: REQUEST_TIME_OUT", debugIndex);
+			if (onError != null)
+				onError ("{\"errors\":\"REQUEST_TIME_OUT\"}");
 		}
 	}
 

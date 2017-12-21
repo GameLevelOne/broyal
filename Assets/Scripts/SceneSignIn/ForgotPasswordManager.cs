@@ -70,7 +70,12 @@ public class ForgotPasswordManager : AppInitPages {
 				},
 				(error)=>{
 					connectingPanel.Connecting (false);
-					notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+					JSONNode jsonData = JSON.Parse (error);
+					if (jsonData!=null) {
+						notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+					} else {
+						notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+					}
 				}
 			);
 		} else{
