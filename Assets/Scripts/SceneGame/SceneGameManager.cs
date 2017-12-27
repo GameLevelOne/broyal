@@ -56,7 +56,7 @@ public class SceneGameManager : MonoBehaviour {
 
 	void InitGame(){
         SoundManager.Instance.PlaySFX(SFXList.GameStart,true);
-		if (gameMode != GameMode.TRAINING) {
+		if (round==1) {
 			Debug.Log ("---------Check Eligible for time-----------");
 			connectingPanel.Connecting (true);
 			DBManager.API.GetEligibleToEnterGame (auctionId,

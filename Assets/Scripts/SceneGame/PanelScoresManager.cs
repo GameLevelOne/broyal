@@ -138,9 +138,11 @@ public class PanelScoresManager : PagesIntroOutro {
 					passNumber = jsonData["scoreBoard"][round-1]["passed"].AsInt;
                     RoyaleScoreData data = new RoyaleScoreData();
                     data.round = round;
-                    data.answer = choice;
                     data.passed = passNumber;
-					data.correct = (status=="PASS");
+                    //data.answer = choice;
+                    //data.correct = (status=="PASS");
+                    data.answer = choice;
+                    data.correct = true;
                     Debug.Log(data.ToString());
                     gameManager.AddRoyaleScore(data);
 				}

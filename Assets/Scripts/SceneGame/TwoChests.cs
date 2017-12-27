@@ -14,8 +14,9 @@ public class TwoChests : BaseGame {
 	public Image wrongChest;
 
 	public Sprite[] correctChestSprite; 
-	public Sprite[] wrongChestSprite; 
+	public Sprite[] wrongChestSprite;
 
+    int correctAnswer;
 	int curChoice;
 	int auctionId;
 	int round;
@@ -60,7 +61,8 @@ public class TwoChests : BaseGame {
 					Debug.Log ("Exit Royale");
 					JSONNode jsonData = JSON.Parse(response);
 					int timeToPopulateServerData = jsonData["timeToServerPopulateData"];
-					bool win = (jsonData["correctAnswer"].AsInt == curChoice) ? true : false;
+                    correctAnswer = jsonData["correctAnswer"].AsInt;
+					bool win = (correctAnswer == curChoice) ? true : false;
 
 					resultPanel.gameObject.SetActive (true);
 					resultPanel.SetInteger ("ChestResult",win ? 1 : 2);
@@ -85,7 +87,7 @@ public class TwoChests : BaseGame {
 
 	IEnumerator DelayEnd(float secs, bool win,int timeToPopulateServerData) {
 		yield return new WaitForSeconds (secs);
-		gameManager.EndRoyale (win, timeToPopulateServerData, curChoice);
+		gameManager.EndRoyale (win, timeToPopulateServerData, correctAnswer);
 	}
 
 

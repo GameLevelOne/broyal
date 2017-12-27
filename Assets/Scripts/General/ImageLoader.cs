@@ -112,4 +112,11 @@ public class ImageLoader : MonoBehaviour {
 		};
 	}
 
+    public void SetSpriteFromTexture(Texture2D tex)
+    {
+        loadAnim.SetInteger("AnimState", (int)ImageLoaderState.LOADED);
+        currentSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0));
+        loadImage.sprite = currentSprite;
+    }
+
 }

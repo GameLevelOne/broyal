@@ -366,7 +366,9 @@ public class ProfilesManager : BasePage {
         connectingPanel.Connecting(false);
         editUserPicture.gameObject.SetActive(true);
         editUserIcon.SetActive(false);
-        editUserPicture.LoadImageFromUrl(imgPath);
+        Texture2D tex = new Texture2D(4,4);
+        tex.LoadImage(System.IO.File.ReadAllBytes(imgPath));
+        editUserPicture.SetSpriteFromTexture(tex);
         //DBManager.API.UpdateProfilePicture(imgPath,
         //    (response) => {
         //        connectingPanel.Connecting(false);

@@ -571,7 +571,7 @@ public class DBManager : MonoBehaviour {
 				}
 			}
 		} else {
-			DebugError ("ERROR: " + www.error, www.text);
+            //DebugError ("ERROR: " + www.error, www.text);
 			if (debugConsole != null)
 				debugConsole.SetError ("ERROR: REQUEST_TIME_OUT", debugIndex);
 			if (onError != null)
