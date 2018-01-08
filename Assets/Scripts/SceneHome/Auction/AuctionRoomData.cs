@@ -125,7 +125,8 @@ public class AuctionRoomData : MonoBehaviour {
 	public void OnRoomShow()
 	{
 //		Debug.Log ("LoadURL: "+imageUrl[0]);
-		productImage.LoadImageFromUrl (imageUrl[0]);
+        if (imageUrl.Length>0) 
+		    productImage.LoadImageFromUrl (imageUrl[0]);
 	}
 
 }

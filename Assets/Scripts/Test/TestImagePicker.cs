@@ -7,7 +7,7 @@ using System.IO;
 
 public class TestImagePicker : MonoBehaviour {
 	public Text locText;
-	public ImageLoader imageLoader;
+    public Image image;
 
 	public void UploadPicture() {
 		#if UNITY_ANDROID
@@ -23,7 +23,9 @@ public class TestImagePicker : MonoBehaviour {
 		string filePath = "file:/" + imgPath;
 		bool existed = File.Exists (filePath);
 		locText.text = filePath + (existed ? "\n\nFile Exists!" : "\n\nFile not found!");
-		imageLoader.LoadImageFromUrl (filePath, false);
+        Texture2D tex = new Texture2D(4, 4);
+        tex.LoadImage(System.IO.File.ReadAllBytes(imgPath));
+        image.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0));
 	}
 
 	void Start() {

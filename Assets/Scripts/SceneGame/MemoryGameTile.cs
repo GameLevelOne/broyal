@@ -11,11 +11,11 @@ public class MemoryGameTile : MonoBehaviour {
 	public Image tileImage;
 	public Animator tileAnim;
 	Sprite tileAnswer;
-	Sprite tileBack;
+	public Sprite tileBack;
 	bool tileAnimate;
 
 	public void InitTile(Sprite pic){
-		tileBack = tileImage.sprite;
+        tileImage.sprite = tileBack;
 		tileAnswer = pic;
 		tileAnimate = false;
 	}

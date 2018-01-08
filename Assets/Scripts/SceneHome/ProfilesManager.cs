@@ -111,7 +111,7 @@ public class ProfilesManager : BasePage {
 					auctionWonLabel.text = jsonData["noOfAuctionWon"];
 					for (int i=0;i<jsonData["playedGames"].Count;i++) {
 						int rumbleGame = jsonData ["playedGames"][i]["bidRumbleGameType"].AsInt - 1;
-						highScoreLabel[rumbleGame].text = ((float)jsonData["playedGames"][i]["score"].AsInt / 1000000000f).ToString("0.0000");
+						highScoreLabel[rumbleGame].text = ((float)jsonData["playedGames"][i]["score"].AsDouble / 1000000000f).ToString("0.0000");
 						scoreDateLabel[rumbleGame].text = jsonData["playedGames"][i]["dateCreated"];
 					}
 					if (jsonData["profilePicture"]!=null) {

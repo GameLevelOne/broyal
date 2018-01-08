@@ -33,7 +33,7 @@ public class AuctionLobbyManager : BasePage {
 	public Transform lastLoading;
 	int minData;
 	int maxData;
-	int bufferData = 4;
+	int bufferData = 7;
 	int claimAuctionId;
 
 	void Start()
@@ -45,9 +45,9 @@ public class AuctionLobbyManager : BasePage {
 	{
 		base.Init ();
 		auctionLogo.sprite = spriteLogo [(int)auctionMode];
-		minData = -3;
-		maxData = 3;
-		LoadData (minData, maxData);
+		minData = 0;
+		maxData = 0;
+		LoadData (-3, 3);
 	}
 
 	void LoadData(int start, int end)
@@ -56,9 +56,8 @@ public class AuctionLobbyManager : BasePage {
 		DBManager.API.GetAuctionListing ((int)auctionMode + 1, start, end,
 			(response) => {
 //				Debug.Log("SuccessResult");
-				connectingPanel.Connecting(false);
 				JSONNode jsonData = JSON.Parse(response);
-				ReturnAllContainer();
+                ReturnAllContainer();
 				int totalData = 0;
 				AuctionRoomData data;
 				for (int i=0;i<jsonData["pastAuctions"].Count;i++) {
@@ -89,11 +88,23 @@ public class AuctionLobbyManager : BasePage {
 					totalData++;
 				}
 
-				if (start<minData) {
-					minData = (start < (minData - (jsonData["pastAuctions"].Count-1)) ) ? start : (minData - (jsonData["pastAuctions"].Count-1)) ;
-				} else {
-					minData = start;
-				}
+                Debug.Log("start: " + start + ", minData: " + minData + " totalData: " + totalData);
+                if (start > 0)
+                {
+                    minData = start; 
+                }
+                else
+                {
+                    if (minData - totalData > start )
+                    {
+                        minData -= totalData;
+                        firstLoading.transform.SetParent(unused);
+                    }
+                    else
+                    {
+                        minData = start;
+                    }
+                }
 
 				int startPage = totalData;
 				if (jsonData["currentAuction"]["auctionId"].AsInt==0) {
@@ -151,22 +162,33 @@ public class AuctionLobbyManager : BasePage {
 					int futureEnterPrice = jsonData["futureAuctions"][i]["enterPrice"].AsInt;
 					data.actionButton.onClick.AddListener(()=>{ClickJoin(futureAuctionId,(futureEnterPrice > 0));});
 					totalData++;
-				}
-
-				if (end > maxData) {
-					maxData = (end > (maxData + (jsonData["futureAuctions"].Count-1)) ) ? end : (maxData + (jsonData["futureAuctions"].Count-1)) ;
-				} else {
-					maxData = end;
-				}
-//				Debug.Log("TotalData: "+totalData);
-				for (int i=totalData;i<rooms.Length;i++)
-				{
-					rooms[i].transform.SetParent(unused);
-				}
+    			}
+                Debug.Log("end: " + start + ", maxData: " + maxData + " totalData: " + totalData);
+                if (end < 0)
+                {
+                    maxData = end;
+                }
+                else
+                {
+                    int totalFuture = jsonData["futureAuctions"].Count;
+                    if (maxData + totalFuture < end)
+                    {
+                        maxData += totalFuture;
+                        lastLoading.transform.SetParent(unused);
+                    }
+                    else
+                    {
+                        maxData = end;
+                    }
+                }
+                for (int i = totalData; i < rooms.Length; i++)
+                {
+                    rooms[i].transform.SetParent(unused);
+                }
 				if (startPage<totalData) {
-					scrollSnap.UpdateContainerSize(startPage+1);
+					StartCoroutine(DelayedSetPage(startPage+1));
 				} else {
-					scrollSnap.UpdateContainerSize(startPage);
+					StartCoroutine(DelayedSetPage(startPage));
 				}
 
 			},
@@ -176,22 +198,39 @@ public class AuctionLobbyManager : BasePage {
 			});	
 	}
 
+    IEnumerator DelayedSetPage(int page)
+    {
+        yield return new WaitForSeconds(0.5f);
+        Debug.Log("StartPage: " + page);
+        scrollSnap.UpdateContainerSize(page);
+        connectingPanel.Connecting(false);
+    }
+
 	public void ReturnAllContainer()
 	{
+        scrollSnap.enabled = false;
+        firstLoading.transform.SetParent(container);
 		firstLoading.SetAsFirstSibling ();
 		for (int i = 0; i < rooms.Length; i++) {
 			rooms [i].transform.SetParent (container);
 			rooms [i].transform.SetSiblingIndex (i + 1);
 		}
-		lastLoading.SetAsLastSibling ();
+        lastLoading.transform.SetParent(container);
+        lastLoading.SetAsLastSibling();
+        scrollSnap.enabled = true;
 	}
 
 	void OnChangeRoomPage(Transform child)
 	{
 		if (child == firstLoading) {
-			LoadData (minData-bufferData,maxData-bufferData);
+
+            Debug.Log("MinData: "+ minData+"\n"+
+                "MaxData: "+maxData+"\n"+
+                "BufferData: "+bufferData+"\n"+
+                "Result: "+ (minData - bufferData) + " to " + (maxData - bufferData));
+            LoadData(minData - bufferData, minData -1);
 		} else if (child == lastLoading) {
-			LoadData (minData+bufferData,maxData+bufferData);
+			LoadData (maxData+1,maxData+bufferData);
 		} else {
 			AuctionRoomData data = child.GetComponent<AuctionRoomData> ();
 //			Debug.Log ("masukSiniiii");
