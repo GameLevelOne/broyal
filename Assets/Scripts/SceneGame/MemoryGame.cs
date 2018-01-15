@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class MemoryGame : BaseGame {
 	public MemoryGameTile[] tiles;
 	public Sprite[] tilePictures;
+	public Sprite tileback;
 	public GameObject tileOverlay;
 
 	MemoryGameTile[] pair;
@@ -27,10 +28,10 @@ public class MemoryGame : BaseGame {
 		for (int i = 0; i < tiles.Length/2; i++) {
 			int ipic = Random.Range(0, picPool.Count);
 			int islots = Random.Range (0, slots.Count);
-			tiles[slots [islots]].InitTile(tilePictures[picPool [ipic]]);
+			tiles[slots [islots]].InitTile(tilePictures[picPool [ipic]],tileback);
 			slots.RemoveAt(islots);
 			islots = Random.Range(0, slots.Count);
-			tiles[slots [islots]].InitTile(tilePictures[picPool [ipic]]);
+			tiles[slots [islots]].InitTile(tilePictures[picPool [ipic]],tileback);
 			slots.RemoveAt(islots);
 			picPool.RemoveAt(ipic);
 		}

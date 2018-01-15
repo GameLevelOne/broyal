@@ -372,11 +372,11 @@ public class DBManager : MonoBehaviour {
 	}
 
 
-	public void UpdateProfilePicture(string imgPath,
+	public void UpdateProfilePicture(byte[] texData,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.updateProfilePicture;
-		byte[] data = File.ReadAllBytes (imgPath);
+		byte[] data = texData;
 
 		DebugMsg ("USER LOGIN Request","\nurl = "+url+"\ndata = "+data.ToString());
 		PostRequest(url,data,CreateHeaderNoJSON(),onComplete, onError);
@@ -563,7 +563,7 @@ public class DBManager : MonoBehaviour {
 				if (debugConsole != null)
 					debugConsole.SetError ("ERROR: " + www.error + "\n" + www.text, debugIndex);
 
-				if (www.error.Trim () != "401") {
+				if (www.error.Trim () != "401 Unauthorized") {
 					if (onError != null)
 						onError (www.error + "|" + www.text);
 				} else {
@@ -636,11 +636,14 @@ public class DBManager : MonoBehaviour {
 
 	void ShowUnauthorizedError() {
 		GameObject g = GameObject.FindWithTag ("NotifPopUp");
-		Debug.Log ("Unauthorized error looo");
 		if (g!=null) {
 			notifPopUp = g.transform.GetChild(g.transform.childCount-1).GetComponent<NotificationPopUp>();
 			notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error.UNAUTHORIZED"));
 			notifPopUp.OnFinishOutro += RestartApp;
+		}
+		GameObject c = GameObject.FindWithTag ("ConnectingPanel");
+		if (c != null) {
+			c.GetComponent<ConnectingPanel> ().Connecting (false);
 		}
 	}
 

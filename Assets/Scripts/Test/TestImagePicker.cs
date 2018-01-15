@@ -7,7 +7,8 @@ using System.IO;
 
 public class TestImagePicker : MonoBehaviour {
 	public Text locText;
-    public Image image;
+    public ImageLoader image;
+	Texture2D texture;
 
 	public void UploadPicture() {
 		#if UNITY_ANDROID
@@ -15,24 +16,30 @@ public class TestImagePicker : MonoBehaviour {
 		#elif UNITY_IPHONE
 		IOSPicker.BrowseImage(false); // true for pick and crop
 		#endif
-		PickerEventListener.onImageSelect += OnImageSelect;
 	}
 
-	void OnImageSelect(string imgPath, ImageAndVideoPicker.ImageOrientation imgOrientation)
+	void OnImageLoad(string imgPath, Texture2D tex, ImageAndVideoPicker.ImageOrientation imgOrientation)
 	{
 		string filePath = "file:/" + imgPath;
-		bool existed = File.Exists (filePath);
+		bool existed = File.Exists (imgPath);
 		locText.text = filePath + (existed ? "\n\nFile Exists!" : "\n\nFile not found!");
-        Texture2D tex = new Texture2D(4, 4);
-        tex.LoadImage(System.IO.File.ReadAllBytes(imgPath));
-        image.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0, 0));
+		locText.text += "\n\nTexture Size: " + tex.width + " x " + tex.height;
+		texture = tex;
+		Sprite spr = image.SetSpriteFromTexture(tex);
+		if (spr != null) {
+			locText.text += "\n\nSprite Created!";
+		} else {
+			locText.text += "\n\nSprite Not Created!";
+		}
 	}
 
 	void Start() {
-		PickerEventListener.onImageSelect += OnImageSelect;
+		PickerEventListener.onImageLoad += OnImageLoad;
+		texture = null;
 	}
 	void OnDestroy() {
-		PickerEventListener.onImageSelect -= OnImageSelect;
+		PickerEventListener.onImageLoad -= OnImageLoad;
 	}
+
 
 }

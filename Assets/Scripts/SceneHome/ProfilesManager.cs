@@ -350,42 +350,34 @@ public class ProfilesManager : BasePage {
 	}
 
 	public void UploadPicture() {
+		PickerEventListener.onImageLoad += OnImageLoad;
 		SoundManager.Instance.PlaySFX(SFXList.Button01);
 		#if UNITY_ANDROID
 		AndroidPicker.BrowseImage(false);
 		#elif UNITY_IPHONE
 		IOSPicker.BrowseImage(false); // true for pick and crop
 		#endif
-		PickerEventListener.onImageSelect += OnImageSelect;
 	}
 
-	void OnImageSelect(string imgPath, ImageAndVideoPicker.ImageOrientation imgOrientation)
+	void OnImageLoad(string imgPath, Texture2D tex, ImageAndVideoPicker.ImageOrientation imgOrientation)
 	{
 		Debug.Log ("Image Location : "+imgPath);
-        //connectingPanel.Connecting (true);
-        connectingPanel.Connecting(false);
+        connectingPanel.Connecting (true);
+		PickerEventListener.onImageLoad -= OnImageLoad;
         editUserPicture.gameObject.SetActive(true);
         editUserIcon.SetActive(false);
-        Texture2D tex = new Texture2D(4,4);
-        tex.LoadImage(System.IO.File.ReadAllBytes(imgPath));
+//      tex.LoadImage(System.IO.File.ReadAllBytes(imgPath));
         editUserPicture.SetSpriteFromTexture(tex);
-        //DBManager.API.UpdateProfilePicture(imgPath,
-        //    (response) => {
-        //        connectingPanel.Connecting(false);
-        //    }, 
-        //    (error) => {
-        //        connectingPanel.Connecting (false);
-        //        editUserIcon.SetActive(true);
-        //        editUserPicture.gameObject.SetActive(false);
-        //        notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("General.SERVER_ERROR"));
-        //    }
-        //);
-	}
-
-	void Start() {
-		PickerEventListener.onImageSelect += OnImageSelect;
-	}
-	void OnDestroy() {
-		PickerEventListener.onImageSelect -= OnImageSelect;
+		DBManager.API.UpdateProfilePicture(tex.GetRawTextureData(),
+            (response) => {
+                connectingPanel.Connecting(false);
+            }, 
+            (error) => {
+                connectingPanel.Connecting (false);
+                editUserIcon.SetActive(true);
+                editUserPicture.gameObject.SetActive(false);
+                notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("General.SERVER_ERROR"));
+            }
+        );
 	}
 }

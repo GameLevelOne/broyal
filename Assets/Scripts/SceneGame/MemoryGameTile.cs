@@ -11,13 +11,16 @@ public class MemoryGameTile : MonoBehaviour {
 	public Image tileImage;
 	public Animator tileAnim;
 	Sprite tileAnswer;
-	public Sprite tileBack;
+	Sprite tileBack;
 	bool tileAnimate;
+	bool closed;
 
-	public void InitTile(Sprite pic){
+	public void InitTile(Sprite pic, Sprite backPic){
+		tileBack = backPic;
         tileImage.sprite = tileBack;
 		tileAnswer = pic;
 		tileAnimate = false;
+		closed = true;
 	}
 	public void ClickTile() {
 		if (!tileAnimate) {
@@ -39,10 +42,12 @@ public class MemoryGameTile : MonoBehaviour {
     }
 
 	void ChangeImage() {
-		if (tileImage.sprite == tileBack) {
+		if (closed) {
 			tileImage.sprite = tileAnswer;
+			closed = false;
 		} else {
 			tileImage.sprite = tileBack;
+			closed = true;
 		}
 	}
 
