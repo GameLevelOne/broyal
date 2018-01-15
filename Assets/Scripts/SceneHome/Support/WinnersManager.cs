@@ -61,8 +61,16 @@ public class WinnersManager : BasePage {
 			}, 
 			(error) => {
 				loadingList.SetActive (false);
-				notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
-			}
+                JSONNode jsonData = JSON.Parse(error);
+                if (jsonData != null)
+                {
+                    notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey("Error." + jsonData["errors"]));
+                }
+                else
+                {
+                    notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+                }
+            }
 		);
 	}
 }

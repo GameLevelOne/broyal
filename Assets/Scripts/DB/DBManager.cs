@@ -376,10 +376,17 @@ public class DBManager : MonoBehaviour {
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.updateProfilePicture;
-		byte[] data = texData;
-
-		DebugMsg ("USER LOGIN Request","\nurl = "+url+"\ndata = "+data.ToString());
-		PostRequest(url,data,CreateHeaderNoJSON(),onComplete, onError);
+        WWWForm data = new WWWForm();
+        data.AddBinaryData("profilePictureImage",texData);
+        if ((accessToken != null) && (accessToken != ""))
+        {            
+            data.headers.Add("royalBidKey", config.royalBidKey);
+            data.headers.Add("royalBidSecret", config.royalBidSecret);
+            data.headers.Add("Authorization", tokenType + " " + accessToken);
+        }
+		
+		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+data.ToString());
+		PostRequestForm(url,data,onComplete, onError);
 	}
 //===========================Auction API=======================================================
 	public void AuctionBidding(int auctionId, 
@@ -532,19 +539,35 @@ public class DBManager : MonoBehaviour {
 				debugIndex = debugConsole.SetRequest ("REST URL: " + serverUrl + "\n" +  apiUrl);
 			}
 			WWW www;
-//			if (!postHeader.ContainsKey ("Content-Type")) {
-//				WWWForm formData = new WWWForm ();
-//				formData.AddBinaryData ("profilePictureImage", data);
-//				www = new WWW (url, formData, postHeader);
-//			} else {
-				www = new WWW (url, data, postHeader);
-//			}
+			www = new WWW (url, data, postHeader); 
 
 			StartCoroutine (WaitForRequest (www, onComplete, onError,debugIndex));
 			return www;
 		}
 	}
+    WWW PostRequestForm(string url, WWWForm data, System.Action<string> onComplete, System.Action<string> onError)
+    {
+        if (data.headers.Count==0)
+        {
+            ShowUnauthorizedError();
+            return null;
+        }
+        else
+        {
+            int debugIndex = -1;
+            if (debugConsole != null)
+            {
+                string serverUrl = url.Substring(0, config.restURL.Length);
+                string apiUrl = url.Substring(config.restURL.Length);
+                debugIndex = debugConsole.SetRequest("REST URL: " + serverUrl + "\n" + apiUrl);
+            }
+            WWW www;
+            www = new WWW(url,data);
 
+            StartCoroutine(WaitForRequest(www, onComplete, onError, debugIndex));
+            return www;
+        }
+    }
 	IEnumerator WaitForRequest(WWW www, System.Action<string> onComplete, System.Action<string> onError,int debugIndex) {
 		float timeOutCheck = timeOutThreshold;
 		while ((timeOutCheck > 0f) && (!www.isDone)) {
@@ -566,9 +589,18 @@ public class DBManager : MonoBehaviour {
 				if (www.error.Trim () != "401 Unauthorized") {
 					if (onError != null)
 						onError (www.error + "|" + www.text);
-				} else {
-					ShowUnauthorizedError ();
-				}
+                } else if (www.error.Contains("ConnectException"))
+                {
+                    //DebugError ("ERROR: " + www.error, www.text);
+                    if (debugConsole != null)
+                        debugConsole.SetError("ERROR: REQUEST_TIME_OUT", debugIndex);
+                    if (onError != null)
+                        onError("{\"errors\":\"REQUEST_TIME_OUT\"}");
+                }
+                else
+                {
+                    ShowUnauthorizedError();
+                }
 			}
 		} else {
             //DebugError ("ERROR: " + www.error, www.text);

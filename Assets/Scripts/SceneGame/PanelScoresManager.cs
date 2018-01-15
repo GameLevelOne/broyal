@@ -64,7 +64,8 @@ public class PanelScoresManager : PagesIntroOutro {
 					buttonNext.interactable = true;
 				} else {
 					bottomLabel.text = LocalizationService.Instance.GetTextByKey ("Game.YOU_PASSED");
-				}
+                    buttonNext.interactable = false;
+                }
 			} else {
 				topLabel.text = LocalizationService.Instance.GetTextByKey ("Game.YOUR_SCORE_IS");
 				bottomLabel.text = score.ToString ("00.0000");
@@ -88,8 +89,9 @@ public class PanelScoresManager : PagesIntroOutro {
 	new protected void OnEnable() {
 		base.OnEnable ();
 		if (gameMode != GameMode.TRAINING) {
+            buttonNext.interactable = false;
 			StartCoroutine (WaitingForServer ());
-		}
+        }
 	}
 
 	IEnumerator WaitingForServer() {

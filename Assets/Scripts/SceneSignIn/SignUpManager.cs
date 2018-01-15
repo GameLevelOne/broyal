@@ -174,7 +174,7 @@ public class SignUpManager : AppInitPages {
 
 	public void ClickTermsConditions() {
 		SoundManager.Instance.PlaySFX(SFXList.Button01);
-		Activate (false);
+		//Activate (false);
 		textManager.showType = 2;
 		textManager.Activate (true);
 	}

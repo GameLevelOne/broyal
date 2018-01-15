@@ -65,4 +65,12 @@ public class LandingPageManager : BasePage {
 		NextPage ("LOBBY");
 	}
 
+    void OnApplicationPause(bool isPaused)
+    {
+        if (!isPaused)
+        {
+            Init();
+        }
+    }
+
 }

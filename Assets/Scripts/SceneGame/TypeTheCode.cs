@@ -16,7 +16,9 @@ public class TypeTheCode : BaseGame {
 		answer = "";
 		for(int i=0;i<answerLabel.Length;i++){
 			char c = (char)('A'+Random.Range(0,26));
-			problem+=c;
+            answerLabel[i].color = Color.white;
+            answerLabel[i].text = "";
+            problem += c;
 		}
 		problemLabel.text = problem;
 

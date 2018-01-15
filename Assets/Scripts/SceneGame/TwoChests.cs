@@ -87,7 +87,9 @@ public class TwoChests : BaseGame {
 
 	IEnumerator DelayEnd(float secs, bool win,int timeToPopulateServerData) {
 		yield return new WaitForSeconds (secs);
-		gameManager.EndRoyale (win, timeToPopulateServerData, correctAnswer);
+        resultPanel.SetInteger("ChestResult", 0);
+        yield return null;
+        gameManager.EndRoyale(win, timeToPopulateServerData, correctAnswer);
 	}
 
 

@@ -6,21 +6,23 @@ using UnityEngine.UI;
 public class ColorPairing : BaseGame {
 
 	public ColorPairingTile[] tiles;
+    public GameObject tileOverlay;
 
 	public override void InitGame (int gameTime, int round)
 	{
+        tileOverlay.SetActive(false);
 		List<int> slots = new List<int> ();
 		for (int i = 0; i < tiles.Length; i++) {
 			slots.Add (i);
 		}
 		for (int i = 0; i < tiles.Length/2; i++) {
 			int randomSlot = Random.Range (0,slots.Count);
-			tiles[slots[randomSlot]].InitTile(0);
+			tiles[slots[randomSlot]].InitTile(0,tileOverlay);
 			slots.RemoveAt (randomSlot);
 		}
 		while (slots.Count > 0) {
 			int randomSlot = Random.Range (0,slots.Count);
-			tiles[slots[randomSlot]].InitTile(1);
+			tiles[slots[randomSlot]].InitTile(1,tileOverlay);
 			slots.RemoveAt (randomSlot);
 		}
 
