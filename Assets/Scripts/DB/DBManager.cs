@@ -377,16 +377,12 @@ public class DBManager : MonoBehaviour {
 	{
 		string url = config.restURL + config.updateProfilePicture;
         WWWForm data = new WWWForm();
-        data.AddBinaryData("profilePictureImage",texData);
-        if ((accessToken != null) && (accessToken != ""))
-        {            
-            data.headers.Add("royalBidKey", config.royalBidKey);
-            data.headers.Add("royalBidSecret", config.royalBidSecret);
-            data.headers.Add("Authorization", tokenType + " " + accessToken);
-        }
-		
+		data.AddBinaryData("profilePictureImage",texData,username+"Pic.png","image/png");
+		Dictionary<string,string> header = CreateHeaderWithAuthorization ();
+		header.Remove ("Content-Type");
+       		
 		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+data.ToString());
-		PostRequestForm(url,data,onComplete, onError);
+		PostRequest(url,data.data,header,onComplete, onError);
 	}
 //===========================Auction API=======================================================
 	public void AuctionBidding(int auctionId, 

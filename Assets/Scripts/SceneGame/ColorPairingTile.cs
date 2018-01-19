@@ -11,15 +11,15 @@ public class ColorPairingTile : MonoBehaviour {
 	public Image tileImage;
 	public Animator tileAnim;
 	bool tileAnimate;
-    GameObject tileOverlay;
+//    GameObject tileOverlay;
 
-	public void InitTile(int colIndex,GameObject overlay){
+	public void InitTile(int colIndex){
 		tileImage.color = tileColors [colIndex];
 		tileAnimate = false;
-        tileOverlay = overlay;
+//        tileOverlay = overlay;
 	}
 	public void ClickTile() {
-        tileOverlay.SetActive(true);
+//        tileOverlay.SetActive(true);
 		if (!tileAnimate) {
 			SoundManager.Instance.PlaySFX(SFXList.CardOpen);
 			FlipTile ();
@@ -40,7 +40,7 @@ public class ColorPairingTile : MonoBehaviour {
 	}
 
 	void EndTileFlip() {
-        tileOverlay.SetActive(false);
+//        tileOverlay.SetActive(false);
 		tileAnim.ResetTrigger ("Flip");
 		if (OnFinishFlip != null)
 			OnFinishFlip ();

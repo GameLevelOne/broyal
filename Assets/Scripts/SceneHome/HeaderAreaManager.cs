@@ -131,7 +131,7 @@ public class HeaderAreaManager : MonoBehaviour {
 			(error) => {
 //				Debug.Log("-------Error get:"+ error.Split('|')[0].Trim() +"muahahahah");
 				JSONNode jsonData = JSON.Parse (error);
-                if ((jsonData != null) && (jsonData["errors"] == "NO_TRAINING_PET"))
+				if ((jsonData != null) && ((jsonData["errors"] == "NO_TRAINING_PET")||(jsonData["errors"] == "TRAINING_NOT_STARTED")))
                 {
 					petTrainButton.interactable = true;
 					petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
