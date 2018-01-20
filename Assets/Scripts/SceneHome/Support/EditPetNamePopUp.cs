@@ -7,7 +7,7 @@ using SimpleJSON;
 public class EditPetNamePopUp : BasePage {
 	public NotificationPopUp notifPopUp;
 	public ConnectingPanel connectingPanel;
-	public HeaderAreaManager header;
+	public ProfilesManager profilesManager;
 	public Text priceLabel;
 	public InputField petNameLabel;
 	public Button saveButton;
@@ -30,7 +30,7 @@ public class EditPetNamePopUp : BasePage {
 			(response) => {
 				connectingPanel.Connecting (false);
 				Activate (false);
-				header.GetPetProfile ();
+				profilesManager.LoadPetData();
 			}, 
 			(error) => {
 				connectingPanel.Connecting (false);

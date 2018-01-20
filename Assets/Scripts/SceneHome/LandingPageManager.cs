@@ -10,6 +10,8 @@ public class LandingPageManager : BasePage {
 	public GameObject panelCompleteProfile;
 	public ImageLoader bidRoyalPic;
 	public ImageLoader bidRumblePic;
+	public GameObject newsIcon;
+	public Text newsNumber;
 
 	void Start ()
 	{
@@ -39,12 +41,24 @@ public class LandingPageManager : BasePage {
 				bidRoyalPic.LoadImageFromUrl(jsonData["bidRoyaleAuction"]["productImage"]);
 				bidRumblePic.LoadImageFromUrl(jsonData["bidRumbleAuction"]["productImage"]);
 
+				int news = jsonData["noOfUnReadNews"].AsInt;
+				if (news<1) {
+					newsIcon.SetActive(false);
+				} else if (news>99) {
+					newsIcon.SetActive(true);
+					newsNumber.text = "99+";
+				} else {
+					newsIcon.SetActive(true);
+					newsNumber.text = news.ToString();
+				}
+
 				GetComponent<Animator>().ResetTrigger ("Intro");
 				GetComponent<Animator>().ResetTrigger ("Outro");
 			},
 			(error) => {
 				bidRoyalPic.SetError();
 				bidRumblePic.SetError();
+				newsIcon.SetActive(false);
 			}
 		);
 	}

@@ -286,6 +286,8 @@ public class ProfilesManager : BasePage {
 				JSONNode jsonData = JSON.Parse (error);
 				if ( (jsonData!=null) && (jsonData["errors"]=="HAVE_NO_PET")) {
 					ShowUserProfile();
+				} if (jsonData!=null) {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
 				} else {
 					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
 				}
