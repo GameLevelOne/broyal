@@ -25,6 +25,9 @@ public class HeaderAreaManager : MonoBehaviour {
 	int curStars;
 
 	public PetData petData;
+    int nextPetExp;
+    int nextPetNextRankExp;
+    string nextPetRank;
 
 	public int userStars {
 		get {
@@ -197,7 +200,23 @@ public class HeaderAreaManager : MonoBehaviour {
 			DBManager.API.ClaimPetTrainExp (
 				(response) => {
 					connectingPanel.Connecting (false);
-					GetPetProfile();
+                    JSONNode jsonData = JSON.Parse(response);
+                    nextPetExp = jsonData["petExp"].AsInt;
+                    nextPetNextRankExp = jsonData["petNextRankExp"].AsInt;
+                    nextPetRank = jsonData["petRank"];
+
+                    petTrainLabel.text = LocalizationService.Instance.GetTextByKey("Header.TRAIN");
+
+                    if (nextPetRank != petData.rank)
+                    {
+                        notificationPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey("Header.PET_RANKUP_CONGRATULATIONS"));
+                        notificationPopUp.OnFinishOutro += AnimatePetExp;
+                    }
+                    else
+                    {
+                        notificationPopUp.OnFinishOutro += AnimatePetExp;
+                        AnimatePetExp();
+                    }
 				}, 
 				(error) => {
 					connectingPanel.Connecting (false);
@@ -211,7 +230,41 @@ public class HeaderAreaManager : MonoBehaviour {
 			);
 		}
 	}
+    public void AnimatePetExp()
+    {
+        notificationPopUp.OnFinishOutro -= AnimatePetExp;
+        StopAllCoroutines();
+        StartCoroutine(CountToNextExp(nextPetExp, nextPetNextRankExp, nextPetRank));
+    }
 
+    IEnumerator CountToNextExp(int nextExp, int nextMax, string nextRank)
+    {
+        int deltaExp = (nextExp - petData.exp) / 20;
+        while ((petData.exp != nextExp) && (deltaExp != 0))
+        {
+            petData.exp += deltaExp;
+            if (deltaExp > 0)
+            {
+                if (petData.exp > petData.nextRankExp)
+                {
+                    petData.nextRankExp = nextMax;
+                    petData.rank = nextRank;
+                }
+                
+                if (petData.exp > nextExp)
+                    petData.exp = nextExp;
+            }
+            else
+            {
+                if (petData.exp < nextExp)
+                    petData.exp = nextExp;
+            }
+            UpdatePetData();
+            yield return new WaitForSeconds(0.05f);
+        }
+        yield return null;
+        petData.exp = nextExp;
+    }
 	void CheckTrainCountDown() {
 		if (trainCountDown>0) {
 			petTrainButton.interactable = false;

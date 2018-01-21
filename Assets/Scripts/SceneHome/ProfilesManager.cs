@@ -370,7 +370,7 @@ public class ProfilesManager : BasePage {
         editUserIcon.SetActive(false);
 //      tex.LoadImage(System.IO.File.ReadAllBytes(imgPath));
         editUserPicture.SetSpriteFromTexture(tex);
-		DBManager.API.UpdateProfilePicture(tex.EncodeToPNG(),
+        DBManager.API.UpdateProfilePicture(System.IO.File.ReadAllBytes(imgPath),
             (response) => {
                 connectingPanel.Connecting(false);
             }, 

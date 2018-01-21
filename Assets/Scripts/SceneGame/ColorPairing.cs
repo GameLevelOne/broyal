@@ -42,11 +42,15 @@ public class ColorPairing : BaseGame {
 				}
 			}
 
-			if (sameColor) {
-				EndGame (true);
-			}
+            if (sameColor)
+            {
+                EndGame(true);
+            }
+            else
+            {
 
-			onCheckingAll = false;
+                onCheckingAll = false;
+            }
 		}
 	}
 	new protected void OnEnable() {
