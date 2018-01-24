@@ -29,7 +29,8 @@ public class AuctionRoomData : MonoBehaviour {
 
 	public ImageLoader productImage;
 	public GameObject futureInfo;
-	public Text futureDatesLabel;
+    public GameObject auctionDateLabel;
+    public Text futureDatesLabel;
 	public Text timeLeftLabel;
 	public Text productNameLabel;
 	public Text dateWinLabel;
@@ -104,11 +105,21 @@ public class AuctionRoomData : MonoBehaviour {
 				starsPriceLabel.text = starsPrice.ToString ("#,0;-#,0;-");
 			}
 		}
-			
-		if (auctionState == AuctionState.FUTURE) {
+
+        if (auctionState == AuctionState.FUTURE)
+        {
+            futureInfo.SetActive(true);
+            auctionDateLabel.SetActive(true);
+            futureDatesLabel.gameObject.SetActive(true);
+            futureDatesLabel.text = futureDates.ToString("MMM dd, yyyy");
+            timeLeftLabel.text = Utilities.TimeToNow(futureDates);
+            StartCoroutine(AuctionCountDown());
+        } else if (auctionState == AuctionState.CURRENT)
+        {
 			futureInfo.SetActive (true);
-			futureDatesLabel.text = futureDates.ToString ("MMM dd, yyyy");
-			timeLeftLabel.text = Utilities.TimeToNow (futureDates);
+            auctionDateLabel.SetActive(false);
+            futureDatesLabel.gameObject.SetActive(false);
+			timeLeftLabel.text = Utilities.SecondsToMinutes (Mathf.FloorToInt(winnerPrice / 1000f));
 			StartCoroutine (AuctionCountDown());
 		} else {
 			futureInfo.SetActive (false);
@@ -117,8 +128,17 @@ public class AuctionRoomData : MonoBehaviour {
 
 	IEnumerator AuctionCountDown() {
 		while (true) {
-			yield return new WaitForSeconds (1);
-			timeLeftLabel.text = Utilities.TimeToNow (futureDates);
+            if (auctionState == AuctionState.FUTURE)
+            {
+                yield return new WaitForSeconds(1);
+                timeLeftLabel.text = Utilities.TimeToNow(futureDates);
+            }
+            else
+            {
+                yield return new WaitForSeconds(1);
+                winnerPrice -= 1000;
+                timeLeftLabel.text = Utilities.SecondsToMinutes(Mathf.FloorToInt(winnerPrice / 1000f));
+            }
 		}
 	}
 

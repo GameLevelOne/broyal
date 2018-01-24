@@ -37,6 +37,7 @@ public class VideoStreamer : MonoBehaviour {
         videoPlayer.audioOutputMode = VideoAudioOutputMode.AudioSource;
         videoPlayer.EnableAudioTrack(0, true);
         videoPlayer.SetTargetAudioSource(0, audioSource);
+        videoPlayer.aspectRatio = VideoAspectRatio.FitVertically;
         videoPlayer.Prepare();
 
         Debug.Log("Prepare Video");

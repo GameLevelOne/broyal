@@ -126,7 +126,7 @@ public class AuctionLobbyManager : BasePage {
 						jsonData["currentAuction"]["maxPrice"].AsInt,
 						jsonData["currentAuction"]["enterPrice"].AsInt,
 						"",
-						0,
+                        jsonData["currentAuction"]["timeToNextIncrement"].AsInt,
 						"",
 						0,
 						false
