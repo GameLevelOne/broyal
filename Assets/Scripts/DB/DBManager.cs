@@ -204,7 +204,7 @@ public class DBManager : MonoBehaviour {
 			"\"password\":\""+password+"\",\n"+
 			"\"mobile\":\""+mobile+"\",\n"+
 			"\"email\":\""+email+"\",\n"+
-			"\"isFbLogin\":true\n"+
+			"\"isFbLogin\":false\n"+
 			"}";
 
 		DebugMsg ("USER REGISTRATION Request","\nurl = "+url+"\ndata = "+jsondata);
