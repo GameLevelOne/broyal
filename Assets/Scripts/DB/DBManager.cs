@@ -259,6 +259,17 @@ public class DBManager : MonoBehaviour {
 			}, onError);
 	}
 
+	public void UserLogout(
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.userLogoutAPI;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{}";
+
+		DebugMsg ("USER LOGOUT Request","\nurl = "+url);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
 	public void CreateTopUp(int stars, 
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{

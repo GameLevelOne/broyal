@@ -23,6 +23,7 @@ public class DBManagerSettings : ScriptableObject {
 	public string verifyUserAPI;
 	public string getResendOTPAPI;
 	public string userLoginAPI;
+	public string userLogoutAPI;
 	public string userForgotPasswordAPI;
 	public string userResetPasswordAPI;
 	public string userChangePasswordAPI;

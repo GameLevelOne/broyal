@@ -21,6 +21,7 @@ public class AuctionRoomData : MonoBehaviour {
 	public int nextIncrement;
 	public int maxPrice;
 	public int starsPrice;
+	public int starsPriceOri;
 	public string winnerName;
 	public int winnerPrice;
 	public string dateWin;
@@ -41,6 +42,7 @@ public class AuctionRoomData : MonoBehaviour {
 	public GameObject starsPanel;
 	public Text actionButtonLabel;
 	public Text starsPriceLabel;
+	public Text starsPriceOriLabel;
 
 
 	public void InitData(int _auctionId, 
@@ -52,6 +54,7 @@ public class AuctionRoomData : MonoBehaviour {
 		int _nextIncrement, 
 		int _maxPrice, 
 		int _starsPrice, 
+		int _starsPriceOri, 
 		string _winnerName,
 		int _winnerPrice,
 		string _dateWin,
@@ -67,6 +70,7 @@ public class AuctionRoomData : MonoBehaviour {
 		nextIncrement = _nextIncrement;
 		maxPrice = _maxPrice;
 		starsPrice = _starsPrice;
+		starsPriceOri = _starsPriceOri;
 		winnerName = _winnerName;
 		winnerPrice = _winnerPrice;
 		dateWin = _dateWin;
@@ -103,6 +107,12 @@ public class AuctionRoomData : MonoBehaviour {
 				starsPanel.gameObject.SetActive (true);
 				actionButtonLabel.text = LocalizationService.Instance.GetTextByKey("AuctionLobby.JOIN_FOR");
 				starsPriceLabel.text = starsPrice.ToString ("#,0;-#,0;-");
+				if (starsPriceOri > starsPrice) {
+					starsPriceOriLabel.gameObject.SetActive (true);
+					starsPriceOriLabel.text = "(" + starsPriceOri.ToString ("#,0;-#,0;-") + ")";
+				} else {
+					starsPriceOriLabel.gameObject.SetActive (false);
+				}
 			}
 		}
 
@@ -119,7 +129,8 @@ public class AuctionRoomData : MonoBehaviour {
 			futureInfo.SetActive (true);
             auctionDateLabel.SetActive(false);
             futureDatesLabel.gameObject.SetActive(false);
-			timeLeftLabel.text = Utilities.SecondsToMinutes (Mathf.FloorToInt(winnerPrice / 1000f));
+			//timeLeftLabel.text = Utilities.SecondsToMinutes (Mathf.FloorToInt(winnerPrice / 1000f));
+			timeLeftLabel.text = Utilities.TimeToNow(futureDates);
 			StartCoroutine (AuctionCountDown());
 		} else {
 			futureInfo.SetActive (false);
@@ -128,16 +139,10 @@ public class AuctionRoomData : MonoBehaviour {
 
 	IEnumerator AuctionCountDown() {
 		while (true) {
-            if (auctionState == AuctionState.FUTURE)
+			if ((auctionState == AuctionState.FUTURE) || (auctionState == AuctionState.CURRENT))
             {
                 yield return new WaitForSeconds(1);
                 timeLeftLabel.text = Utilities.TimeToNow(futureDates);
-            }
-            else
-            {
-                yield return new WaitForSeconds(1);
-                winnerPrice -= 1000;
-                timeLeftLabel.text = Utilities.SecondsToMinutes(Mathf.FloorToInt(winnerPrice / 1000f));
             }
 		}
 	}

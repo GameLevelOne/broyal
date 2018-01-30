@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using SunCubeStudio.Localization;
+using SimpleJSON;
 
 public class SettingsManager : BasePage {
+	public ConnectingPanel connectingPanel;
+	public NotificationPopUp notifPopUp;
 	public TextManager textPanel;
 	public Image buttonNotifOn;
 	public Image buttonNotifOff;
@@ -90,7 +93,21 @@ public class SettingsManager : BasePage {
 
 	public void OnClickLogout(){
 		SoundManager.Instance.PlaySFX(SFXList.Button01);
-		PlayerPrefs.DeleteKey ("LastUserLogin");
-		Application.LoadLevel ("SceneSignIn");
+		connectingPanel.Connecting (true);
+		DBManager.API.UserLogout (
+			(response) => {
+				PlayerPrefs.DeleteKey ("LastUserLogin");
+				Application.LoadLevel ("SceneSignIn");
+			}, 
+			(error) => {
+				connectingPanel.Connecting (false);
+				JSONNode jsonData = JSON.Parse (error);
+				if (jsonData!=null) {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+				} else {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				}
+			}
+		);
 	}
 }

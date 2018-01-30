@@ -110,6 +110,7 @@ public class PanelScoresManager : PagesIntroOutro {
 				rank = jsonData["rank"].AsInt;
 				status = jsonData["status"];
 				winner = jsonData["winner"].AsBool;
+				passNumber = jsonData["noOfPassingPlayers"].AsInt;
 				timeToNextGameRound = jsonData["timeToNextGameRound"].AsInt;
 				if (gameMode==GameMode.BIDRUMBLE) {
 
@@ -182,7 +183,7 @@ public class PanelScoresManager : PagesIntroOutro {
 		timeToNextGameRound -= (int)(secs * 1000f);
 		yield return new WaitForSeconds (secs);
 		Activate (false);
-        int remPlayers = (gameMode == GameMode.BIDRUMBLE) ? rumbleScoreData.Length : passNumber;
+        int remPlayers = passNumber;
 		gameManager.NextRound (timeToNextGameRound,remPlayers);
 	}
 
