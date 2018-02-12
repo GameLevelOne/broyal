@@ -31,7 +31,7 @@ public class TestUploadPP : MonoBehaviour {
             s += databytes[i].ToString();
         }
         Debug.Log(s);
-        DBManager.API.UpdateProfilePicture(sourceTex.GetRawTextureData(),
+		DBManager.API.UpdateProfilePicture(databytes,
             (response) =>
             {
                 statusText.text = "UPLOAD SUCCESS";

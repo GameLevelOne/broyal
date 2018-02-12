@@ -259,6 +259,32 @@ public class DBManager : MonoBehaviour {
 			}, onError);
 	}
 
+	public void UserSocialLogin(string firstName,string lastName, int gender, string token, string userId, string email,
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.userSocialLoginAPI;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"firstName\":\""+firstName+"\",\n"+
+			"\"lastName\":\""+lastName+"\",\n"+
+			"\"gender\":"+gender+",\n"+
+			"\"token\":\""+token+"\",\n"+
+			"\"userId\":\""+userId+"\",\n"+
+			"\"email\":\""+email+"\""+
+			"}";
+
+		DebugMsg ("USER SOCIAL LOGIN Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithKey(),(response)=> {
+			JSONNode jdata = JSON.Parse(response);
+			tokenType = "Bearer";
+			accessToken = jdata["token"];
+			username = firstName+lastName;
+			PlayerPrefs.SetString("LastUserLogin","FB_"+username);
+			PlayerPrefs.SetString("LastUserPassword","FB_"+username);
+			if (onComplete!=null)
+				onComplete(response);
+		}, onError);
+	}
 	public void UserLogout(
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
@@ -388,9 +414,9 @@ public class DBManager : MonoBehaviour {
 	{
 		string url = config.restURL + config.updateProfilePicture;
         WWWForm data = new WWWForm();
-		data.AddBinaryData("profilePictureImage",texData,username+"Pic.png","image/png");
+		data.AddBinaryData("profilePictureImage",texData);
 		Dictionary<string,string> header = CreateHeaderWithAuthorization ();
-		header.Remove ("Content-Type");
+		header["Content-Type"]= "multipart/form-data";
        		
 		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+data.ToString());
 		PostRequest(url,data.data,header,onComplete, onError);

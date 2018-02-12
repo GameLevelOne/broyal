@@ -4,6 +4,16 @@ using UnityEngine;
 using Facebook.Unity;
 using UnityEngine.UI;
 
+public struct FBData {
+	public string firstName;
+	public string lastName;
+	public int gender;
+	public string accessToken;
+	public string id;
+	public string email;
+}
+
+
 public class FBManager : MonoBehaviour {
 	private static FBManager instance = null;
 	private bool fbLogin = false;
@@ -11,6 +21,9 @@ public class FBManager : MonoBehaviour {
 	public static FBManager Instance{get{return instance;}}
 	public bool FBLogin{ get { return fbLogin;}}
 
+	System.Action<string> onFBSuccess;
+	System.Action<string> onFBError;
+	public FBData fbData;
 
 	void Awake ()
 	{
@@ -27,7 +40,6 @@ public class FBManager : MonoBehaviour {
 	{
 		if (!FB.IsInitialized) {
 			FB.Init (OnInitFBComplete, null, null);
-			Debug.Log("init fb");
 		} else {
 			FB.ActivateApp();
 		}
@@ -35,109 +47,62 @@ public class FBManager : MonoBehaviour {
 	}
 
 	void OnInitFBComplete (){
-		Debug.Log(string.Format("OnInitCompleteCalled IsLoggedIn='{0}' IsInitialized='{1}'",FB.IsLoggedIn,FB.IsInitialized));
-
-//		if(FB.IsLoggedIn){
-//			GetFBFirstName();
-//		}
-	}
-
-	public void OnFBLogin ()
-	{
-		if (!FB.IsInitialized) {
-			FB.Init (OnInitFBComplete, null, null);
+		Debug.Log("Facebook API initialized");
+		if (FB.IsLoggedIn) {
+			fbLogin = true;
 		} else {
-			FB.LogInWithReadPermissions(new List<string>{"public_profile", "email", "user_friends"},this.HandleLoginResult);
+			fbLogin = false;
 		}
 	}
 
-	void GetFBFirstName(){
-		FB.API("/me?fields=first_name",HttpMethod.GET,OnFBGetFirstName);
+	void OnInitFBCompleteThenLogin (){
+		OnInitFBComplete ();
+		FB.LogInWithReadPermissions(new List<string>{"public_profile", "email", "user_friends"},FBHandleLoginResult);
 	}
 
-	void GetFBLastName(){
-		FB.API("/me?fields=last_name",HttpMethod.GET,OnFBGetLastName);
+	public void OnFBLogin (System.Action<string> onComplete , System.Action<string> onError)
+	{
+		onFBSuccess = onComplete;
+		onFBError = onError;
+		fbData = new FBData ();
+		if (!FB.IsInitialized) {
+			FB.Init (OnInitFBCompleteThenLogin, null, null);
+		} else {
+			FB.LogInWithReadPermissions(new List<string>{"public_profile", "email", "user_friends"},FBHandleLoginResult);
+		}
 	}
-
-	void GetFBEmail(){
-		FB.API ("/me?fields=email", HttpMethod.GET, OnFBGetEmail);
-	}
-
-	void GetFBProfilePicture(){
-		FB.API ("/me?fields=picture", HttpMethod.GET, OnFBGetProfilePicture);
-	}
-
-	void GetFBGender(){
-		FB.API ("/me?fields=gender", HttpMethod.GET, OnFBGetGender);
-	}
-
-	void GetFBAgeRange(){
-		FB.API ("/me?fields=age_range", HttpMethod.GET, OnFBGetAgeRange);
-	}
-
-	void GetFBFriends(){
-		FB.API ("/me?fields=friends", HttpMethod.GET, OnFBGetFriends);
-	}
-
-	void OnFBGetFirstName(Facebook.Unity.IGraphResult result){
-		string fbFirstName = result.ResultDictionary["first_name"].ToString();
-		Debug.Log("FBFirstName: "+fbFirstName);
-	}
-
-	void OnFBGetLastName(Facebook.Unity.IGraphResult result){
-		string fbLastName = result.ResultDictionary["last_name"].ToString();
-		Debug.Log("FBLastName: "+fbLastName);
-	}
-
-	void OnFBGetEmail(Facebook.Unity.IGraphResult result){
-		string fbEmail = result.ResultDictionary["email"].ToString();
-		Debug.Log("FBEmail: "+fbEmail);
-	}
-
-	void OnFBGetProfilePicture(Facebook.Unity.IGraphResult result){
-		Debug.Log (result.RawResult);
-
-	}
-
-	void OnFBGetGender(Facebook.Unity.IGraphResult result){
-		string fbGender = result.ResultDictionary ["gender"].ToString ();
-		Debug.Log ("FBGender: " + fbGender);
-	}
-
-	void OnFBGetAgeRange(Facebook.Unity.IGraphResult result){
-		string fbAgeRange = result.ResultDictionary ["age_range"].ToString ();
-		Debug.Log ("FBAgeRange: " + fbAgeRange);
-	}
-
-	void OnFBGetFriends(Facebook.Unity.IGraphResult result){
-		string fbFriends = result.ResultDictionary ["friends"].ToString ();
-		Debug.Log ("FBFriends: " + fbFriends);
-	}
-
-	void GetFBDetails(){
-//		GetFBEmail ();
-//		GetFBFirstName ();
-//		GetFBLastName ();
-		GetFBProfilePicture ();
-//		GetFBGender ();
-//		GetFBAgeRange ();
-//		GetFBFriends ();
-	}
-
-	void HandleLoginResult (IResult result)
+	void FBHandleLoginResult (IResult result)
 	{
 		if (result == null) {
 			Debug.Log (result.ToString());
 		} else if (!string.IsNullOrEmpty (result.Error)) {
-			Debug.Log ("error login 01: " + result.ToString());
+			Debug.Log ("FB Login Error");
+			if (onFBError != null)
+				onFBError("{\"errors\":\""+result.RawResult+"\"}");
 		} else if (result.Cancelled) {
-			Debug.Log ("error login 02: " + result.ToString());
+			Debug.Log ("FB Login Cancelled");
+			if (onFBError != null)
+				onFBError("{\"errors\":\"CANCELLED\"}");
 		} else if (!string.IsNullOrEmpty (result.RawResult)) { //success
-			Debug.Log("login success");
-			Debug.Log (result.RawResult);
+			Debug.Log("FB Login success");
+			fbData.accessToken = result.ResultDictionary ["access_token"].ToString ();
 			fbLogin=true;
 			GetFBDetails ();
 		}
 	}
+	void GetFBDetails(){
+		FB.API ("/me?fields=first_name,last_name,gender,id,email", HttpMethod.GET, OnFBGetDetails);
 
+	}
+	void OnFBGetDetails(Facebook.Unity.IGraphResult result) {
+		fbData.firstName = result.ResultDictionary["first_name"].ToString();
+		fbData.lastName = result.ResultDictionary["last_name"].ToString();
+		fbData.gender = result.ResultDictionary["gender"].ToString() == "male" ? 1 : 2;
+		fbData.id = result.ResultDictionary["id"].ToString();
+		fbData.email = result.ResultDictionary["email"].ToString();
+
+		if (onFBSuccess != null) {
+			onFBSuccess ("{}");
+		}
+	}		
 }

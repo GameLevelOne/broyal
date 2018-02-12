@@ -46,7 +46,15 @@ public class SignInManager : AppInitPages {
 			SoundManager.Instance.PlayBGM(BGMList.BGMMenu01);
 			fader.FadeIn();
 		}else{
-			DoLogin(true);
+			if (signInUsername.StartsWith ("FB_")) {
+				if (FBManager.Instance.FBLogin) {
+					ClickFBLogin (true);
+				} else {
+					fader.FadeIn ();
+				};
+			} else {
+				DoLogin(true);
+			}
 		}
 	} 
 
@@ -64,8 +72,51 @@ public class SignInManager : AppInitPages {
 		}
 	}
 
-	public void ClickFBLogin (){
-		FBManager.Instance.OnFBLogin();
+	public void ClickFBLogin (bool fadeIn){
+		connectingPanel.Connecting (true);
+		FBManager.Instance.OnFBLogin(
+			(response) => {
+				FBData fbData = FBManager.Instance.fbData;
+				DBManager.API.UserSocialLogin(fbData.firstName,fbData.lastName,fbData.gender,fbData.accessToken,fbData.id,fbData.email,
+					(response2)=>{
+						connectingPanel.Connecting (false);
+						Activate(false);
+						if (fadeIn) {
+							fader.OnFadeInFinished+= FadeInToLoading;
+							fader.FadeIn();				
+						} else {
+							OnFinishOutro += FadeOutToLoading;
+						}
+					},
+					(error2)=>{
+						connectingPanel.Connecting (false);
+						JSONNode jsonData = JSON.Parse (error2);
+						if (jsonData!=null) {
+							notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+							if (jsonData["errors"]=="USER_NOT_VERIFIED") {
+								notificationPopUp.OnFinishOutro += AfterNotVerified;
+							}
+						} else {
+							notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+						}
+					}
+				);
+			},
+			(error) => {
+				connectingPanel.Connecting (false);
+				if (fadeIn) {
+					fader.FadeIn();
+				} else {
+					JSONNode jsonData = JSON.Parse (error);
+					if (jsonData["errors"]!="CANCELLED") {
+						notificationPopUp.ShowPopUp (jsonData["errors"]);
+					}
+
+					int debugIndex = DBManager.API.debugConsole.SetRequest("FB LOGIN");
+					DBManager.API.debugConsole.SetResult(jsonData["errors"],debugIndex);
+				}
+			}
+		);
         SoundManager.Instance.PlaySFX(SFXList.Button01);
     }
 
