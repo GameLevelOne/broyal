@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "818289478261",
+    "firebase_url": "https://bid-royale.firebaseio.com",
+    "project_id": "bid-royale",
+    "storage_bucket": "bid-royale.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818289478261:android:1e2a28dabc68a1a1",
+        "android_client_info": {
+          "package_name": "com.kanaka.bidroyale"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "818289478261-l8si3anbl9v9pg419ibu1c1d1v9agfct.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiZJ6s_vdKf-seLCqPWt68pCIg6kzqEr8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
