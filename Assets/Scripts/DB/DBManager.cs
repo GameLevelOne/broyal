@@ -415,8 +415,8 @@ public class DBManager : MonoBehaviour {
 		string url = config.restURL + config.updateProfilePicture;
         WWWForm data = new WWWForm();
 		data.AddBinaryData("profilePictureImage",texData);
-		Dictionary<string,string> header = CreateHeaderWithAuthorization ();
-		header["Content-Type"]= "multipart/form-data";
+		Dictionary<string,string> header = CreateHeaderNoJSON ();
+//		header["Content-Type"]= "multipart/form-data";
        		
 		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+data.ToString());
 		PostRequest(url,data.data,header,onComplete, onError);

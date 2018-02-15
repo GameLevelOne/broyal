@@ -15,7 +15,7 @@
      limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.google.firebase.iid" >
+    package="com.kanaka.bidroyale" >
 
     <uses-sdk android:minSdkVersion="14" />
 

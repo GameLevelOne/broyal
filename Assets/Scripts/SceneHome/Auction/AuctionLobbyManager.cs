@@ -71,6 +71,7 @@ public class AuctionLobbyManager : BasePage {
 						AuctionState.PAST,
 						imgUrl,
 						DateTime.Now,
+						0f,
 						jsonData["pastAuctions"][i]["productName"],
 						0,
 						0,
@@ -121,6 +122,7 @@ public class AuctionLobbyManager : BasePage {
 						AuctionState.CURRENT,
 						imgUrl,
 						Utilities.StringLongToDateTime(jsonData["currentAuction"]["dateOpen"]),
+						jsonData["currentAuction"]["timeToNextIncrement"].AsInt / 1000f,
 						jsonData["currentAuction"]["productName"],
 						jsonData["currentAuction"]["openBid"].AsInt,
 						jsonData["currentAuction"]["nextIncrement"].AsInt,
@@ -128,7 +130,7 @@ public class AuctionLobbyManager : BasePage {
 						jsonData["currentAuction"]["afterDiscountPrice"].AsInt,
 						jsonData["currentAuction"]["enterPrice"].AsInt,
 						"",
-                        0,
+						0,
 						"",
 						0,
 						false
@@ -148,6 +150,7 @@ public class AuctionLobbyManager : BasePage {
 						AuctionState.FUTURE,
 						imgUrl,
 						Utilities.StringLongToDateTime(jsonData["futureAuctions"][i]["dateOpen"]),
+						jsonData["futureAuctions"][i]["timeToNextIncrement"].AsInt / 1000f,
 						jsonData["futureAuctions"][i]["productName"],
 						jsonData["futureAuctions"][i]["openBid"].AsInt,
 						jsonData["futureAuctions"][i]["nextIncrement"].AsInt,
@@ -261,6 +264,7 @@ public class AuctionLobbyManager : BasePage {
 					header.AnimateUserStars(jsonData["availableStar"]);
 					connectingPanel.Connecting (false);
 					auctionRoomManager.auctionMode = auctionMode;
+					auctionRoomManager.kickIfNotBidding = false;
 					NextPage ("AUCTIONROOM");
 				},
 				(error)=>{

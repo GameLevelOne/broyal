@@ -198,9 +198,17 @@ public class PaymentFormManager : BasePage {
 			if (purchaseType == 1) {
 				NextPage ("SHOP");
 			} else {
-				NextPage ("LOBBY");
+				notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("PaymentForm.PAYMENT_SUCCESS"));
+				notifPopUp.OnFinishOutro += AfterSuccessPopUp;
 			}
+		} else {
+			notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey ("PaymentForm.PAYMENT_FAILED"));
 		}
+	}
+
+	void AfterSuccessPopUp() {
+		notifPopUp.OnFinishOutro -= AfterSuccessPopUp;
+		NextPage ("LOBBY");
 	}
 
 	void ShowHideWebView(bool show) {

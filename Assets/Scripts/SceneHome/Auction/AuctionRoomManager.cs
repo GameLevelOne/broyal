@@ -47,6 +47,7 @@ public class AuctionRoomManager : BasePage {
 	public ImageLoader bannerImage;
 	public Button bidButton;
 	public string bannerAction;
+	public bool kickIfNotBidding;
 
 	void Start()
 	{
@@ -88,7 +89,7 @@ public class AuctionRoomManager : BasePage {
 				productWeight = jsonData["weight"] + " " + jsonData["unit"];
 				productDescription = jsonData["description"];
 				numberBidders = jsonData["noOfLastCycleBidders"].AsInt;
-				int getTime = (jsonData["timeToNextCycle"].AsInt > 0) ? jsonData["timeToNextCycle"].AsInt : jsonData["timeToFirstAuctionCycle"].AsInt;
+				int getTime = (jsonData["timeToFirstAuctionCycle"].AsInt > 0) ? jsonData["timeToFirstAuctionCycle"].AsInt : jsonData["timeToNextCycle"].AsInt;
 				timeToNextCycle = getTime / 1000f;
 				bidButton.gameObject.SetActive(jsonData["bidEnable"].AsBool);
 				bannerImage.LoadImageFromUrl(jsonData["bannerImageURL"]);
@@ -119,6 +120,9 @@ public class AuctionRoomManager : BasePage {
 				} else if (numberBidders==1) {
 					Debug.Log ("---------Single bidder-----------");
 					NextPage("LOBBY");
+				} else if (kickIfNotBidding) {
+					Debug.Log ("---------Not Bidding last cycle-----------");
+					NextPage("LOBBY");
 				} else {
 					if (timeToNextCycle>0) {
 						StopAllCoroutines();
@@ -128,7 +132,7 @@ public class AuctionRoomManager : BasePage {
 						CheckEligible();
 					}
 				}
-					
+				kickIfNotBidding = true;	
 			},
 			(error) => {
 				connectingPanel.Connecting (false);
@@ -181,6 +185,7 @@ public class AuctionRoomManager : BasePage {
 			(response)=>{
 				JSONNode jsonData = JSON.Parse(response);
 				bidButton.gameObject.SetActive(false);
+				kickIfNotBidding = false;	
 				connectingPanel.Connecting (false);
 			},
 			(error)=>{

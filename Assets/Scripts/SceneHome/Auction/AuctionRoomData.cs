@@ -16,6 +16,7 @@ public class AuctionRoomData : MonoBehaviour {
 	public AuctionState auctionState;
 	public string[] imageUrl;
 	public System.DateTime futureDates;
+	public float timeToNextIncrement;
 	public string productName;
 	public int openingBid;
 	public int nextIncrement;
@@ -49,6 +50,7 @@ public class AuctionRoomData : MonoBehaviour {
 		AuctionState _auctionState, 
 		string[] _imageUrl,
 		System.DateTime _futureDate,
+		float _timeToNextIncrement, 
 		string _productName, 
 		int _openingBid, 
 		int _nextIncrement, 
@@ -65,6 +67,7 @@ public class AuctionRoomData : MonoBehaviour {
 		auctionState = _auctionState;
 		imageUrl = _imageUrl;
 		futureDates = _futureDate;
+		timeToNextIncrement = _timeToNextIncrement;
 		productName = _productName;
 		openingBid = _openingBid;
 		nextIncrement = _nextIncrement;
@@ -122,15 +125,16 @@ public class AuctionRoomData : MonoBehaviour {
             auctionDateLabel.SetActive(true);
             futureDatesLabel.gameObject.SetActive(true);
             futureDatesLabel.text = futureDates.ToString("MMM dd, yyyy");
-            timeLeftLabel.text = Utilities.TimeToNow(futureDates);
+//            timeLeftLabel.text = Utilities.TimeToNow(futureDates);
+			timeLeftLabel.text = Utilities.SecondsToMinutes (Mathf.CeilToInt (timeToNextIncrement));
             StartCoroutine(AuctionCountDown());
         } else if (auctionState == AuctionState.CURRENT)
         {
 			futureInfo.SetActive (true);
             auctionDateLabel.SetActive(false);
             futureDatesLabel.gameObject.SetActive(false);
-			//timeLeftLabel.text = Utilities.SecondsToMinutes (Mathf.FloorToInt(winnerPrice / 1000f));
-			timeLeftLabel.text = Utilities.TimeToNow(futureDates);
+			timeLeftLabel.text = Utilities.SecondsToMinutes (Mathf.CeilToInt (timeToNextIncrement));
+//			timeLeftLabel.text = Utilities.TimeToNow(futureDates);
 			StartCoroutine (AuctionCountDown());
 		} else {
 			futureInfo.SetActive (false);
@@ -142,7 +146,9 @@ public class AuctionRoomData : MonoBehaviour {
 			if ((auctionState == AuctionState.FUTURE) || (auctionState == AuctionState.CURRENT))
             {
                 yield return new WaitForSeconds(1);
-                timeLeftLabel.text = Utilities.TimeToNow(futureDates);
+				timeToNextIncrement -= 1f;
+//              timeLeftLabel.text = Utilities.TimeToNow(futureDates);
+				timeLeftLabel.text = Utilities.SecondsToMinutes (Mathf.CeilToInt (timeToNextIncrement));
             }
 		}
 	}
