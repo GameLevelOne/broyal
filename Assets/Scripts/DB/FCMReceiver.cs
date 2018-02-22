@@ -30,7 +30,11 @@ public class FCMReceiver : MonoBehaviour {
 
 	void InitializeFirebase() {
 		Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
-//		Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
+		Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
+		Firebase.Messaging.FirebaseMessaging.Subscribe("auction_reminder");
+		Firebase.Messaging.FirebaseMessaging.Subscribe("auction_won");
+		Firebase.Messaging.FirebaseMessaging.Subscribe("claim_reminder");
+		Firebase.Messaging.FirebaseMessaging.Subscribe("miss_you");
 	}
 	public virtual void OnMessageReceived(object sender, Firebase.Messaging.MessageReceivedEventArgs e) {
 		string s="";
@@ -55,11 +59,11 @@ public class FCMReceiver : MonoBehaviour {
 	}
 
 	public virtual void OnTokenReceived(object sender, Firebase.Messaging.TokenReceivedEventArgs token) {
-		MessageLog("FCM Token",token.Token);
+		DBManager.API.firebaseToken = token.Token;
 	}
 	// End our messaging session when the program exits.
 	public void OnDestroy() {
 		Firebase.Messaging.FirebaseMessaging.MessageReceived -= OnMessageReceived;
-//		Firebase.Messaging.FirebaseMessaging.TokenReceived -= OnTokenReceived;
+		Firebase.Messaging.FirebaseMessaging.TokenReceived -= OnTokenReceived;
 	}
 }

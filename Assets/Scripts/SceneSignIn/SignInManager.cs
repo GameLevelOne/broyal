@@ -79,14 +79,27 @@ public class SignInManager : AppInitPages {
 				FBData fbData = FBManager.Instance.fbData;
 				DBManager.API.UserSocialLogin(fbData.firstName,fbData.lastName,fbData.gender,fbData.accessToken,fbData.id,fbData.email,
 					(response2)=>{
-						connectingPanel.Connecting (false);
-						Activate(false);
-						if (fadeIn) {
-							fader.OnFadeInFinished+= FadeInToLoading;
-							fader.FadeIn();				
-						} else {
-							OnFinishOutro += FadeOutToLoading;
-						}
+						DBManager.API.UpdateFCMToken(
+							(response3) => {
+								connectingPanel.Connecting (false);
+								Activate(false);
+								if (fadeIn) {
+									fader.OnFadeInFinished+= FadeInToLoading;
+									fader.FadeIn();				
+								} else {
+									OnFinishOutro += FadeOutToLoading;
+								}
+							},
+							(error3) => {
+								connectingPanel.Connecting (false);
+								JSONNode jsonData = JSON.Parse (error3);
+								if (jsonData!=null) {
+									notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+								} else {
+									notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+								}
+							}
+						);
 					},
 					(error2)=>{
 						connectingPanel.Connecting (false);
@@ -136,14 +149,31 @@ public class SignInManager : AppInitPages {
         //Debug.Log ("------Do Login");
 		DBManager.API.UserLogin(signInUsername,signInPassword,
 			(response)=>{
-				connectingPanel.Connecting (false);
-				Activate(false);
-				if (fadeIn) {
-					fader.OnFadeInFinished+= FadeInToLoading;
-					fader.FadeIn();				
-				} else {
-					OnFinishOutro += FadeOutToLoading;
-				}
+
+				DBManager.API.UpdateFCMToken(
+					(response2) => {
+						connectingPanel.Connecting (false);
+						Activate(false);
+						if (fadeIn) {
+							fader.OnFadeInFinished+= FadeInToLoading;
+							fader.FadeIn();				
+						} else {
+							OnFinishOutro += FadeOutToLoading;
+						}
+					},
+					(error2) => {
+						connectingPanel.Connecting (false);
+						JSONNode jsonData = JSON.Parse (error2);
+						if (jsonData!=null) {
+							notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+						} else {
+							notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+						}
+						if (fadeIn) 
+							DBManager.API.RestartApp();
+					}
+				);
+
 			},
 			(error)=>{
 				connectingPanel.Connecting (false);

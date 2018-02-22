@@ -28,6 +28,7 @@ public class DBManagerSettings : ScriptableObject {
 	public string userForgotPasswordAPI;
 	public string userResetPasswordAPI;
 	public string userChangePasswordAPI;
+	public string userUpdateFCMTokenAPI;
 	[Space(10)]
 	public string getLandingAuctionData;
 	public string getAuctionListing;

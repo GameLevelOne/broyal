@@ -150,10 +150,25 @@ public class SignUpManager : AppInitPages {
         PlayerPrefs.SetInt("GameMode", 0);
 		DBManager.API.UserLogin(signUpUsername,signUpPassword,
 			(response)=>{
-				connectingPanel.Connecting (false);
-				Activate(false);
-				fader.OnFadeOutFinished+= FadeOutToLoading;
-				fader.FadeOut();				
+				DBManager.API.UpdateFCMToken(
+					(response2) => {
+						connectingPanel.Connecting (false);
+						Activate(false);
+						fader.OnFadeOutFinished+= FadeOutToLoading;
+						fader.FadeOut();				
+					},
+					(error2) => {
+						connectingPanel.Connecting (false);
+						JSONNode jsonData = JSON.Parse (error2);
+						if (jsonData!=null) {
+							notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+						} else {
+							notificationPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+						}
+						CloseAndGoToNextPage (panelSignIn);
+					}
+				);
+
 			},
 			(error)=>{
 				connectingPanel.Connecting (false);

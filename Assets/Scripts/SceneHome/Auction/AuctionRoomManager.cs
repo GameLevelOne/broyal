@@ -132,7 +132,7 @@ public class AuctionRoomManager : BasePage {
 						CheckEligible();
 					}
 				}
-				kickIfNotBidding = true;	
+				kickIfNotBidding = bidButton.gameObject.activeSelf;	
 			},
 			(error) => {
 				connectingPanel.Connecting (false);

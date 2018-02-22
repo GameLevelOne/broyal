@@ -26,6 +26,7 @@ public class DBManager : MonoBehaviour {
 
 	public DBManagerSettings config;
 	public string username = null;
+	public string firebaseToken = null;
 	public DebugConsole debugConsole;
 	public float timeOutThreshold;
 	string tokenType = null;
@@ -416,11 +417,25 @@ public class DBManager : MonoBehaviour {
         WWWForm data = new WWWForm();
 		data.AddBinaryData("profilePictureImage",texData);
 		Dictionary<string,string> header = CreateHeaderNoJSON ();
-//		header["Content-Type"]= "multipart/form-data";
+		header["Content-Type"]= "multipart/form-data";
        		
 		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+data.ToString());
 		PostRequest(url,data.data,header,onComplete, onError);
 	}
+
+	public void UpdateFCMToken(
+		System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.userUpdateFCMTokenAPI;
+		UTF8Encoding encoder = new UTF8Encoding ();
+		string jsondata = "{\n"+
+			"\"firebaseToken\":\""+firebaseToken+"\"\n"+
+			"}";
+
+		DebugMsg ("UPDATE FCM TOKEN Request","\nurl = "+url+"\ndata = "+jsondata);
+		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
+	}
+
 //===========================Auction API=======================================================
 	public void AuctionBidding(int auctionId, 
 		System.Action<string> onComplete , System.Action<string> onError = null)

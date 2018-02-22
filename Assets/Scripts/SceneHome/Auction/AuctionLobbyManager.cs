@@ -282,6 +282,7 @@ public class AuctionLobbyManager : BasePage {
 			);
 		} else {
 			auctionRoomManager.auctionMode = auctionMode;
+			auctionRoomManager.kickIfNotBidding = false;
 			NextPage ("AUCTIONROOM");
 		}
 	}
