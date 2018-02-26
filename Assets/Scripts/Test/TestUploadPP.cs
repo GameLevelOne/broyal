@@ -31,7 +31,7 @@ public class TestUploadPP : MonoBehaviour {
             s += databytes[i].ToString();
         }
         Debug.Log(s);
-		DBManager.API.UpdateProfilePicture(databytes,
+		DBManager.API.UpdateProfilePicture(databytes,sourceTex.GetHashCode().ToString()+".png",
             (response) =>
             {
                 statusText.text = "UPLOAD SUCCESS";

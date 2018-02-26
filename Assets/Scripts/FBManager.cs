@@ -105,4 +105,39 @@ public class FBManager : MonoBehaviour {
 			onFBSuccess ("{}");
 		}
 	}		
+
+	public void ShareItem(string productName, int productPrice, string photoUrl, System.Action<string> onComplete, System.Action<string> onError) {
+		string title = "Produk Baru BID ROYALE!";
+		string url = "https://play.google.com/store/apps/details?id=com.kanaka.bidroyale";
+		string desc = "Mau beli produk BARU bergaransi resmi dan HEMAT sampai 99%?\n";
+		desc += "Cuma ada di aplikasi BID ROYALE\n\n";
+		desc += "Yuk kita main aplikasi BID ROYALE dan dapatkan " + productName + " hanya dengan Rp. " + productPrice.ToString ("#,0;-#,0;-") + ".\n";
+		desc += "Masih banyak produk menarik lainnya.\n\n";
+		desc += "Ayo segera gabung di Aplikasi BID ROYALE.";
+
+		onFBSuccess = onComplete;
+		onFBError = onError;
+
+		FB.ShareLink (new System.Uri (url), title, desc, new System.Uri (photoUrl), OnShareSuccess);
+//		FB.ShareLink (null, title, desc, new System.Uri (photoUrl), OnShareSuccess);
+//		FB.ShareLink (new System.Uri (url), title, "testing", null, OnShareSuccess);
+
+	}
+
+	void OnShareSuccess(IShareResult result) {
+		if (result.Cancelled || !string.IsNullOrEmpty (result.Error)) {
+			Debug.Log ("FB Share Error: "+ result.Error);
+			if (onFBError != null)
+				onFBError("{\"errors\":\""+result.Error+"\"}");
+		} else if (!string.IsNullOrEmpty (result.PostId)) {
+			Debug.Log ("FB PostID: "+ result.PostId);
+			if (onFBError != null)
+				onFBError("{\"errors\":\""+result.PostId+"\"}");
+		} else {
+			Debug.Log ("FB Share Succeed!");
+			if (onFBSuccess != null) {
+				onFBSuccess ("{}");
+			}
+		}
+	}
 }

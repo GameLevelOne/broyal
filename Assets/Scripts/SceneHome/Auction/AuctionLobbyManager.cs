@@ -36,6 +36,8 @@ public class AuctionLobbyManager : BasePage {
 	int bufferData = 7;
 	int claimAuctionId;
 
+	AuctionRoomData currentData;
+
 	void Start()
 	{
 		scrollSnap.OnChangePage += OnChangeRoomPage;
@@ -238,18 +240,48 @@ public class AuctionLobbyManager : BasePage {
 	{
 		if (child == firstLoading) {
 
-            Debug.Log("MinData: "+ minData+"\n"+
-                "MaxData: "+maxData+"\n"+
-                "BufferData: "+bufferData+"\n"+
-                "Result: "+ (minData - bufferData) + " to " + (maxData - bufferData));
+//            Debug.Log("MinData: "+ minData+"\n"+
+//                "MaxData: "+maxData+"\n"+
+//                "BufferData: "+bufferData+"\n"+
+//                "Result: "+ (minData - bufferData) + " to " + (maxData - bufferData));
             LoadData(minData - bufferData, minData -1);
 		} else if (child == lastLoading) {
 			LoadData (maxData+1,maxData+bufferData);
 		} else {
 			AuctionRoomData data = child.GetComponent<AuctionRoomData> ();
+			currentData = data;
 //			Debug.Log ("masukSiniiii");
 			data.OnRoomShow ();
 		}
+	}
+
+	public void ClickShare() {
+		connectingPanel.Connecting (true);
+		FBManager.Instance.ShareItem (
+			currentData.productName,
+			currentData.maxPrice,
+			currentData.imageUrl[0],
+			(response) => {
+				DBManager.API.ClaimPetShareExp(
+					(response2) => {
+						connectingPanel.Connecting(false);
+					},
+					(error2) => {
+						connectingPanel.Connecting(false);
+						JSONNode jsonData = JSON.Parse(error2);
+						if (jsonData != null)
+						{
+							if (jsonData["errors"]!="HAVE_NO_PET") 
+								notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+						}
+					}
+				);
+				
+			}, 
+			(error) => {
+				connectingPanel.Connecting(false);
+			}
+		);
 	}
 
 	public void ClickJoin (int dataAuctionId, bool payment){

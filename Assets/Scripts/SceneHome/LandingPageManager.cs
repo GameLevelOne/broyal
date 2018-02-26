@@ -7,7 +7,7 @@ using SimpleJSON;
 public class LandingPageManager : BasePage {
 	public Fader fader;
 	public AuctionLobbyManager auctionLobby;
-	public GameObject panelCompleteProfile;
+//	public GameObject panelCompleteProfile;
 	public ImageLoader bidRoyalPic;
 	public ImageLoader bidRumblePic;
 	public GameObject newsIcon;
@@ -19,8 +19,8 @@ public class LandingPageManager : BasePage {
         SoundManager.Instance.PlayBGM(BGMList.BGMMenu02);
 		if (FBManager.Instance != null) {
 			if (FBManager.Instance.FBLogin) {
-				Debug.Log ("fb");
-				panelCompleteProfile.SetActive (true);
+//				Debug.Log ("fb");
+//				panelCompleteProfile.SetActive (true);
 			}
 		}
         GameMode gameMode = (GameMode)PlayerPrefs.GetInt("GameMode", 0);

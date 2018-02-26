@@ -101,34 +101,7 @@ public class PaymentFormManager : BasePage {
 		connectingPanel.Connecting (true);
 		DBManager.API.GeneratePreOrder (purchaseType,itemId,"02",
 			(response) => {
-				DBManager.API.GetPaymentDetails (itemId,
-					(response2) => {
-						connectingPanel.Connecting (false);
-						JSONNode jsonData = JSON.Parse(response2);
-						productNameLabel.text = jsonData["productName"];
-						itemPriceLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.ITEM_PRICE") + jsonData["productPrice"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
-						adminFeeLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.ADMIN_FEE") + jsonData["adminFee"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
-						paymentFeeLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.PAYMENT_FEE") + jsonData["paymentFee"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
-						taxLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.TAX") + jsonData["tax"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
-						shippingHandlingLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.SHIPPING_HANDLING") + jsonData["shipping"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
-						grandTotalLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.GRAND_TOTAL") + jsonData["grandTotal"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
-
-						nameLabel.text = jsonData["receiverName"];
-						addressLabel.text = jsonData["address1"];
-						cityLabel.text = jsonData["address2"];
-						phoneLabel.text = jsonData["phone"];
-					}, 
-					(error2) => {
-						connectingPanel.Connecting (false);
-						JSONNode jsonData = JSON.Parse (error2);
-						if (jsonData!=null) {
-							notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
-						} else {
-							notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
-						}
-					}
-				);					
-
+				StartCoroutine(GetPaymentDetailsDelayed(0.5f));
 			}, 
 			(error) => {
 				connectingPanel.Connecting (false);
@@ -140,6 +113,37 @@ public class PaymentFormManager : BasePage {
 				}
 			}
 		);
+	}
+
+	IEnumerator GetPaymentDetailsDelayed(float delay) {
+		yield return new WaitForSeconds (delay);
+		DBManager.API.GetPaymentDetails (itemId,
+			(response2) => {
+				connectingPanel.Connecting (false);
+				JSONNode jsonData = JSON.Parse(response2);
+				productNameLabel.text = jsonData["productName"];
+				itemPriceLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.ITEM_PRICE") + jsonData["productPrice"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
+				adminFeeLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.ADMIN_FEE") + jsonData["adminFee"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
+				paymentFeeLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.PAYMENT_FEE") + jsonData["paymentFee"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
+				taxLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.TAX") + jsonData["tax"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
+				shippingHandlingLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.SHIPPING_HANDLING") + jsonData["shipping"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
+				grandTotalLabel.text = LocalizationService.Instance.GetTextByKey("PaymentForm.GRAND_TOTAL") + jsonData["grandTotal"].AsInt.ToString ("IDR #,0;IDR -#,0;-");
+
+				nameLabel.text = jsonData["receiverName"];
+				addressLabel.text = jsonData["address1"];
+				cityLabel.text = jsonData["address2"];
+				phoneLabel.text = jsonData["phone"];
+			}, 
+			(error2) => {
+				connectingPanel.Connecting (false);
+				JSONNode jsonData = JSON.Parse (error2);
+				if (jsonData!=null) {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+				} else {
+					notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+				}
+			}
+		);					
 	}
 
 	public void ChangePaymentSelection(string paymentCode) {

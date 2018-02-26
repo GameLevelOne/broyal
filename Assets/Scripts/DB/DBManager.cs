@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using System.Text;
 using SimpleJSON;
 using System.IO;
@@ -279,7 +280,7 @@ public class DBManager : MonoBehaviour {
 			JSONNode jdata = JSON.Parse(response);
 			tokenType = "Bearer";
 			accessToken = jdata["token"];
-			username = firstName+lastName;
+			username = jdata["username"];
 			PlayerPrefs.SetString("LastUserLogin","FB_"+username);
 			PlayerPrefs.SetString("LastUserPassword","FB_"+username);
 			if (onComplete!=null)
@@ -410,18 +411,62 @@ public class DBManager : MonoBehaviour {
 	}
 
 
-	public void UpdateProfilePicture(byte[] texData,
+	public void UpdateProfilePicture(byte[] texData,string filename,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.updateProfilePicture;
-        WWWForm data = new WWWForm();
-		data.AddBinaryData("profilePictureImage",texData);
-		Dictionary<string,string> header = CreateHeaderNoJSON ();
-		header["Content-Type"]= "multipart/form-data";
+
+		List<IMultipartFormSection> formData = new List<IMultipartFormSection> ();
+		formData.Add(new MultipartFormFileSection("profilePictureImage",texData,filename,"images/png"));
+
+
+//        WWWForm data = new WWWForm();
+//		data.AddBinaryData("profilePictureImage",texData);
+//		Dictionary<string,string> header = CreateHeaderNoJSON ();
+//		header["Content-Type"]= "multipart/form-data";
        		
-		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+data.ToString());
-		PostRequest(url,data.data,header,onComplete, onError);
+		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+formData.ToString());
+//		PostRequest(url,data.data,header,onComplete, onError);
 	}
+
+	IEnumerator WaitForUploadRequest(string url, List<IMultipartFormSection> formData ,System.Action<string> onComplete, System.Action<string> onError,int debugIndex) {
+		UnityWebRequest www = UnityWebRequest.Post(url,formData);
+		www.SetRequestHeader ("Content-Type","multipart/form-data");
+		www.SetRequestHeader ("royalBidKey", config.royalBidKey);
+		www.SetRequestHeader ("royalBidSecret", config.royalBidSecret);
+		www.SetRequestHeader ("Authorization", tokenType +" "+ accessToken);
+
+		yield return www.Send ();
+
+		if (!www.isError) {
+			DebugMsg ("", "RESULT: \n" + www.responseCode);
+			if (debugConsole != null)
+				debugConsole.SetResult (www.responseCode.ToString(), debugIndex);
+			if (onComplete != null)
+				onComplete (www.responseCode.ToString());
+		} else {
+			DebugError ("ERROR: " + www.error);
+			if (debugConsole != null)
+				debugConsole.SetError ("ERROR: " + www.error, debugIndex);
+
+			if (www.responseCode != 400) {
+				if (onError != null)
+					onError (www.error);
+			} else if (www.error.Contains("ConnectException"))
+			{
+				//DebugError ("ERROR: " + www.error, www.text);
+				if (debugConsole != null)
+					debugConsole.SetError("ERROR: REQUEST_TIME_OUT", debugIndex);
+				if (onError != null)
+					onError("{\"errors\":\"REQUEST_TIME_OUT\"}");
+			}
+			else
+			{
+				ShowUnauthorizedError();
+			}
+		}
+	}
+
 
 	public void UpdateFCMToken(
 		System.Action<string> onComplete , System.Action<string> onError = null)
@@ -593,29 +638,7 @@ public class DBManager : MonoBehaviour {
 			return www;
 		}
 	}
-    WWW PostRequestForm(string url, WWWForm data, System.Action<string> onComplete, System.Action<string> onError)
-    {
-        if (data.headers.Count==0)
-        {
-            ShowUnauthorizedError();
-            return null;
-        }
-        else
-        {
-            int debugIndex = -1;
-            if (debugConsole != null)
-            {
-                string serverUrl = url.Substring(0, config.restURL.Length);
-                string apiUrl = url.Substring(config.restURL.Length);
-                debugIndex = debugConsole.SetRequest("REST URL: " + serverUrl + "\n" + apiUrl);
-            }
-            WWW www;
-            www = new WWW(url,data);
 
-            StartCoroutine(WaitForRequest(www, onComplete, onError, debugIndex));
-            return www;
-        }
-    }
 	IEnumerator WaitForRequest(WWW www, System.Action<string> onComplete, System.Action<string> onError,int debugIndex) {
 		float timeOutCheck = timeOutThreshold;
 		while ((timeOutCheck > 0f) && (!www.isDone)) {
