@@ -25,13 +25,13 @@ public class TestUploadPP : MonoBehaviour {
 	
 	public void UploadClicked () {
         statusText.text = "UPLOADING";
-        byte[] databytes = sourceTex.GetRawTextureData();
-        string s = "";
-        for (int i=0;i<databytes.Length;i++) {
-            s += databytes[i].ToString();
-        }
-        Debug.Log(s);
-		DBManager.API.UpdateProfilePicture(databytes,sourceTex.GetHashCode().ToString()+".png",
+		byte[] databytes = sourceTex.GetRawTextureData();
+//        string s = "";
+//        for (int i=0;i<databytes.Length;i++) {
+//            s += databytes[i].ToString();
+//        }
+//        Debug.Log(s);
+		DBManager.API.UpdateProfilePicture(databytes,"pp.png",
             (response) =>
             {
                 statusText.text = "UPLOAD SUCCESS";
@@ -39,7 +39,7 @@ public class TestUploadPP : MonoBehaviour {
             (error) =>
             {
                 statusText.text = "UPLOAD ERROR";
-            }
+			},statusText
         );
 		
 	}

@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using System.Text;
 using SimpleJSON;
 using System.IO;
+using UnityEngine.UI;
 
 public class DBManager : MonoBehaviour {
 //===========================Singleton Coding=======================================================
@@ -412,34 +413,49 @@ public class DBManager : MonoBehaviour {
 
 
 	public void UpdateProfilePicture(byte[] texData,string filename,
-		System.Action<string> onComplete , System.Action<string> onError = null)
+		System.Action<string> onComplete , System.Action<string> onError = null, Text testText=null)
 	{
 		string url = config.restURL + config.updateProfilePicture;
+//
+//		UnityWebRequest www = new UnityWebRequest (url);
+//		UploadHandler uh = new UploadHandlerRaw (texData);
+//		www.uploadHandler = uh;
 
 		List<IMultipartFormSection> formData = new List<IMultipartFormSection> ();
+//		formData.Add(new MultipartFormFileSection("profilePictureImage",texData));
 		formData.Add(new MultipartFormFileSection("profilePictureImage",texData,filename,"images/png"));
+//		formData.Add(new MultipartFormDataSection("profilePictureImage",texData));
+//		int debugIndex = debugConsole.SetRequest ("REST URL: " + config.restURL + "\n" +  config.updateProfilePicture);
 
-
-//        WWWForm data = new WWWForm();
+//      WWWForm data = new WWWForm();
 //		data.AddBinaryData("profilePictureImage",texData);
 //		Dictionary<string,string> header = CreateHeaderNoJSON ();
 //		header["Content-Type"]= "multipart/form-data";
-       		
-		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+formData.ToString());
-//		PostRequest(url,data.data,header,onComplete, onError);
+//		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+formData.ToString());
+//		StartCoroutine(WaitForUploadRequest(www,onComplete,onError,0,testText));
+		StartCoroutine(WaitForUploadRequest(url,formData,onComplete,onError,0,testText));
+//		PostRequestForm(url,data,header,onComplete, onError);
 	}
 
-	IEnumerator WaitForUploadRequest(string url, List<IMultipartFormSection> formData ,System.Action<string> onComplete, System.Action<string> onError,int debugIndex) {
+//	IEnumerator WaitForUploadRequest(UnityWebRequest www ,System.Action<string> onComplete, System.Action<string> onError,int debugIndex, Text testText=null) {
+	IEnumerator WaitForUploadRequest(string url,List<IMultipartFormSection> formData ,System.Action<string> onComplete, System.Action<string> onError,int debugIndex, Text testText=null) {
 		UnityWebRequest www = UnityWebRequest.Post(url,formData);
 		www.SetRequestHeader ("Content-Type","multipart/form-data");
 		www.SetRequestHeader ("royalBidKey", config.royalBidKey);
 		www.SetRequestHeader ("royalBidSecret", config.royalBidSecret);
 		www.SetRequestHeader ("Authorization", tokenType +" "+ accessToken);
-
-		yield return www.Send ();
+		www.Send ();
+		while (!www.isDone) {
+			Debug.Log ("Progress: "+www.uploadProgress);
+			if (testText != null) {
+				testText.text = "Uploading..."+(www.uploadProgress * 100) + "%" ;
+			}
+			yield return null;
+		}
 
 		if (!www.isError) {
-			DebugMsg ("", "RESULT: \n" + www.responseCode);
+			Debug.Log ("check"+www.responseCode);
+			DebugMsg ("", "RESULT: \n" + www.responseCode + "|" +www.downloadHandler.text);
 			if (debugConsole != null)
 				debugConsole.SetResult (www.responseCode.ToString(), debugIndex);
 			if (onComplete != null)
