@@ -38,25 +38,38 @@ public class SignInManager : AppInitPages {
 
 	void CheckPreviousSignIn(){
 		OnFinishIntro -= CheckPreviousSignIn;
-//		Debug.Log ("CheckSignIn");
+		StartCoroutine (InitSequence());
+	} 
+
+	IEnumerator InitSequence() {
+
+		//Wait for FCM initialized
+		while (DBManager.API.firebaseToken == null) {
+			yield return null;
+		}
+
+		//Check Previous Login
 		signInUsername = PlayerPrefs.GetString("LastUserLogin","");
 		signInPassword = PlayerPrefs.GetString("LastUserPassword","");
 
 		if (string.IsNullOrEmpty(signInUsername)) {
+			//No Login
 			SoundManager.Instance.PlayBGM(BGMList.BGMMenu01);
 			fader.FadeIn();
 		}else{
 			if (signInUsername.StartsWith ("FB_")) {
+				//FB Login
 				if (FBManager.Instance.FBLogin) {
 					ClickFBLogin (true);
 				} else {
 					fader.FadeIn ();
 				};
 			} else {
+				//Normal Login
 				DoLogin(true);
 			}
 		}
-	} 
+	}
 
 	public void ClickEnter(){
 		//go to loading scene

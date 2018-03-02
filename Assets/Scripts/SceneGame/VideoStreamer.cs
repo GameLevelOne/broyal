@@ -63,7 +63,8 @@ public class VideoStreamer : MonoBehaviour {
         audioSource.Play();
         Debug.Log("Playing video...");
 
-        while ((videoPlayer.isPlaying) && ((long)videoPlayer.frameCount > videoPlayer.frame))
+//        while ((videoPlayer.isPlaying) && ((long)videoPlayer.frameCount > videoPlayer.frame))
+		while ((long)videoPlayer.frameCount > videoPlayer.frame )
         //while (videoPlayer.isPlaying)
         {
             float timeLeft = (float)((long)videoPlayer.frameCount - videoPlayer.frame) / videoPlayer.frameRate;

@@ -48,41 +48,40 @@ public class TwoChests : BaseGame {
 	}
 		
 	void CheckResult() {
-		if (curChoice < 0) {
-			resultPanel.gameObject.SetActive (true);
-			resultPanel.SetInteger ("ChestResult",3);
-			StartCoroutine (DelayEnd (2f, false, 0));
-		} else {
-			connectingPanel.Connecting (true);
-			DBManager.API.SubmitBidRoyaleResult(auctionId,round,curChoice,
-				(response) =>
-				{
-					connectingPanel.Connecting (false);
-					Debug.Log ("Exit Royale");
-					JSONNode jsonData = JSON.Parse(response);
-					int timeToPopulateServerData = jsonData["timeToServerPopulateData"];
-                    correctAnswer = jsonData["correctAnswer"].AsInt;
-					bool win = (correctAnswer == curChoice) ? true : false;
+		connectingPanel.Connecting (true);
+		DBManager.API.SubmitBidRoyaleResult(auctionId,round,curChoice,
+			(response) =>
+			{
+				connectingPanel.Connecting (false);
+				Debug.Log ("Exit Royale");
+				JSONNode jsonData = JSON.Parse(response);
+				int timeToPopulateServerData = jsonData["timeToServerPopulateData"];
+				bool win = (correctAnswer == curChoice) ? true : false;
 
-					resultPanel.gameObject.SetActive (true);
+				resultPanel.gameObject.SetActive (true);
+				if (curChoice<0) {
+					resultPanel.SetInteger ("ChestResult",3);
+					correctAnswer = curChoice;
+				} else {
 					resultPanel.SetInteger ("ChestResult",win ? 1 : 2);
-                    if (win)
-                    {
-                        SoundManager.Instance.PlaySFX(SFXList.ChestOpen);
-                    }
-                    else
-                    {
-                        SoundManager.Instance.PlaySFX(SFXList.ChestWrong);
-                    }
-					StartCoroutine (DelayEnd (2f, win, timeToPopulateServerData-2000));
-				},
-				(error) =>
-				{
-					connectingPanel.Connecting (false);
-					gameManager.PopUpBackToHome(error);
+					correctAnswer = jsonData["correctAnswer"].AsInt;
 				}
-			);
-		}
+                if (win)
+                {
+                    SoundManager.Instance.PlaySFX(SFXList.ChestOpen);
+                }
+                else
+                {
+                    SoundManager.Instance.PlaySFX(SFXList.ChestWrong);
+                }
+				StartCoroutine (DelayEnd (2f, win, timeToPopulateServerData-2000));
+			},
+			(error) =>
+			{
+				connectingPanel.Connecting (false);
+				gameManager.PopUpBackToHome(error);
+			}
+		);
 	}
 
 	IEnumerator DelayEnd(float secs, bool win,int timeToPopulateServerData) {

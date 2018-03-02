@@ -19,8 +19,13 @@
       </intent-filter>
       <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
     </activity>
+	
     <service android:name="com.google.firebase.messaging.MessageForwardingService"
              android:exported="false"/>
+			 
+
+
+
     <activity android:name="com.astricstore.imageandvideopicker.AndroidPickerActivity" android:configChanges="orientation|keyboardHidden|screenSize">
     </activity>
     <activity android:name="eu.janmuller.android.simplecropimage.CropImage" android:configChanges="orientation|keyboardHidden|screenSize">
@@ -41,6 +46,7 @@
     <provider android:name="com.facebook.FacebookContentProvider" android:authorities="com.facebook.app.FacebookContentProvider171634710235066" android:exported="true" />
   </application>
   <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 

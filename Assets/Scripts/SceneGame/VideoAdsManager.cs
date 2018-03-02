@@ -38,6 +38,7 @@ public class VideoAdsManager : PagesIntroOutro {
 
     void VideoFinished()
     {
+//		Debug.Log ("VideoFinished - Time to Go home");
         videoStreamer.OnVideoFinished -= VideoFinished;
         Activate(false);
     }

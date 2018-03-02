@@ -25,8 +25,10 @@ public class RoyaleScoreItem : MonoBehaviour {
 
 	public void InitItem(RoyaleScoreData scoreData) {
 		roundLabel.text = "" + scoreData.round;
-		chests [scoreData.answer].sprite = scoreData.correct ? correctChest[scoreData.answer] : wrongChest[scoreData.answer];
-		chests [scoreData.answer].color = Color.white;
+		if (scoreData.answer >= 0) {
+			chests [scoreData.answer].sprite = scoreData.correct ? correctChest [scoreData.answer] : wrongChest [scoreData.answer];
+			chests [scoreData.answer].color = Color.white;
+		}
 		passedLabel.text = scoreData.passed.ToString("N0");
 	}
 }

@@ -96,6 +96,9 @@ public class PanelScoresManager : PagesIntroOutro {
 
 	IEnumerator WaitingForServer() {
 		Debug.Log ("Delay to populate server: "+timeToPopulateServer);
+		if (choice<0) {
+			gameManager.notifPopUp.ShowPopUp(LocalizationService.Instance.GetTextByKey ("Game.BID_ROYALE_NO_SELECT"));
+		}
 		while (timeToPopulateServer > 0) {
 			timeToPopulateServer -= Time.deltaTime;
 			ShowTimerOnButton ();
@@ -103,72 +106,69 @@ public class PanelScoresManager : PagesIntroOutro {
 		}
 		timeToPopulateServer = 0;
 		ShowTimerOnButton ();
-		DBManager.API.GetPassingUserResult(auctionId,round,
-			(response) =>
-			{
-				JSONNode jsonData = JSON.Parse(response);
-				rank = jsonData["rank"].AsInt;
-				status = jsonData["status"];
-				winner = jsonData["winner"].AsBool;
-				passNumber = jsonData["noOfPassingPlayers"].AsInt;
-				timeToNextGameRound = jsonData["timeToNextGameRound"].AsInt;
-				if (gameMode==GameMode.BIDRUMBLE) {
 
-                    rumbleScoreData = new RumbleScoreData[jsonData["scoreBoard"].Count];
-                    for (int i = 0; i < jsonData["scoreBoard"].Count; i++)
-                    {
-						rumbleScoreData[i] = new RumbleScoreData();
-                        int rRank = jsonData["scoreBoard"][i]["rank"].AsInt;
-						rumbleScoreData[i].rank = rRank;
-                        string rUser = jsonData["scoreBoard"][i]["username"];
-                        rumbleScoreData[i].username = rUser;
-                        float rScore = (float)(jsonData["scoreBoard"][i]["score"].AsDouble / 1000000000f);
-						rumbleScoreData[i].score = rScore;
+		//Check GetPassingUser
+		DBManager.API.GetPassingUserResult (auctionId, round,
+			(response) => {
+				JSONNode jsonData = JSON.Parse (response);
+				rank = jsonData ["rank"].AsInt;
+				status = jsonData ["status"];
+				winner = jsonData ["winner"].AsBool;
+				passNumber = jsonData ["noOfPassingPlayers"].AsInt;
+				timeToNextGameRound = jsonData ["timeToNextGameRound"].AsInt;
+				if (gameMode == GameMode.BIDRUMBLE) {
 
-                        Debug.Log(rumbleScoreData[i].ToString());
+					rumbleScoreData = new RumbleScoreData[jsonData ["scoreBoard"].Count];
+					for (int i = 0; i < jsonData ["scoreBoard"].Count; i++) {
+						rumbleScoreData [i] = new RumbleScoreData ();
+						int rRank = jsonData ["scoreBoard"] [i] ["rank"].AsInt;
+						rumbleScoreData [i].rank = rRank;
+						string rUser = jsonData ["scoreBoard"] [i] ["username"];
+						rumbleScoreData [i].username = rUser;
+						float rScore = (float)(jsonData ["scoreBoard"] [i] ["score"].AsDouble / 1000000000f);
+						rumbleScoreData [i].score = rScore;
+
+						Debug.Log (rumbleScoreData [i].ToString ());
 					}
 
-					rankLabel.text = rank.ToString("N0");
-					if (status=="PASS") {
+					rankLabel.text = rank.ToString ("N0");
+					if (status == "PASS") {
 						statusLabel.text = LocalizationService.Instance.GetTextByKey ("Game.YOU_PASSED");
 					} else {
 						statusLabel.text = LocalizationService.Instance.GetTextByKey ("Game.YOU_FAILED");
 					}
 
-					waitingInfo.SetActive(false);
-					resultInfo.SetActive(true);
+					waitingInfo.SetActive (false);
+					resultInfo.SetActive (true);
 				} else {
-					passNumber = jsonData["scoreBoard"][round-1]["passed"].AsInt;
-                    RoyaleScoreData data = new RoyaleScoreData();
-                    data.round = round;
-                    data.passed = passNumber;
-                    //data.answer = choice;
-                    //data.correct = (status=="PASS");
-                    data.answer = choice;
-                    data.correct = true;
-                    Debug.Log(data.ToString());
-                    gameManager.AddRoyaleScore(data);
+					passNumber = jsonData ["scoreBoard"] [round - 1] ["passed"].AsInt;
+					RoyaleScoreData data = new RoyaleScoreData ();
+					data.round = round;
+					data.passed = passNumber;
+					data.answer = choice;
+					data.correct = true;
+					Debug.Log (data.ToString ());
+					gameManager.AddRoyaleScore (data);
+
 				}
-				if ((winner)  || (status!="PASS")) {
+				if ((winner) || (status != "PASS")) {
 					buttonNext.interactable = true;
-                    if (gameMode == GameMode.BIDRUMBLE)
-                    {
-                        scoreBoard.InitScoreBoard(rumbleScoreData);
-                    }
-                    else
-                    {
-                        scoreBoard.InitScoreBoard(gameManager.GetRoyaleScores());
-                    }
+					if (gameMode == GameMode.BIDRUMBLE) {
+						scoreBoard.InitScoreBoard (rumbleScoreData);
+					} else {
+						scoreBoard.InitScoreBoard (gameManager.GetRoyaleScores ());
+					}
 				} else {
-                    StopAllCoroutines();
-					StartCoroutine(DelayNextRound(1f));
+					StopAllCoroutines ();
+					StartCoroutine (DelayNextRound (1f));
 				}
 			},
-			(error) =>
-			{
-				gameManager.PopUpBackToHome(error);
+			(error) => {
+				Activate(false);
+				gameManager.PopUpBackToHome (error);
 			}
 		);
+
 	}
 
 	void ShowTimerOnButton() {

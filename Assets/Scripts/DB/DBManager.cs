@@ -333,17 +333,28 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
-	public void UpdateUserName(string userName,
+	public void UpdateUserName(string newUserName,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.updateUserNameAPI;
 		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
-			"\"username\":\""+userName+"\"\n"+
+			"\"username\":\""+newUserName+"\"\n"+
 			"}";
 
 		DebugMsg ("UPDATE USER NAME Request","\nurl = "+url+"\ndata = "+jsondata);
-		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),onComplete, onError);
+		PostRequest(url,encoder.GetBytes(jsondata),PutRequestHeader(CreateHeaderWithAuthorization()),
+			(response)=> {
+				username = newUserName;
+				string signInUsername = PlayerPrefs.GetString("LastUserLogin","");
+				if (signInUsername.StartsWith ("FB_")) {
+					PlayerPrefs.SetString("LastUserLogin","FB_"+username);
+				} else {
+					PlayerPrefs.SetString("LastUserLogin",username);
+				}
+				if (onComplete!=null)
+					onComplete(response);
+			}, onError);
 	}
 
 	public void UpdateUserProfile(int gender, string phoneNumber, string email, string completeName, string province, string provinceId, string city, string cityId, string streetAddress,
@@ -422,19 +433,19 @@ public class DBManager : MonoBehaviour {
 //		www.uploadHandler = uh;
 
 		List<IMultipartFormSection> formData = new List<IMultipartFormSection> ();
-//		formData.Add(new MultipartFormFileSection("profilePictureImage",texData));
-		formData.Add(new MultipartFormFileSection("profilePictureImage",texData,filename,"images/png"));
+		formData.Add(new MultipartFormFileSection("profilePictureImage",texData));
+//		formData.Add(new MultipartFormFileSection("profilePictureImage",texData,filename,"images/png"));
 //		formData.Add(new MultipartFormDataSection("profilePictureImage",texData));
 //		int debugIndex = debugConsole.SetRequest ("REST URL: " + config.restURL + "\n" +  config.updateProfilePicture);
 
-//      WWWForm data = new WWWForm();
-//		data.AddBinaryData("profilePictureImage",texData);
+//	    WWWForm data = new WWWForm();
+//		data.AddBinaryData("profilePictureImage",texData,"test.png","image/png");
 //		Dictionary<string,string> header = CreateHeaderNoJSON ();
 //		header["Content-Type"]= "multipart/form-data";
 //		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+formData.ToString());
 //		StartCoroutine(WaitForUploadRequest(www,onComplete,onError,0,testText));
 		StartCoroutine(WaitForUploadRequest(url,formData,onComplete,onError,0,testText));
-//		PostRequestForm(url,data,header,onComplete, onError);
+//		PostRequest(url,data.data,header,onComplete, onError);
 	}
 
 //	IEnumerator WaitForUploadRequest(UnityWebRequest www ,System.Action<string> onComplete, System.Action<string> onError,int debugIndex, Text testText=null) {
@@ -478,7 +489,7 @@ public class DBManager : MonoBehaviour {
 			}
 			else
 			{
-				ShowUnauthorizedError();
+				ShowGeneralError(LocalizationService.Instance.GetTextByKey("Error.UNAUTHORIZED"));
 			}
 		}
 	}
@@ -638,7 +649,7 @@ public class DBManager : MonoBehaviour {
 
 	WWW PostRequest(string url, byte[] data, Dictionary<string,string> postHeader, System.Action<string> onComplete, System.Action<string> onError) {
 		if (postHeader == null) {
-			ShowUnauthorizedError ();
+			ShowGeneralError (LocalizationService.Instance.GetTextByKey("Error.UNAUTHORIZED"));
 			return null;
 		} else {
 			int debugIndex = -1;
@@ -657,10 +668,11 @@ public class DBManager : MonoBehaviour {
 
 	IEnumerator WaitForRequest(WWW www, System.Action<string> onComplete, System.Action<string> onError,int debugIndex) {
 		float timeOutCheck = timeOutThreshold;
-		while ((timeOutCheck > 0f) && (!www.isDone)) {
-			timeOutCheck -= Time.deltaTime;
-			yield return null;
-		}
+//		while ((timeOutCheck > 0f) && (!www.isDone)) {
+//			timeOutCheck -= Time.deltaTime;
+//			yield return null;
+//		}
+		yield return www;
 		if (timeOutCheck > 0f) {
 			if (www.error == null) {
 				DebugMsg ("", "RESULT: \n" + www.text);
@@ -673,20 +685,16 @@ public class DBManager : MonoBehaviour {
 				if (debugConsole != null)
 					debugConsole.SetError ("ERROR: " + www.error + "\n" + www.text, debugIndex);
 
-				if (www.error.Trim () != "401 Unauthorized") {
-					if (onError != null)
-						onError (www.error + "|" + www.text);
-                } else if (www.error.Contains("ConnectException"))
+				if (www.error.Trim () == "401 Unauthorized") {
+					ShowGeneralError(LocalizationService.Instance.GetTextByKey("Error.UNAUTHORIZED"));
+				} else if ((www.error.Contains("ConnectException")) || (www.error.Contains("ailed to connect")) )
                 {
-                    //DebugError ("ERROR: " + www.error, www.text);
                     if (debugConsole != null)
                         debugConsole.SetError("ERROR: REQUEST_TIME_OUT", debugIndex);
-                    if (onError != null)
-                        onError("{\"errors\":\"REQUEST_TIME_OUT\"}");
-                }
-                else
-                {
-                    ShowUnauthorizedError();
+					ShowGeneralError(LocalizationService.Instance.GetTextByKey("Error.REQUEST_TIME_OUT"));
+				} else {
+					if (onError != null)
+						onError (www.error + "|" + www.text);
                 }
 			}
 		} else {
@@ -753,11 +761,11 @@ public class DBManager : MonoBehaviour {
 		return header;
 	}
 
-	void ShowUnauthorizedError() {
+	void ShowGeneralError(string s) {
 		GameObject g = GameObject.FindWithTag ("NotifPopUp");
 		if (g!=null) {
 			notifPopUp = g.transform.GetChild(g.transform.childCount-1).GetComponent<NotificationPopUp>();
-			notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error.UNAUTHORIZED"));
+			notifPopUp.ShowPopUp (s);
 			notifPopUp.OnFinishOutro += RestartApp;
 		}
 		GameObject c = GameObject.FindWithTag ("ConnectingPanel");

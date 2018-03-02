@@ -162,6 +162,7 @@ Game.COLOR_PAIRING_DESC,Change all the boxes into one color. Between blue or red
 Game.TYPE_THE_CODE_DESC,Type the displayed alphabets in sequence. Dont type wrong or you have to use your time to backspace the alphabets.
 Game.SEQUENCE_DESC,Try to count from lowest number to highest number. To increase the difficulty we will use negative value too.
 Game.BID_ROYALE_DESC,Lets test your luck! Choose one chest with treasure inside. The chance is 50-50.
+Game.BID_ROYALE_NO_SELECT,You didnt choose any chest and is not allowed to play in next round!
 ShopPage.STARS,STARS
 ShopPage.PETS,PETS
 EditPet.CONGRATULATIONS,CONGRATULATIONS!\nYOU JUST PURCHASED A BARGAINER PET.\nYOU SHOULD NAME IT RIGHT AWAY.

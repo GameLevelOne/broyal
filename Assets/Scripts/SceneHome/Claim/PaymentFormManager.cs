@@ -99,7 +99,7 @@ public class PaymentFormManager : BasePage {
 
 	void LoadShippingData() {
 		connectingPanel.Connecting (true);
-		DBManager.API.GeneratePreOrder (purchaseType,itemId,"02",
+		DBManager.API.GeneratePreOrder (purchaseType,itemId,paymentId=="" ? "02" : paymentId,
 			(response) => {
 				StartCoroutine(GetPaymentDetailsDelayed(0.5f));
 			}, 

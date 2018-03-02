@@ -150,8 +150,8 @@ public class SceneGameManager : MonoBehaviour {
 		if (gameMode == GameMode.TRAINING) {
             scorePanel.Activate(false);
             scorePanel.OnFinishOutro += LoadToHome;
-            //videoPanel.Activate(true);
-            //videoPanel.OnFinishOutro += LoadToHome;
+//            videoPanel.Activate(true);
+//            videoPanel.OnFinishOutro += LoadToHome;
         }
         else
         {
@@ -159,6 +159,9 @@ public class SceneGameManager : MonoBehaviour {
 				scoreBoard.Activate (false);
                 videoPanel.Activate(true);
                 videoPanel.OnFinishOutro += LoadToHome;        
+			} else if (scorePanel.gameObject.activeSelf) {
+				scorePanel.Activate(false);
+				scorePanel.OnFinishOutro += LoadToHome;
 			} else {
 				gamePanel [nextGame].Activate (false);
 			}
@@ -174,7 +177,7 @@ public class SceneGameManager : MonoBehaviour {
 		}
 		notifPopUp.OnFinishOutro += LoadToHomeFromNotif;
 	}
-
+		
 	void LoadToHomeFromNotif() {
 		notifPopUp.OnFinishOutro -= LoadToHomeFromNotif;
 		gamePanel [nextGame].Activate (false);

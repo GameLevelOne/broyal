@@ -162,6 +162,7 @@ Game.COLOR_PAIRING_DESC,Rubah semua kotak menjadi satu warna yang sama. Antara b
 Game.TYPE_THE_CODE_DESC,Ketik sesuai urutan alfabet yang tertera. Jangan sampai salah atau kamu harus gunakan waktu untuk hapus mundur alfabetnya.
 Game.SEQUENCE_DESC,Coba berhitung dari angka terkecil ke angka terbesar. Agar tambah susah kita pakai angka negatif pula.
 Game.BID_ROYALE_DESC,Ayo uji keberuntunganmu! Pilih satu kotak yang ada harta di dalamnya. Kesempatannya 50-50.
+Game.BID_ROYALE_NO_SELECT,Anda tidak memilih peti dan tidak dapat ikut ke ronde berikutnya!
 ShopPage.STARS,BINTANG
 ShopPage.PETS,PELIHARAAN
 EditPet.CONGRATULATIONS,SELAMAT!\nANDA BARU SAJA MEMBELI PELIHARAAN BARU.\nSEBAIKANYA ANDA SEGERA MEMBERINYA NAMA.
