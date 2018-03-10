@@ -39,8 +39,16 @@ public class FCMReceiver : MonoBehaviour {
 	public virtual void OnMessageReceived(object sender, Firebase.Messaging.MessageReceivedEventArgs e) {
 		string s="";
 		var notification = e.Message.Notification;
+		GameObject g = GameObject.FindGameObjectWithTag ("HangingNotification"); 
+
+		if (notification!=null) {
+			if (g != null) {
+				g.GetComponent<HangingNotification> ().ShowNotification (notification.Body);
+			}
+		}
+
 		if (notification != null) {
-			s = "title: " + notification.Title + "\n";
+			s += "title: " + notification.Title +"\n";
 			s += "body: " + notification.Body + "\n";
 		}
 		if (e.Message.From.Length > 0)
@@ -56,6 +64,8 @@ public class FCMReceiver : MonoBehaviour {
 			}
 		}
 		MessageLog("FCM Message",s);
+
+
 	}
 
 	public virtual void OnTokenReceived(object sender, Firebase.Messaging.TokenReceivedEventArgs token) {

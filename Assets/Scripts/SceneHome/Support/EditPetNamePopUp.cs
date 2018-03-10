@@ -26,7 +26,7 @@ public class EditPetNamePopUp : BasePage {
 	public void SaveClicked() {
         SoundManager.Instance.PlaySFX(SFXList.Button01);
 		connectingPanel.Connecting (true);
-		DBManager.API.ChangePetName (petNameLabel.text,
+		DBManager.API.ChangePetName (petNameLabel.text,false,
 			(response) => {
 				connectingPanel.Connecting (false);
 				Activate (false);

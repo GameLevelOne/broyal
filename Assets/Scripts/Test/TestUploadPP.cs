@@ -25,7 +25,7 @@ public class TestUploadPP : MonoBehaviour {
 	
 	public void UploadClicked () {
         statusText.text = "UPLOADING";
-		byte[] databytes = sourceTex.EncodeToPNG();
+		byte[] databytes = sourceTex.GetRawTextureData();
 //        string s = "";
 //        for (int i=0;i<databytes.Length;i++) {
 //            s += databytes[i].ToString();

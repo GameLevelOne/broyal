@@ -8,6 +8,7 @@ using SimpleJSON;
 public class SettingsManager : BasePage {
 	public ConnectingPanel connectingPanel;
 	public NotificationPopUp notifPopUp;
+	public TutorialCarrouselPopUp tutorialCarrouselPopUp;
 	public TextManager textPanel;
 	public Image buttonNotifOn;
 	public Image buttonNotifOff;
@@ -69,7 +70,40 @@ public class SettingsManager : BasePage {
         SoundManager.Instance.PlaySFX(SFXList.Button01);
         buttonSubscribe.enabled = optionSubscribe;
 		buttonUnsubscribe.enabled = !optionSubscribe;
-		PlayerPrefs.SetInt ("Subscribe",(optionSubscribe ? 1 : 0));
+		connectingPanel.Connecting (true);
+		if (optionSubscribe) {
+			DBManager.API.SubscribeUser (
+				(response) => {
+					connectingPanel.Connecting (false);
+					PlayerPrefs.SetInt ("Subscribe",1);
+				}, 
+				(error) => {
+					connectingPanel.Connecting (false);
+					JSONNode jsonData = JSON.Parse (error);
+					if (jsonData!=null) {
+						notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+					} else {
+						notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+					}
+				}
+			);		
+		} else {
+			DBManager.API.UnsubscribeUser (
+				(response) => {
+					connectingPanel.Connecting (false);
+					PlayerPrefs.SetInt ("Subscribe",0);
+				}, 
+				(error) => {
+					connectingPanel.Connecting (false);
+					JSONNode jsonData = JSON.Parse (error);
+					if (jsonData!=null) {
+						notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error."+jsonData["errors"]));
+					} else {
+						notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("General.SERVER_ERROR"));
+					}
+				}
+			);		
+		}
 	}
 
 	public void ClickDebug(bool optionOn) {
@@ -89,6 +123,8 @@ public class SettingsManager : BasePage {
 
 	public void ClickTutorial(){
         SoundManager.Instance.PlaySFX(SFXList.Button01);
+		tutorialCarrouselPopUp.Activate (true);
+
 	}
 
 	public void OnClickLogout(){

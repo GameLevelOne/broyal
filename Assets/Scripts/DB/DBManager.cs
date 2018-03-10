@@ -152,13 +152,14 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,encoder.GetBytes(jsondata),CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
-	public void ChangePetName(string newName,
+	public void ChangePetName(string newName,bool isFirstTime,
 		System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.changePetName;
 		UTF8Encoding encoder = new UTF8Encoding ();
 		string jsondata = "{\n"+
-			"\"petName\":\""+newName+"\"\n"+
+			"\"petName\":\""+newName+"\",\n"+
+			"\"isFirstTime\":"+isFirstTime+"\n"+
 			"}";
 
 		DebugMsg ("CHANGE PET NAME Request","\nurl = "+url);
@@ -326,6 +327,12 @@ public class DBManager : MonoBehaviour {
 		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
 	}
 
+	public void SubscribeUser(System.Action<string> onComplete , System.Action<string> onError = null)
+	{
+		string url = config.restURL + config.subscribeUserAPI;
+		DebugMsg ("SUBSCRIBE USER Request","\nurl = "+url);
+		PostRequest(url,null,CreateHeaderWithAuthorization(),onComplete, onError);
+	}
 	public void UnsubscribeUser(System.Action<string> onComplete , System.Action<string> onError = null)
 	{
 		string url = config.restURL + config.unsubscribeUserAPI;
@@ -432,9 +439,11 @@ public class DBManager : MonoBehaviour {
 //		UploadHandler uh = new UploadHandlerRaw (texData);
 //		www.uploadHandler = uh;
 
+		byte[] img = File.ReadAllBytes (filename);
+
 		List<IMultipartFormSection> formData = new List<IMultipartFormSection> ();
-		formData.Add(new MultipartFormFileSection("profilePictureImage",texData));
-//		formData.Add(new MultipartFormFileSection("profilePictureImage",texData,filename,"images/png"));
+//		formData.Add(new MultipartFormFileSection("profilePictureImage",filename));
+		formData.Add(new MultipartFormFileSection("profilePictureImage",img,"profilepic.png","image/png"));
 //		formData.Add(new MultipartFormDataSection("profilePictureImage",texData));
 //		int debugIndex = debugConsole.SetRequest ("REST URL: " + config.restURL + "\n" +  config.updateProfilePicture);
 
@@ -444,29 +453,40 @@ public class DBManager : MonoBehaviour {
 //		header["Content-Type"]= "multipart/form-data";
 //		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+formData.ToString());
 //		StartCoroutine(WaitForUploadRequest(www,onComplete,onError,0,testText));
-		StartCoroutine(WaitForUploadRequest(url,formData,onComplete,onError,0,testText));
+		StartCoroutine(WaitForUploadRequest(url,formData,onComplete,onError, testText));
 //		PostRequest(url,data.data,header,onComplete, onError);
 	}
 
 //	IEnumerator WaitForUploadRequest(UnityWebRequest www ,System.Action<string> onComplete, System.Action<string> onError,int debugIndex, Text testText=null) {
-	IEnumerator WaitForUploadRequest(string url,List<IMultipartFormSection> formData ,System.Action<string> onComplete, System.Action<string> onError,int debugIndex, Text testText=null) {
+	IEnumerator WaitForUploadRequest(string url,List<IMultipartFormSection> formData ,System.Action<string> onComplete, System.Action<string> onError, Text testText=null) {
 		UnityWebRequest www = UnityWebRequest.Post(url,formData);
 		www.SetRequestHeader ("Content-Type","multipart/form-data");
 		www.SetRequestHeader ("royalBidKey", config.royalBidKey);
 		www.SetRequestHeader ("royalBidSecret", config.royalBidSecret);
 		www.SetRequestHeader ("Authorization", tokenType +" "+ accessToken);
+
+		int debugIndex = -1;
+		if (debugConsole != null) {
+			string serverUrl = url.Substring (0, config.restURL.Length);
+			string apiUrl = url.Substring (config.restURL.Length);
+			debugIndex = debugConsole.SetRequest ("REST URL: " + serverUrl + "\n" +  apiUrl);
+		}
+
 		www.Send ();
 		while (!www.isDone) {
-			Debug.Log ("Progress: "+www.uploadProgress);
-			if (testText != null) {
-				testText.text = "Uploading..."+(www.uploadProgress * 100) + "%" ;
-			}
+//			Debug.Log ("Progress: "+www.uploadProgress);
+//			if (testText != null) {
+//				testText.text = "Uploading..."+(www.uploadProgress * 100) + "%" ;
+//			}
+
+			if (debugConsole != null)
+				debugConsole.SetResult ("Uploading..."+(www.uploadProgress * 100) + "%", debugIndex);
 			yield return null;
 		}
 
 		if (!www.isError) {
 			Debug.Log ("check"+www.responseCode);
-			DebugMsg ("", "RESULT: \n" + www.responseCode + "|" +www.downloadHandler.text);
+//			DebugMsg ("", "RESULT: \n" + www.responseCode + "|" +www.downloadHandler.text);
 			if (debugConsole != null)
 				debugConsole.SetResult (www.responseCode.ToString(), debugIndex);
 			if (onComplete != null)
@@ -668,11 +688,11 @@ public class DBManager : MonoBehaviour {
 
 	IEnumerator WaitForRequest(WWW www, System.Action<string> onComplete, System.Action<string> onError,int debugIndex) {
 		float timeOutCheck = timeOutThreshold;
-//		while ((timeOutCheck > 0f) && (!www.isDone)) {
-//			timeOutCheck -= Time.deltaTime;
-//			yield return null;
-//		}
-		yield return www;
+		while ((timeOutCheck > 0f) && (!www.isDone)) {
+			timeOutCheck -= Time.deltaTime;
+			yield return null;
+		}
+//		yield return www;
 		if (timeOutCheck > 0f) {
 			if (www.error == null) {
 				DebugMsg ("", "RESULT: \n" + www.text);

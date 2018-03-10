@@ -50,6 +50,7 @@ public class DBManagerSettings : ScriptableObject {
 	[Space(10)]
 	public string getUserStarsAPI;
 	public string createTopUp;
+	public string subscribeUserAPI;
 	public string unsubscribeUserAPI;
 	public string updateUserNameAPI;
 	public string updateUserProfileAPI;

@@ -103,7 +103,7 @@ public class AuctionRoomData : MonoBehaviour {
 			nextIncrementLabel.text = LocalizationService.Instance.GetTextByKey("AuctionLobby.NEXT_INCREMENT") + ": " + nextIncrement.ToString ("IDR #,0;IDR -#,0;-");
 			maxPriceLabel.text = LocalizationService.Instance.GetTextByKey("AuctionLobby.MAX_PRICE") + ": " + maxPrice.ToString ("IDR #,0;IDR -#,0;-");
 			actionButton.gameObject.SetActive (true);
-			if (starsPrice == 0) {
+			if (starsPrice <= 0) {
 				actionButtonLabel.text = LocalizationService.Instance.GetTextByKey("General.ENTER");
 				starsPanel.gameObject.SetActive (false);
 			} else {

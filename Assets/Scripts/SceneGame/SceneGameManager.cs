@@ -157,8 +157,9 @@ public class SceneGameManager : MonoBehaviour {
         {
 			if (scoreBoard.gameObject.activeSelf) {
 				scoreBoard.Activate (false);
-                videoPanel.Activate(true);
-                videoPanel.OnFinishOutro += LoadToHome;        
+				scoreBoard.OnFinishOutro += LoadToHome;
+//                videoPanel.Activate(true);
+//                videoPanel.OnFinishOutro += LoadToHome;        
 			} else if (scorePanel.gameObject.activeSelf) {
 				scorePanel.Activate(false);
 				scorePanel.OnFinishOutro += LoadToHome;
@@ -187,12 +188,13 @@ public class SceneGameManager : MonoBehaviour {
     void LoadToHome()
     {
 		if (gameMode == GameMode.TRAINING) {
-            scorePanel.OnFinishOutro -= LoadToHome;
+			scorePanel.OnFinishOutro -= LoadToHome;
             //videoPanel.OnFinishOutro -= LoadToHome;
         }
         else
         {
-            videoPanel.OnFinishOutro -= LoadToHome;        
+//            videoPanel.OnFinishOutro -= LoadToHome;        
+			scoreBoard.OnFinishOutro -= LoadToHome;
 		}
         loadingPanel.gameObject.SetActive(true);
     }

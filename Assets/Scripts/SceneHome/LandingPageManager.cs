@@ -6,6 +6,7 @@ using SimpleJSON;
 
 public class LandingPageManager : BasePage {
 	public Fader fader;
+	public TutorialCarrouselPopUp tutorialCarrouselPopUp;
 	public AuctionLobbyManager auctionLobby;
 //	public GameObject panelCompleteProfile;
 	public ImageLoader bidRoyalPic;
@@ -28,6 +29,12 @@ public class LandingPageManager : BasePage {
         {
             fader.FadeIn();
         }
+
+		int firstTime = PlayerPrefs.GetInt ("FirstTime",1);
+		if (firstTime == 1) {
+			tutorialCarrouselPopUp.Activate (true);
+			PlayerPrefs.SetInt ("FirstTime",0);
+		}
 	}
 
 	protected override void Init ()
@@ -35,6 +42,13 @@ public class LandingPageManager : BasePage {
 		base.Init ();
 		bidRoyalPic.SetLoading();
 		bidRumblePic.SetLoading();
+
+//		GameObject g = GameObject.FindGameObjectWithTag ("HangingNotification"); 
+//
+//		if (g != null) {
+//			g.GetComponent<HangingNotification> ().ShowNotification ("Testing");
+//		}
+
 		DBManager.API.GetLandingAuctionData (
 			(response) => {
 				JSONNode jsonData = JSON.Parse(response);
