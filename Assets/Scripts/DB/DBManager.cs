@@ -440,10 +440,11 @@ public class DBManager : MonoBehaviour {
 //		www.uploadHandler = uh;
 
 		byte[] img = File.ReadAllBytes (filename);
-
 		List<IMultipartFormSection> formData = new List<IMultipartFormSection> ();
-//		formData.Add(new MultipartFormFileSection("profilePictureImage",filename));
-		formData.Add(new MultipartFormFileSection("profilePictureImage",img,"profilepic.png","image/png"));
+//		formData.Add(new MultipartFormFileSection("profilePictureImage",texData,"profilepic.png","image/png"));
+//		formData.Add(new MultipartFormFileSection("profilePictureImage",img,"profilepic.png","image/png"));
+		formData.Add(new MultipartFormFileSection("profilePictureImage",filename));
+
 //		formData.Add(new MultipartFormDataSection("profilePictureImage",texData));
 //		int debugIndex = debugConsole.SetRequest ("REST URL: " + config.restURL + "\n" +  config.updateProfilePicture);
 
@@ -459,11 +460,27 @@ public class DBManager : MonoBehaviour {
 
 //	IEnumerator WaitForUploadRequest(UnityWebRequest www ,System.Action<string> onComplete, System.Action<string> onError,int debugIndex, Text testText=null) {
 	IEnumerator WaitForUploadRequest(string url,List<IMultipartFormSection> formData ,System.Action<string> onComplete, System.Action<string> onError, Text testText=null) {
-		UnityWebRequest www = UnityWebRequest.Post(url,formData);
+		//generate a unique boundary
+		byte[] boundary = UnityWebRequest.GenerateBoundary();
+		//serialize form fields into byte[] => requires a bounday to put in between fields
+		byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
+
+//		UnityWebRequest www = UnityWebRequest.Post(url,formData);
+//		www.SetRequestHeader ("Content-Type",contentType);
+//		www.SetRequestHeader ("Content-Type","content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW");
+
+		UnityWebRequest www = new UnityWebRequest (url);
 		www.SetRequestHeader ("Content-Type","multipart/form-data");
 		www.SetRequestHeader ("royalBidKey", config.royalBidKey);
 		www.SetRequestHeader ("royalBidSecret", config.royalBidSecret);
 		www.SetRequestHeader ("Authorization", tokenType +" "+ accessToken);
+
+		www.uploadHandler = new UploadHandlerRaw (formSections);
+		www.uploadHandler.contentType = "multipart/form-data; boundary=\"" + System.Text.Encoding.UTF8.GetString(boundary) + "\"";
+		www.downloadHandler = new DownloadHandlerBuffer();
+		www.method = "POST";
+//		uploader.contentType = contentType;
+//		www.uploadHandler = uploader;
 
 		int debugIndex = -1;
 		if (debugConsole != null) {
@@ -485,7 +502,7 @@ public class DBManager : MonoBehaviour {
 		}
 
 		if (!www.isError) {
-			Debug.Log ("check"+www.responseCode);
+			Debug.Log ("check"+www.responseCode + "\n" + www.downloadHandler.text);
 //			DebugMsg ("", "RESULT: \n" + www.responseCode + "|" +www.downloadHandler.text);
 			if (debugConsole != null)
 				debugConsole.SetResult (www.responseCode.ToString(), debugIndex);
@@ -693,6 +710,7 @@ public class DBManager : MonoBehaviour {
 			yield return null;
 		}
 //		yield return www;
+//		Debug.Log("AccessToken: "+tokenType+" "+accessToken);
 		if (timeOutCheck > 0f) {
 			if (www.error == null) {
 				DebugMsg ("", "RESULT: \n" + www.text);
@@ -705,7 +723,7 @@ public class DBManager : MonoBehaviour {
 				if (debugConsole != null)
 					debugConsole.SetError ("ERROR: " + www.error + "\n" + www.text, debugIndex);
 
-				if (www.error.Trim () == "401 Unauthorized") {
+				if ((www.error.Trim() == "401") || (www.error.Trim () == "401 Unauthorized")) {
 					ShowGeneralError(LocalizationService.Instance.GetTextByKey("Error.UNAUTHORIZED"));
 				} else if ((www.error.Contains("ConnectException")) || (www.error.Contains("ailed to connect")) )
                 {

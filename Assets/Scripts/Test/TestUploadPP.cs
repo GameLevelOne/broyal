@@ -26,12 +26,14 @@ public class TestUploadPP : MonoBehaviour {
 	public void UploadClicked () {
         statusText.text = "UPLOADING";
 		byte[] databytes = sourceTex.GetRawTextureData();
+		string fname = Application.dataPath + "/2DAssets/Logo/KING BIDDER.png";
+		Debug.Log ("Filepath: "+fname);
 //        string s = "";
 //        for (int i=0;i<databytes.Length;i++) {
 //            s += databytes[i].ToString();
 //        }
 //        Debug.Log(s);
-		DBManager.API.UpdateProfilePicture(databytes,"pp.png",
+		DBManager.API.UpdateProfilePicture(databytes,fname,
             (response) =>
             {
                 statusText.text = "UPLOAD SUCCESS";

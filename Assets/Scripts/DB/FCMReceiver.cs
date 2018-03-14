@@ -22,7 +22,7 @@ public class FCMReceiver : MonoBehaviour {
 	
 	// Update is called once per frame
 	void MessageLog (string title, string log) {
-		if (DBManager.API.debugConsole) {
+		if (DBManager.API.debugConsole!=null) {
 			int idx = DBManager.API.debugConsole.SetRequest (title);
 			DBManager.API.debugConsole.SetResult (log,idx);
 		}

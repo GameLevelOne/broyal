@@ -24,6 +24,8 @@ public class SignInManager : AppInitPages {
 	bool webViewReady = false;
 
 	void Start() {
+//		QualitySettings.vSyncCount = 0;
+//		Application.targetFrameRate = 20;
 		SoundManager.Instance.SetVolume (PlayerPrefs.GetFloat("SoundVolume",1f));
 		fader.SetFaderActive (true);
 		OnFinishIntro += CheckPreviousSignIn;
