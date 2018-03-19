@@ -38,6 +38,7 @@ public class VideoStreamer : MonoBehaviour {
         videoPlayer.EnableAudioTrack(0, true);
         videoPlayer.SetTargetAudioSource(0, audioSource);
         videoPlayer.aspectRatio = VideoAspectRatio.FitVertically;
+		yield return null;
         videoPlayer.Prepare();
 
         Debug.Log("Prepare Video");
@@ -58,7 +59,6 @@ public class VideoStreamer : MonoBehaviour {
 
         if (OnVideoReady != null)
             OnVideoReady();
-
         videoPlayer.Play();
         audioSource.Play();
         Debug.Log("Playing video...");
@@ -78,5 +78,6 @@ public class VideoStreamer : MonoBehaviour {
             OnVideoFinished();
 
         SoundManager.Instance.SetVolume(PlayerPrefs.GetFloat("SoundVolume", 1f));
+		gameObject.SetActive (false);
     }
 }

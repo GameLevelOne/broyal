@@ -439,23 +439,27 @@ public class DBManager : MonoBehaviour {
 //		UploadHandler uh = new UploadHandlerRaw (texData);
 //		www.uploadHandler = uh;
 
-		byte[] img = File.ReadAllBytes (filename);
-		List<IMultipartFormSection> formData = new List<IMultipartFormSection> ();
+//		byte[] img = File.ReadAllBytes (filename);
+//		List<IMultipartFormSection> formData = new List<IMultipartFormSection> ();
 //		formData.Add(new MultipartFormFileSection("profilePictureImage",texData,"profilepic.png","image/png"));
 //		formData.Add(new MultipartFormFileSection("profilePictureImage",img,"profilepic.png","image/png"));
-		formData.Add(new MultipartFormFileSection("profilePictureImage",filename));
+//		formData.Add(new MultipartFormFileSection("profilePictureImage",filename));
 
 //		formData.Add(new MultipartFormDataSection("profilePictureImage",texData));
 //		int debugIndex = debugConsole.SetRequest ("REST URL: " + config.restURL + "\n" +  config.updateProfilePicture);
 
-//	    WWWForm data = new WWWForm();
-//		data.AddBinaryData("profilePictureImage",texData,"test.png","image/png");
-//		Dictionary<string,string> header = CreateHeaderNoJSON ();
-//		header["Content-Type"]= "multipart/form-data";
+	    WWWForm data = new WWWForm();
+		data.AddBinaryData("profilePictureImage",texData,"test.png","image/png");
+		Dictionary<string,string> header = CreateHeaderNoJSON ();
+		header.Add("Content-Type","multipart/form-data");
 //		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+formData.ToString());
 //		StartCoroutine(WaitForUploadRequest(www,onComplete,onError,0,testText));
-		StartCoroutine(WaitForUploadRequest(url,formData,onComplete,onError, testText));
-//		PostRequest(url,data.data,header,onComplete, onError);
+//		StartCoroutine(WaitForUploadRequest(url,formData,onComplete,onError, testText));
+
+		string s64 = System.Convert.ToBase64String (texData);
+		System.IO.File.WriteAllText (Application.dataPath + "/temp/string64.txt",s64);
+
+		PostRequest(url,data.data,header,onComplete, onError);
 	}
 
 //	IEnumerator WaitForUploadRequest(UnityWebRequest www ,System.Action<string> onComplete, System.Action<string> onError,int debugIndex, Text testText=null) {

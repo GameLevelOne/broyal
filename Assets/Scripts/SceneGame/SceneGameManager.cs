@@ -37,6 +37,7 @@ public class SceneGameManager : MonoBehaviour {
 	int round;
 	int countdownTimer;
 	int remainingPlayer;
+	bool fromScorePanel;
 
 	void Start () {
         auctionId = PlayerPrefs.GetInt("GameAuctionId", 0);
@@ -149,18 +150,22 @@ public class SceneGameManager : MonoBehaviour {
 		
 		if (gameMode == GameMode.TRAINING) {
             scorePanel.Activate(false);
+			loadingPanel.nextScene = "SceneHome";
             scorePanel.OnFinishOutro += LoadToHome;
 //            videoPanel.Activate(true);
 //            videoPanel.OnFinishOutro += LoadToHome;
         }
         else
         {
+			loadingPanel.nextScene = "SceneVideo";
+			fromScorePanel = false;
 			if (scoreBoard.gameObject.activeSelf) {
 				scoreBoard.Activate (false);
 				scoreBoard.OnFinishOutro += LoadToHome;
 //                videoPanel.Activate(true);
 //                videoPanel.OnFinishOutro += LoadToHome;        
 			} else if (scorePanel.gameObject.activeSelf) {
+				fromScorePanel = true;
 				scorePanel.Activate(false);
 				scorePanel.OnFinishOutro += LoadToHome;
 			} else {
@@ -189,12 +194,16 @@ public class SceneGameManager : MonoBehaviour {
     {
 		if (gameMode == GameMode.TRAINING) {
 			scorePanel.OnFinishOutro -= LoadToHome;
-            //videoPanel.OnFinishOutro -= LoadToHome;
+//            videoPanel.OnFinishOutro -= LoadToHome;
         }
         else
         {
-//            videoPanel.OnFinishOutro -= LoadToHome;        
-			scoreBoard.OnFinishOutro -= LoadToHome;
+			if (fromScorePanel) {
+				scorePanel.OnFinishOutro -= LoadToHome;
+			} else {
+//				videoPanel.OnFinishOutro -= LoadToHome;        
+				scoreBoard.OnFinishOutro -= LoadToHome;
+			}
 		}
         loadingPanel.gameObject.SetActive(true);
     }

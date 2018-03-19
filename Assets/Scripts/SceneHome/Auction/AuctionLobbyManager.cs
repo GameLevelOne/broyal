@@ -361,6 +361,14 @@ public class AuctionLobbyManager : BasePage {
 		carrouselPopUp.Activate (true);
 	}
 
+	void OnApplicationPause(bool isPaused) {
+		if (!isPaused) {
+//			LoadData (minData,maxData);
+			Init();
+		}
+	}
+
+
 	void OnDestroy()
 	{
 		scrollSnap.OnChangePage += OnChangeRoomPage;
