@@ -37,7 +37,8 @@ public class DebugConsole : MonoBehaviour {
 	}
 
 	public void SetResult(string msg, int idx = -1) {
-		if (idx > -1) {
+		Debug.Log ("SetResult IDX: "+idx);
+		if ((idx > -1) && (response.Count>idx)) {
 			response [idx] = msg;
 			UpdateText ();
 		} else if (response.Count>0) {
@@ -58,7 +59,7 @@ public class DebugConsole : MonoBehaviour {
 	void UpdateText() {
 		if (restUrl.Count > 0) {
 			restUrlText.text = restUrl [curIndex];
-			if (response [curIndex] != "") {
+			if ((response [curIndex] != "") && (response[curIndex].Length>7)) {
 				if (response [curIndex].Substring (0, 7) != "ERROR: ") {
 					responseText.color = Color.white;
 				} else {

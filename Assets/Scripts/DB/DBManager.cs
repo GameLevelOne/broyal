@@ -390,8 +390,12 @@ public class DBManager : MonoBehaviour {
 	{
 		string url = config.restURL + config.userForgotPasswordAPI;
 		UTF8Encoding encoder = new UTF8Encoding ();
+		string property = "username";
+		if (username.Contains ("@")) {
+			property = "email";
+		}
 		string jsondata = "{\n"+
-			"\"username\":\""+userName+"\"\n"+
+			"\""+property+"\":\""+userName+"\"\n"+
 			"}";
 
 		DebugMsg ("USER FORGOT PASSWORD Request","\nurl = "+url+"\ndata = "+jsondata);
@@ -430,63 +434,22 @@ public class DBManager : MonoBehaviour {
 	}
 
 
-	public void UpdateProfilePicture(byte[] texData,string filename,
+	public void UpdateProfilePicture(string filename,
 		System.Action<string> onComplete , System.Action<string> onError = null, Text testText=null)
 	{
 		string url = config.restURL + config.updateProfilePicture;
-//
-//		UnityWebRequest www = new UnityWebRequest (url);
-//		UploadHandler uh = new UploadHandlerRaw (texData);
-//		www.uploadHandler = uh;
-
-//		byte[] img = File.ReadAllBytes (filename);
-//		List<IMultipartFormSection> formData = new List<IMultipartFormSection> ();
-//		formData.Add(new MultipartFormFileSection("profilePictureImage",texData,"profilepic.png","image/png"));
-//		formData.Add(new MultipartFormFileSection("profilePictureImage",img,"profilepic.png","image/png"));
-//		formData.Add(new MultipartFormFileSection("profilePictureImage",filename));
-
-//		formData.Add(new MultipartFormDataSection("profilePictureImage",texData));
-//		int debugIndex = debugConsole.SetRequest ("REST URL: " + config.restURL + "\n" +  config.updateProfilePicture);
-
-	    WWWForm data = new WWWForm();
-		data.AddBinaryData("profilePictureImage",texData,"test.png","image/png");
-		Dictionary<string,string> header = CreateHeaderNoJSON ();
-		header.Add("Content-Type","multipart/form-data");
-//		DebugMsg ("UPLOAD PROFILE PICTURE REQUEST","\nurl = "+url+"\ndata = "+formData.ToString());
-//		StartCoroutine(WaitForUploadRequest(www,onComplete,onError,0,testText));
-//		StartCoroutine(WaitForUploadRequest(url,formData,onComplete,onError, testText));
-
-		string s64 = System.Convert.ToBase64String (texData);
-		System.IO.File.WriteAllText (Application.dataPath + "/temp/string64.txt",s64);
-
-		PostRequest(url,data.data,header,onComplete, onError);
+		byte[] img = File.ReadAllBytes (filename);
+		WWWForm formData = new WWWForm();
+		formData.AddBinaryData("profilePictureImage",img,"test.png","image/png");
+		StartCoroutine(WaitForUploadRequest(url,formData,onComplete,onError, testText));
 	}
-
-//	IEnumerator WaitForUploadRequest(UnityWebRequest www ,System.Action<string> onComplete, System.Action<string> onError,int debugIndex, Text testText=null) {
-	IEnumerator WaitForUploadRequest(string url,List<IMultipartFormSection> formData ,System.Action<string> onComplete, System.Action<string> onError, Text testText=null) {
-		//generate a unique boundary
-		byte[] boundary = UnityWebRequest.GenerateBoundary();
-		//serialize form fields into byte[] => requires a bounday to put in between fields
-		byte[] formSections = UnityWebRequest.SerializeFormSections(formData, boundary);
-
-//		UnityWebRequest www = UnityWebRequest.Post(url,formData);
-//		www.SetRequestHeader ("Content-Type",contentType);
-//		www.SetRequestHeader ("Content-Type","content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW");
-
-		UnityWebRequest www = new UnityWebRequest (url);
-		www.SetRequestHeader ("Content-Type","multipart/form-data");
+	IEnumerator WaitForUploadRequest(string url,WWWForm formData ,System.Action<string> onComplete, System.Action<string> onError, Text testText=null) {
+		UnityWebRequest www = UnityWebRequest.Post (url,formData);
+//		www.SetRequestHeader ("Content-Type","multipart/form-data");
 		www.SetRequestHeader ("royalBidKey", config.royalBidKey);
 		www.SetRequestHeader ("royalBidSecret", config.royalBidSecret);
 		www.SetRequestHeader ("Authorization", tokenType +" "+ accessToken);
-
-		www.uploadHandler = new UploadHandlerRaw (formSections);
-		www.uploadHandler.contentType = "multipart/form-data; boundary=\"" + System.Text.Encoding.UTF8.GetString(boundary) + "\"";
-		www.downloadHandler = new DownloadHandlerBuffer();
-		www.method = "POST";
-//		uploader.contentType = contentType;
-//		www.uploadHandler = uploader;
-
-		int debugIndex = -1;
+		int debugIndex = 0;
 		if (debugConsole != null) {
 			string serverUrl = url.Substring (0, config.restURL.Length);
 			string apiUrl = url.Substring (config.restURL.Length);
@@ -495,19 +458,12 @@ public class DBManager : MonoBehaviour {
 
 		www.Send ();
 		while (!www.isDone) {
-//			Debug.Log ("Progress: "+www.uploadProgress);
-//			if (testText != null) {
-//				testText.text = "Uploading..."+(www.uploadProgress * 100) + "%" ;
-//			}
-
-			if (debugConsole != null)
-				debugConsole.SetResult ("Uploading..."+(www.uploadProgress * 100) + "%", debugIndex);
 			yield return null;
 		}
 
 		if (!www.isError) {
-			Debug.Log ("check"+www.responseCode + "\n" + www.downloadHandler.text);
-//			DebugMsg ("", "RESULT: \n" + www.responseCode + "|" +www.downloadHandler.text);
+//			Debug.Log ("check"+www.responseCode + "\n" + www.downloadHandler.text);
+			DebugMsg ("", "RESULT: \n" + www.responseCode + "|" +www.downloadHandler.text);
 			if (debugConsole != null)
 				debugConsole.SetResult (www.responseCode.ToString(), debugIndex);
 			if (onComplete != null)

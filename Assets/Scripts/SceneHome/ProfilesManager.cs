@@ -52,6 +52,7 @@ public class ProfilesManager : BasePage {
 	[Header("EDIT PROFILE AREA")]
 	public Sprite[] genderIcons = new Sprite[2]; //0=male, 1=female
 	public ImageLoader editUserPicture;
+	string profilePicUrl;
 	public GameObject editUserIcon;
 	public Image genderButton;
 	public Text editUserNameLabel;
@@ -115,13 +116,9 @@ public class ProfilesManager : BasePage {
 						scoreDateLabel[rumbleGame].text = jsonData["playedGames"][i]["dateCreated"];
 					}
 					if (jsonData["profilePicture"]!=null) {
-						cameraIcon.SetActive(false);
-						editUserPicture.gameObject.SetActive(true);
-						editUserIcon.SetActive(false);
-						editUserPicture.LoadImageFromUrl(jsonData["profilePicture"]);
+						profilePicUrl = jsonData["profilePicture"];
 					} else {
-						editUserIcon.SetActive(true);
-						editUserPicture.gameObject.SetActive(false);
+						profilePicUrl = "";
 					}
 
 					if (jsonData["gender"]=="Male")
@@ -160,6 +157,16 @@ public class ProfilesManager : BasePage {
 		userProfilePanel.SetActive (false);
 		petProfilePanel.SetActive (false);
 		editProfilePanel.SetActive (true);
+
+		if (profilePicUrl != "") {
+			cameraIcon.SetActive(false);
+			editUserPicture.gameObject.SetActive(true);
+			editUserIcon.SetActive(false);
+			editUserPicture.LoadImageFromUrl(profilePicUrl);
+		} else {
+			editUserIcon.SetActive(true);
+			editUserPicture.gameObject.SetActive(false);
+		}
 
 		provinceDrop.gameObject.SetActive (false);
 		provinceLoading.SetActive (true);
@@ -228,6 +235,7 @@ public class ProfilesManager : BasePage {
 
 	public void CloseClick() {
 		SoundManager.Instance.PlaySFX(SFXList.Button02);
+		Debug.Log ("Close and return to : "+ prevPage.gameObject.name);
 		PagesManager.instance.CurrentPageOutro(prevPage);
 	}
 
@@ -370,9 +378,10 @@ public class ProfilesManager : BasePage {
         editUserIcon.SetActive(false);
 //      tex.LoadImage(System.IO.File.ReadAllBytes(imgPath));
         editUserPicture.SetSpriteFromTexture(tex);
-		DBManager.API.UpdateProfilePicture(tex.GetRawTextureData(),imgPath,
+		DBManager.API.UpdateProfilePicture(imgPath,
             (response) => {
-                connectingPanel.Connecting(false);
+				connectingPanel.Connecting(false);
+				userLoaded = false;
             }, 
             (error) => {
                 connectingPanel.Connecting (false);

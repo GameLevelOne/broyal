@@ -7,7 +7,8 @@ using UnityEngine.Video;
 public class VideoStreamer : MonoBehaviour {
     public delegate void VideoStreamerEvent();
     public event VideoStreamerEvent OnVideoReady;
-    public event VideoStreamerEvent OnVideoFinished;
+	public delegate void VideoStreamerEventBool(bool correct);
+    public event VideoStreamerEventBool OnVideoFinished;
 
     public RawImage rawImage;
     public Text timeLabel;
@@ -45,9 +46,9 @@ public class VideoStreamer : MonoBehaviour {
         float timeElapsed = Time.timeSinceLevelLoad;
         while (!videoPlayer.isPrepared)
         {
-            //yield return new WaitForSeconds(waitTime);
-            //break;
-            yield return null;
+            yield return new WaitForSeconds(waitTime);
+            break;
+//            yield return null;
         }
         timeElapsed = Time.timeSinceLevelLoad - timeElapsed;
         Debug.Log("Finish Preparing in " + timeElapsed.ToString("00.000") + "s");
@@ -73,9 +74,9 @@ public class VideoStreamer : MonoBehaviour {
             yield return new WaitForSeconds(1f);
         }
 		yield return null;
-        Debug.Log("Done Playing");
+		Debug.Log("Done Playing with total frame: "+(long)videoPlayer.frameCount);
         if (OnVideoFinished != null)
-            OnVideoFinished();
+			OnVideoFinished(((long)videoPlayer.frameCount > 0));
 
         SoundManager.Instance.SetVolume(PlayerPrefs.GetFloat("SoundVolume", 1f));
 		gameObject.SetActive (false);

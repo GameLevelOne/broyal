@@ -7,6 +7,7 @@ public class VideoAdsManager : MonoBehaviour {
 	public LoadingProgress loadingPanel;
 	public ConnectingPanel connectingPanel;
     public VideoStreamer videoStreamer;
+	public NotificationPopUp notifPopUp;
     public float waitTime;
 
     void OnEnable()
@@ -28,6 +29,8 @@ public class VideoAdsManager : MonoBehaviour {
 //            }
 //        );
 		string url = "http://54.169.68.12:8080/bidroyalweb/advertisement/getAdvertisementImageOrVideoUrl?fileName=e8d56a25-aac2-4938-95f4-9cd70e1cbf38.mp4";
+
+		Debug.Log ("VideoScene Loaded");
 		videoStreamer.ReadyVideo(url,waitTime);
 		videoStreamer.OnVideoReady += VideoReady;
 		videoStreamer.OnVideoFinished += VideoFinished;
@@ -39,11 +42,21 @@ public class VideoAdsManager : MonoBehaviour {
 		connectingPanel.Connecting (false);
     }
 
-    void VideoFinished()
+	void VideoFinished(bool correct)
     {
-//		Debug.Log ("VideoFinished - Time to Go home");
+		Debug.Log ("VideoFinished - Time to Go home");
         videoStreamer.OnVideoFinished -= VideoFinished;
-		loadingPanel.gameObject.SetActive (true);
+		if (correct) {
+			loadingPanel.gameObject.SetActive (true);
+		} else {
+			notifPopUp.ShowPopUp (LocalizationService.Instance.GetTextByKey("Error.VIDEO_NOT_LOADED"));
+			notifPopUp.OnFinishOutro += AfterError;
+		}
     }
+
+	void AfterError() {
+		notifPopUp.OnFinishOutro -= AfterError;
+		loadingPanel.gameObject.SetActive (true);
+	}
 
 }
